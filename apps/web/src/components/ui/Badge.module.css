@@ -1,0 +1,84 @@
+.badge {
+  --_fg: var(--color-text-muted);
+  --_bg: var(--color-border-subtle);
+  --_border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  border: 1px solid var(--_border);
+  border-radius: var(--radius-pill);
+  background-color: var(--_bg);
+  color: var(--_fg);
+
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: 1;
+  white-space: nowrap;
+}
+
+/* ── Tamaños ─────────────────────────────────────────────────────────────── */
+
+.sm {
+  padding: 4px var(--space-2);
+  font-size: var(--text-2xs);
+}
+
+.md {
+  padding: 6px var(--space-3);
+  font-size: var(--text-xs);
+}
+
+/* ── Tonos ───────────────────────────────────────────────────────────────── */
+
+.neutral {
+  --_fg: var(--color-text-muted);
+  --_bg: var(--color-border-subtle);
+}
+
+.gold {
+  --_fg: var(--color-primary);
+  --_bg: var(--color-primary-soft);
+}
+
+.success {
+  --_fg: var(--color-success);
+  --_bg: var(--color-success-soft);
+}
+
+.warning {
+  --_fg: var(--color-warning);
+  --_bg: var(--color-primary-soft);
+}
+
+.danger {
+  --_fg: var(--color-danger);
+  --_bg: var(--color-danger-soft);
+}
+
+.info {
+  --_fg: var(--color-info);
+  --_bg: var(--color-info-soft);
+}
+
+/* ── Apariencias ─────────────────────────────────────────────────────────── */
+
+.soft {
+  --_border: transparent;
+}
+
+.outline {
+  --_bg: transparent;
+  --_border: currentColor;
+}
+
+/* ── Punto de estado ─────────────────────────────────────────────────────── */
+
+.dot {
+  width: 6px;
+  height: 6px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  background-color: currentColor;
+}

@@ -1,0 +1,66 @@
+.lines {
+  display: flex;
+  flex-direction: column;
+}
+
+.summary {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.totals {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.totals > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.totals dt {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.totals dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.discount dd {
+  color: var(--color-success);
+}
+
+.rule {
+  margin-block: var(--space-1);
+}
+
+.dueNow dt {
+  color: var(--color-text);
+  font-weight: var(--weight-medium);
+}
+
+.note {
+  padding: var(--space-3);
+  border-left: 2px solid var(--color-primary);
+  background-color: var(--color-primary-soft);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.actions {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}

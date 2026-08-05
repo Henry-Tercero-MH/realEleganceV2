@@ -1,0 +1,147 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-modal);
+
+  display: grid;
+  place-items: center;
+  padding: var(--space-5);
+
+  background-color: var(--color-overlay);
+  backdrop-filter: blur(4px);
+  animation: fade var(--duration-base) var(--ease-out);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-height: min(86dvh, 900px);
+  overflow: hidden;
+
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-2);
+
+  animation: rise var(--duration-base) var(--ease-out);
+}
+
+.sm {
+  max-width: 420px;
+}
+.md {
+  max-width: 620px;
+}
+.lg {
+  max-width: 900px;
+}
+
+/* ── Cabecera ────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: var(--space-4);
+  padding: var(--space-6) var(--space-6) var(--space-4);
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.headerText {
+  min-width: 0;
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-regular);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+}
+
+.description {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.close {
+  flex-shrink: 0;
+  margin: -6px -6px 0 0;
+}
+
+/* ── Cuerpo ──────────────────────────────────────────────────────────────── */
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  padding: var(--space-6);
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* ── Pie ─────────────────────────────────────────────────────────────────── */
+
+.footer {
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  padding: var(--space-4) var(--space-6) var(--space-6);
+  border-top: 1px solid var(--color-border-subtle);
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes rise {
+  from {
+    opacity: 0;
+    transform: translateY(16px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .panel {
+    animation: none;
+  }
+}
+
+/* ── Móvil: el diálogo se pega abajo, como una hoja ──────────────────────── */
+
+@media (max-width: 640px) {
+  .overlay {
+    place-items: end center;
+    padding: 0;
+  }
+
+  .panel {
+    max-width: none;
+    max-height: 92dvh;
+    border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    border-bottom: none;
+    animation: sheet var(--duration-base) var(--ease-out);
+  }
+
+  .header,
+  .body,
+  .footer {
+    padding-inline: var(--space-5);
+  }
+
+  @keyframes sheet {
+    from {
+      transform: translateY(100%);
+    }
+  }
+}

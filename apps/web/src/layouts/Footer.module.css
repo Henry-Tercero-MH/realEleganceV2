@@ -1,0 +1,121 @@
+.footer {
+  margin-top: var(--space-10);
+  padding-top: var(--space-8);
+  background-color: var(--color-surface);
+  /* Filete superior con los ticks de la cinta métrica. */
+  border-top: 1px solid var(--color-border);
+  background-image: var(--pattern-tape);
+  background-repeat: repeat-x;
+  background-position: top;
+  background-size: auto 8px;
+}
+
+.inner {
+  display: grid;
+  grid-template-columns: 1.6fr repeat(3, 1fr);
+  gap: var(--space-7);
+  padding-bottom: var(--space-7);
+}
+
+/* ── Columna de marca ────────────────────────────────────────────────────── */
+
+.brandColumn {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+  color: var(--color-text);
+}
+
+.pitch {
+  max-width: 34ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.contact {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  font-style: normal;
+}
+
+.contact a {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.contact a:hover {
+  color: var(--color-primary);
+}
+
+/* ── Columnas de enlaces ─────────────────────────────────────────────────── */
+
+.columnTitle {
+  margin-bottom: var(--space-4);
+  color: var(--color-primary);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.links {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+}
+
+.link {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.link:hover {
+  color: var(--color-text);
+}
+
+/* ── Línea legal ─────────────────────────────────────────────────────────── */
+
+.legal {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding-block: var(--space-5);
+  border-top: 1px solid var(--color-border-subtle);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.craft {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-primary);
+  opacity: 0.75;
+}
+
+@media (max-width: 900px) {
+  .inner {
+    grid-template-columns: repeat(2, 1fr);
+    gap: var(--space-6);
+  }
+
+  .brandColumn {
+    grid-column: 1 / -1;
+  }
+}
+
+@media (max-width: 520px) {
+  .inner {
+    grid-template-columns: 1fr;
+  }
+}

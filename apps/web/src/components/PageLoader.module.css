@@ -1,0 +1,16 @@
+.loader {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-4);
+  min-height: 60dvh;
+  color: var(--color-primary);
+}
+
+.text {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}

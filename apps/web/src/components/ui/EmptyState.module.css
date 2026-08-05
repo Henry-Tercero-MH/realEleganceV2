@@ -1,0 +1,64 @@
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  border: 1px dashed var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.md {
+  gap: var(--space-4);
+  padding: var(--space-8) var(--space-5);
+}
+
+.sm {
+  gap: var(--space-3);
+  padding: var(--space-6) var(--space-4);
+}
+
+/* El icono va en un círculo con el filete de la marca — un ojal. */
+.iconWrap {
+  display: grid;
+  place-items: center;
+  width: 56px;
+  height: 56px;
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background-color: var(--color-surface-raised);
+  color: var(--color-primary);
+}
+
+.sm .iconWrap {
+  width: 44px;
+  height: 44px;
+}
+
+.error .iconWrap {
+  border-color: var(--color-danger);
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-regular);
+  color: var(--color-text);
+}
+
+.sm .title {
+  font-size: var(--text-lg);
+}
+
+.description {
+  max-width: 46ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.action {
+  margin-top: var(--space-2);
+}

@@ -1,0 +1,198 @@
+/* ═══════════════════════════════════════════════════════════════════════════
+   Real Elegance — design tokens
+   FUENTE DE VERDAD de la identidad visual. Ningún componente define colores,
+   espaciados, radios ni sombras propias: todos consumen estas variables.
+
+   Orden de lectura:
+     1. Paleta cruda (--re-*)      → nombres de marca, no se usan en componentes
+     2. Semánticos (--color-*)     → los que SÍ se usan en componentes
+     3. Tipografía, escala, motion
+     4. Tema claro                 → remapea solo los semánticos
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  /* ── 1. Paleta cruda — negro / dorado / blanco ───────────────────────── */
+  --re-noir: #0e0c0a; /* fondo principal (negro cálido)      */
+  --re-onyx: #14110c; /* superficies elevadas                */
+  --re-onyx-2: #1d1912; /* tarjetas / paneles                  */
+  --re-gold: #c6a253; /* dorado principal (antiguo, sobrio)  */
+  --re-gold-bright: #e6cc86; /* dorado de acento / hover            */
+  --re-gold-deep: #8c6e2e; /* dorado apagado / bordes             */
+  --re-ivory: #f4efe4; /* texto y superficies claras          */
+  --re-muted: #9b917e; /* texto secundario                    */
+  --re-line: rgba(198, 162, 83, 0.22); /* líneas tipo patrón sastre */
+
+  /* Derivados de la paleta, para veladuras y estados. */
+  --re-gold-a08: rgba(198, 162, 83, 0.08);
+  --re-gold-a14: rgba(198, 162, 83, 0.14);
+  --re-gold-a30: rgba(198, 162, 83, 0.3);
+  --re-ivory-a08: rgba(244, 239, 228, 0.08);
+  --re-noir-a60: rgba(14, 12, 10, 0.6);
+  --re-noir-a85: rgba(14, 12, 10, 0.85);
+
+  /* ── 2. Semánticos — USA SIEMPRE ESTOS EN COMPONENTES ────────────────── */
+  --color-bg: var(--re-noir);
+  --color-surface: var(--re-onyx);
+  --color-surface-raised: var(--re-onyx-2);
+  --color-surface-sunken: #0a0907;
+  --color-overlay: var(--re-noir-a85);
+
+  --color-primary: var(--re-gold);
+  --color-primary-hover: var(--re-gold-bright);
+  --color-primary-deep: var(--re-gold-deep);
+  --color-primary-soft: var(--re-gold-a14);
+  /* Texto que va ENCIMA de un fondo dorado sólido. */
+  --color-on-primary: var(--re-noir);
+
+  --color-text: var(--re-ivory);
+  --color-text-muted: var(--re-muted);
+  --color-text-inverse: var(--re-noir);
+
+  --color-border: var(--re-line);
+  --color-border-strong: var(--re-gold-a30);
+  --color-border-subtle: var(--re-ivory-a08);
+
+  /* Estado */
+  --color-success: #6fa86b;
+  --color-warning: var(--re-gold-bright);
+  --color-danger: #c1553f;
+  --color-info: #6f8fa8;
+  --color-success-soft: rgba(111, 168, 107, 0.14);
+  --color-danger-soft: rgba(193, 85, 63, 0.14);
+  --color-info-soft: rgba(111, 143, 168, 0.14);
+
+  /* Anillo de foco — accesibilidad, siempre visible por teclado. */
+  --color-focus: var(--re-gold-bright);
+  --focus-ring: 0 0 0 2px var(--color-bg), 0 0 0 4px var(--color-focus);
+
+  /* ── 3. Tipografía ───────────────────────────────────────────────────── */
+  --font-display: 'Cormorant Garamond', Georgia, serif; /* titulares alta costura */
+  --font-sans: 'Jost', 'Inter', system-ui, sans-serif; /* UI / cuerpo */
+  --font-mono: 'JetBrains Mono', ui-monospace, 'SFMono-Regular', monospace;
+
+  /* Escala tipográfica (base 16px, razón ~1.25 con saltos editoriales arriba). */
+  --text-2xs: 0.6875rem; /* 11px — etiquetas, ticks            */
+  --text-xs: 0.75rem; /* 12px                               */
+  --text-sm: 0.875rem; /* 14px                               */
+  --text-base: 1rem; /* 16px                               */
+  --text-lg: 1.125rem; /* 18px                               */
+  --text-xl: 1.375rem; /* 22px                               */
+  --text-2xl: 1.75rem; /* 28px                               */
+  --text-3xl: 2.25rem; /* 36px                               */
+  --text-4xl: 3rem; /* 48px                               */
+  --text-5xl: 4rem; /* 64px — hero                        */
+
+  --leading-tight: 1.1;
+  --leading-snug: 1.3;
+  --leading-normal: 1.6;
+  --leading-relaxed: 1.75;
+
+  --weight-light: 300;
+  --weight-regular: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+
+  /* Interletraje: la marca usa versalitas muy espaciadas para etiquetas. */
+  --tracking-tight: -0.01em;
+  --tracking-normal: 0;
+  --tracking-wide: 0.08em;
+  --tracking-widest: 0.18em;
+
+  /* ── 4. Escala espacial (múltiplos de --space-unit) ───────────────────── */
+  --space-unit: 8px;
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 64px;
+  --space-9: 96px;
+  --space-10: 128px;
+
+  /* ── 5. Radios y sombras ─────────────────────────────────────────────── */
+  --radius-sm: 6px;
+  --radius-md: 12px;
+  --radius-lg: 20px;
+  --radius-pill: 999px;
+
+  --shadow-1: 0 2px 12px rgba(0, 0, 0, 0.35);
+  --shadow-2: 0 12px 40px rgba(0, 0, 0, 0.5);
+  --shadow-gold: 0 0 0 1px var(--re-gold-deep), 0 8px 30px rgba(198, 162, 83, 0.12);
+
+  /* ── 6. Motivo de marca — patrón de sastre ───────────────────────────── */
+  /* Guion de costura: bordes discontinuos con el ritmo de una hilvanada. */
+  --pattern-stitch: 6px;
+  --pattern-stitch-gap: 5px;
+  /* Cinta métrica: ticks verticales finos, uno alto cada cinco. */
+  --pattern-tape: repeating-linear-gradient(
+    to right,
+    var(--color-border) 0 1px,
+    transparent 1px 8px
+  );
+  /* Trama diagonal muy tenue, como el hilo de un paño espigado. */
+  --pattern-herringbone: repeating-linear-gradient(
+    45deg,
+    var(--re-gold-a08) 0 1px,
+    transparent 1px 7px
+  );
+
+  /* ── 7. Movimiento ───────────────────────────────────────────────────── */
+  --ease-out: cubic-bezier(0.22, 1, 0.36, 1);
+  --ease-in-out: cubic-bezier(0.65, 0, 0.35, 1);
+  --duration-fast: 140ms;
+  --duration-base: 240ms;
+  --duration-slow: 420ms;
+
+  /* ── 8. Capas (z-index) ──────────────────────────────────────────────── */
+  --z-base: 0;
+  --z-sticky: 100;
+  --z-header: 200;
+  --z-drawer: 300;
+  --z-modal: 400;
+  --z-toast: 500;
+
+  /* ── 9. Medidas de layout ────────────────────────────────────────────── */
+  --container-max: 1280px;
+  --container-narrow: 760px;
+  --header-height: 72px;
+  --admin-sidebar-width: 248px;
+}
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Tema claro — «lino»
+   Solo se remapean los SEMÁNTICOS. La paleta cruda y el dorado no cambian:
+   la marca es la misma, cambia el paño sobre el que se imprime.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+[data-theme='light'] {
+  --color-bg: #faf7f1;
+  --color-surface: #ffffff;
+  --color-surface-raised: #f4efe4;
+  --color-surface-sunken: #efe8da;
+  --color-overlay: rgba(30, 25, 18, 0.45);
+
+  --color-primary: #8c6e2e;
+  --color-primary-hover: #6f561f;
+  --color-primary-deep: #5c4718;
+  --color-primary-soft: rgba(140, 110, 46, 0.12);
+  --color-on-primary: #faf7f1;
+
+  --color-text: #1b1710;
+  --color-text-muted: #6c6353;
+  --color-text-inverse: #faf7f1;
+
+  --color-border: rgba(140, 110, 46, 0.26);
+  --color-border-strong: rgba(140, 110, 46, 0.45);
+  --color-border-subtle: rgba(27, 23, 16, 0.1);
+
+  --color-success: #4a7a46;
+  --color-danger: #a33f2b;
+  --color-info: #4a6a82;
+  --color-focus: #8c6e2e;
+
+  --shadow-1: 0 2px 12px rgba(60, 48, 25, 0.1);
+  --shadow-2: 0 12px 40px rgba(60, 48, 25, 0.16);
+  --shadow-gold: 0 0 0 1px rgba(140, 110, 46, 0.35), 0 8px 30px rgba(140, 110, 46, 0.1);
+}

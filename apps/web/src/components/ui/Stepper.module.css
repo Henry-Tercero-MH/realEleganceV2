@@ -1,0 +1,255 @@
+.stepper {
+  --_marker: 32px;
+  display: flex;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  counter-reset: step;
+}
+
+.step {
+  position: relative;
+  flex: 1;
+  min-width: 0;
+}
+
+.trigger {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  width: 100%;
+  text-align: left;
+  background: none;
+  border: none;
+  padding: 0;
+  color: inherit;
+}
+
+/* ── El disco del paso ───────────────────────────────────────────────────── */
+
+.marker {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: var(--_marker);
+  height: var(--_marker);
+  z-index: 1;
+
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  background-color: var(--color-surface);
+  color: var(--color-text-muted);
+
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    color var(--duration-base) var(--ease-out);
+}
+
+.number {
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+  line-height: 1;
+}
+
+.done .marker {
+  background-color: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+/* El paso actual respira: anillo dorado tenue alrededor del disco. */
+.current .marker {
+  border-color: var(--color-primary);
+  color: var(--color-primary);
+  box-shadow: 0 0 0 4px var(--color-primary-soft);
+}
+
+/* ── Texto ───────────────────────────────────────────────────────────────── */
+
+.text {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+  padding-top: 5px;
+}
+
+.label {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  line-height: var(--leading-snug);
+}
+
+.done .label,
+.current .label {
+  color: var(--color-text);
+}
+
+.current .label {
+  color: var(--color-primary);
+}
+
+.description {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+.meta {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+}
+
+/* Un paso ya recorrido y clicable se ilumina al pasar el cursor. */
+.done button.trigger {
+  cursor: pointer;
+}
+
+.done button.trigger:hover .label {
+  color: var(--color-primary);
+}
+
+/* ═══ Orientación horizontal ═══════════════════════════════════════════════
+   La cinta métrica une los discos: ticks finos de fondo, dorado sólido en el
+   tramo ya recorrido. */
+
+.horizontal {
+  gap: var(--space-4);
+}
+
+.horizontal .trigger {
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: var(--space-3);
+}
+
+.horizontal .text {
+  align-items: center;
+  padding-top: 0;
+}
+
+.horizontal .step::before {
+  content: '';
+  position: absolute;
+  top: calc(var(--_marker) / 2);
+  left: calc(-1 * var(--space-4) - 50% + var(--_marker) / 2);
+  width: calc(100% + var(--space-4) - var(--_marker));
+  height: 1px;
+  background-image: var(--pattern-tape);
+  background-repeat: repeat-x;
+}
+
+.horizontal .step:first-child::before {
+  display: none;
+}
+
+.horizontal .step.done::before,
+.horizontal .step.current::before {
+  background-image: none;
+  background-color: var(--color-primary);
+}
+
+/* ═══ Orientación vertical ═════════════════════════════════════════════════ */
+
+.vertical {
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.vertical .step {
+  flex: none;
+}
+
+.vertical .step::before {
+  content: '';
+  position: absolute;
+  top: var(--_marker);
+  left: calc(var(--_marker) / 2);
+  width: 1px;
+  height: calc(100% + var(--space-6) - var(--_marker));
+  transform: translateX(-50%);
+  background-image: repeating-linear-gradient(
+    to bottom,
+    var(--color-border) 0 var(--pattern-stitch),
+    transparent var(--pattern-stitch) calc(var(--pattern-stitch) + var(--pattern-stitch-gap))
+  );
+}
+
+.vertical .step:last-child::before {
+  display: none;
+}
+
+.vertical .step.done::before {
+  background-image: none;
+  background-color: var(--color-primary);
+}
+
+/* ═══ Responsive ═══════════════════════════════════════════════════════════
+   En móvil el flujo horizontal no cabe: se convierte en vertical. */
+
+@media (max-width: 720px) {
+  .horizontal {
+    flex-direction: column;
+    gap: var(--space-5);
+  }
+
+  .horizontal .step {
+    flex: none;
+  }
+
+  .horizontal .trigger {
+    flex-direction: row;
+    align-items: flex-start;
+    text-align: left;
+  }
+
+  .horizontal .text {
+    align-items: flex-start;
+    padding-top: 5px;
+  }
+
+  .horizontal .step::before {
+    top: var(--_marker);
+    left: calc(var(--_marker) / 2);
+    width: 1px;
+    height: calc(100% + var(--space-5) - var(--_marker));
+    transform: translateX(-50%);
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--color-border) 0 var(--pattern-stitch),
+      transparent var(--pattern-stitch) calc(var(--pattern-stitch) + var(--pattern-stitch-gap))
+    );
+  }
+
+  .horizontal .step:first-child::before {
+    display: block;
+  }
+
+  .horizontal .step:last-child::before {
+    display: none;
+  }
+
+  /* Al invertirse el eje, el tramo pintado ya no es «el anterior» sino el
+     propio paso completado hacia el siguiente. */
+  .horizontal .step.done::before {
+    background-image: none;
+    background-color: var(--color-primary);
+  }
+
+  .horizontal .step.current::before {
+    background-image: repeating-linear-gradient(
+      to bottom,
+      var(--color-border) 0 var(--pattern-stitch),
+      transparent var(--pattern-stitch) calc(var(--pattern-stitch) + var(--pattern-stitch-gap))
+    );
+    background-color: transparent;
+  }
+}

@@ -1,0 +1,147 @@
+.layout {
+  display: grid;
+  grid-template-columns: var(--admin-sidebar-width) 1fr;
+  gap: var(--space-7);
+  align-items: start;
+  padding-block: var(--space-7) var(--space-9);
+}
+
+/* ── Barra lateral ───────────────────────────────────────────────────────── */
+
+.sidebar {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-5));
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-6);
+}
+
+.heading {
+  padding-bottom: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  color: var(--color-text);
+}
+
+.subtitle {
+  margin-top: var(--space-1);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.nav {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.section {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.sectionTitle {
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  list-style: none;
+  padding: 0;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  padding: var(--space-3);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.item:hover {
+  background-color: var(--color-primary-soft);
+  color: var(--color-text);
+}
+
+/* La entrada activa lleva un filete dorado a la izquierda: el mismo recurso
+   que marca las líneas del carrito y las notas del taller. */
+.itemActive {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+  box-shadow: inset 2px 0 0 var(--color-primary);
+}
+
+.aside {
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.content {
+  min-width: 0;
+}
+
+/* ── Tableta y móvil ─────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+    gap: var(--space-5);
+  }
+
+  .sidebar {
+    position: static;
+    gap: var(--space-4);
+  }
+
+  .nav {
+    gap: var(--space-3);
+  }
+
+  /* La navegación pasa a ser una tira horizontal deslizable. */
+  .section {
+    gap: var(--space-2);
+  }
+
+  .items {
+    flex-direction: row;
+    gap: var(--space-2);
+    overflow-x: auto;
+    padding-bottom: var(--space-2);
+    scrollbar-width: none;
+  }
+
+  .items::-webkit-scrollbar {
+    display: none;
+  }
+
+  .item {
+    flex-shrink: 0;
+    border: 1px solid var(--color-border);
+    white-space: nowrap;
+  }
+
+  .itemActive {
+    border-color: var(--color-primary);
+    box-shadow: none;
+  }
+
+  .aside {
+    display: none;
+  }
+}

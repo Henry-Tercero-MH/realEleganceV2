@@ -1,0 +1,86 @@
+.button {
+  display: inline-grid;
+  place-items: center;
+  position: relative;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+/* ── Tamaños ─── área de toque mínima de 40px en md, según WCAG 2.5.8. ───── */
+
+.sm {
+  width: 32px;
+  height: 32px;
+}
+.md {
+  width: 40px;
+  height: 40px;
+}
+.lg {
+  width: 48px;
+  height: 48px;
+}
+
+/* ── Variantes ───────────────────────────────────────────────────────────── */
+
+.ghost:hover:not(:disabled) {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.outline {
+  border-color: var(--color-border);
+  color: var(--color-primary);
+}
+
+.outline:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.solid {
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+
+.solid:hover:not(:disabled) {
+  background-color: var(--color-primary-hover);
+}
+
+.danger:hover:not(:disabled) {
+  background-color: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+/* ── Contador ────────────────────────────────────────────────────────────── */
+
+.badge {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  min-width: 17px;
+  height: 17px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  border: 2px solid var(--color-bg);
+  border-radius: var(--radius-pill);
+
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-semibold);
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}

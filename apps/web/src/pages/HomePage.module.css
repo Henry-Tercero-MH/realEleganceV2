@@ -1,0 +1,225 @@
+/* ═══ Hero ═══════════════════════════════════════════════════════════════ */
+
+.hero {
+  position: relative;
+  overflow: hidden;
+  padding-block: var(--space-9) var(--space-8);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.heroInner {
+  position: relative;
+  z-index: 1;
+  max-width: 760px;
+}
+
+.heroEyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-3);
+  margin-bottom: var(--space-5);
+  color: var(--color-primary);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.heroTick {
+  width: 40px;
+  height: 1px;
+  background-image: var(--pattern-tape);
+  background-repeat: repeat-x;
+}
+
+.heroTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-5xl);
+  font-weight: var(--weight-light);
+  line-height: 1.05;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+  text-wrap: balance;
+}
+
+/* La segunda mitad del titular, en dorado: el remate de la frase. */
+.heroTitleAccent {
+  color: var(--color-primary);
+  font-style: italic;
+}
+
+.heroText {
+  max-width: 54ch;
+  margin-top: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-lg);
+  line-height: var(--leading-relaxed);
+  font-weight: var(--weight-light);
+}
+
+.heroActions {
+  display: flex;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+  margin-top: var(--space-7);
+}
+
+.heroStats {
+  display: flex;
+  gap: var(--space-8);
+  flex-wrap: wrap;
+  margin-top: var(--space-8);
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.heroStats dt {
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.heroStats dd {
+  margin: var(--space-1) 0 0;
+  color: var(--color-primary);
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-light);
+  line-height: 1;
+}
+
+/* Trama de espiga que se desvanece hacia la izquierda: el paño de fondo. */
+.heroDecor {
+  position: absolute;
+  inset: 0 0 0 45%;
+  background-image: var(--pattern-herringbone);
+  mask-image: linear-gradient(to right, transparent, black 40%, black 85%, transparent);
+  pointer-events: none;
+}
+
+/* ═══ Cómo funciona ══════════════════════════════════════════════════════ */
+
+.journey {
+  padding-block: var(--space-8);
+  background-color: var(--color-surface);
+  border-block: 1px solid var(--color-border);
+}
+
+/* ═══ Oficio ═════════════════════════════════════════════════════════════ */
+
+.craftGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
+  gap: var(--space-5);
+}
+
+.craftCard {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.craftIcon {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  color: var(--color-primary);
+}
+
+.craftTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-regular);
+  color: var(--color-text);
+}
+
+.craftText {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* ═══ Llamada final ══════════════════════════════════════════════════════ */
+
+.cta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-6);
+  flex-wrap: wrap;
+  padding: var(--space-7);
+  border: 1px solid var(--color-border-strong);
+  border-radius: var(--radius-lg);
+  background-color: var(--color-surface);
+  background-image: var(--pattern-herringbone);
+}
+
+.ctaTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  color: var(--color-text);
+}
+
+.ctaText {
+  max-width: 52ch;
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.demoNote {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  flex-wrap: wrap;
+  margin-top: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+/* ═══ Responsive ═════════════════════════════════════════════════════════ */
+
+@media (max-width: 900px) {
+  .hero {
+    padding-block: var(--space-7) var(--space-6);
+  }
+
+  .heroTitle {
+    font-size: var(--text-4xl);
+  }
+
+  .heroText {
+    font-size: var(--text-base);
+  }
+
+  .heroStats {
+    gap: var(--space-6);
+    margin-top: var(--space-6);
+  }
+
+  .heroDecor {
+    display: none;
+  }
+}
+
+@media (max-width: 560px) {
+  .heroTitle {
+    font-size: var(--text-3xl);
+  }
+
+  .heroActions > * {
+    width: 100%;
+  }
+
+  .cta {
+    padding: var(--space-5);
+  }
+}

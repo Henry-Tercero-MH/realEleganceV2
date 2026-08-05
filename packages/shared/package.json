@@ -1,0 +1,34 @@
+{
+  "name": "@real-elegance/shared",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Tipos, esquemas Zod y design tokens compartidos entre web y api",
+  "main": "./dist/cjs/index.js",
+  "module": "./dist/esm/index.js",
+  "types": "./dist/esm/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/esm/index.d.ts",
+      "import": "./dist/esm/index.js",
+      "require": "./dist/cjs/index.js"
+    },
+    "./tokens.css": "./tokens.css"
+  },
+  "files": [
+    "dist",
+    "tokens.css"
+  ],
+  "scripts": {
+    "build": "npm run clean && tsc -p tsconfig.esm.json && tsc -p tsconfig.cjs.json && node ./scripts/fix-dual-package.mjs",
+    "clean": "node -e \"require('node:fs').rmSync('dist',{recursive:true,force:true})\"",
+    "typecheck": "tsc -p tsconfig.esm.json --noEmit",
+    "test": "vitest run"
+  },
+  "dependencies": {
+    "zod": "^3.24.1"
+  },
+  "devDependencies": {
+    "typescript": "^5.7.2",
+    "vitest": "^2.1.8"
+  }
+}

@@ -1,0 +1,235 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  margin-bottom: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.breadcrumb a {
+  color: var(--color-text-muted);
+}
+
+.breadcrumb a:hover {
+  color: var(--color-primary);
+}
+
+.breadcrumb [aria-current] {
+  color: var(--color-text);
+}
+
+.layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px;
+  gap: var(--space-7);
+  align-items: start;
+  padding-bottom: var(--space-9);
+}
+
+.config {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-7);
+  min-width: 0;
+}
+
+/* ── Aviso del simulador 2D ──────────────────────────────────────────────── */
+
+.comingSoon {
+  border-style: dashed;
+}
+
+.comingSoonBody {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  flex-wrap: wrap;
+  padding: var(--space-5);
+}
+
+.comingSoonIcon {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  border: 1px solid var(--color-border-strong);
+  border-radius: 50%;
+  color: var(--color-primary);
+}
+
+.comingSoonBody > div {
+  flex: 1;
+  min-width: 200px;
+}
+
+.comingSoonTitle {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-regular);
+  color: var(--color-text);
+}
+
+.comingSoonText {
+  margin-top: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+/* ── Grupos de opciones ──────────────────────────────────────────────────── */
+
+.group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-4);
+}
+
+.groupHeader {
+  padding-bottom: var(--space-3);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.groupTitle {
+  display: flex;
+  align-items: center;
+  gap: var(--space-3);
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-regular);
+  color: var(--color-text);
+}
+
+.optional {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.groupHint {
+  margin-top: var(--space-2);
+  max-width: 62ch;
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.optionsGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+  gap: var(--space-3);
+}
+
+.optionsList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: var(--space-3);
+}
+
+/* ── Resumen pegajoso ────────────────────────────────────────────────────── */
+
+.summary {
+  position: sticky;
+  top: calc(var(--header-height) + var(--space-5));
+}
+
+.recap {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+  margin: 0;
+}
+
+.recap > div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-4);
+}
+
+.recap dt {
+  flex-shrink: 0;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.recap dd {
+  margin: 0;
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  text-align: right;
+  font-variant-numeric: tabular-nums;
+}
+
+.recapRule {
+  margin-block: var(--space-4);
+}
+
+.total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-3);
+  flex-wrap: wrap;
+}
+
+.total > span:first-child {
+  color: var(--color-text);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.pending {
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  font-style: italic;
+}
+
+.summaryFooter {
+  flex-direction: column;
+  align-items: stretch;
+  gap: var(--space-3);
+}
+
+.summaryNote {
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  line-height: var(--leading-snug);
+}
+
+/* ── Responsive ──────────────────────────────────────────────────────────── */
+
+@media (max-width: 1024px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  /* En móvil el resumen deja de ser barra lateral y pasa al final del flujo,
+     que es donde se toma la decisión. */
+  .summary {
+    position: static;
+    order: 2;
+  }
+
+  .config {
+    order: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .optionsGrid {
+    grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+  }
+
+  .optionsList {
+    grid-template-columns: 1fr;
+  }
+}

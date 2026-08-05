@@ -1,0 +1,175 @@
+.header {
+  position: sticky;
+  top: 0;
+  z-index: var(--z-header);
+  border-bottom: 1px solid transparent;
+  transition:
+    background-color var(--duration-base) var(--ease-out),
+    border-color var(--duration-base) var(--ease-out),
+    backdrop-filter var(--duration-base) var(--ease-out);
+}
+
+/* Al despegarse del hero la cabecera se vela y aparece el filete dorado. */
+.scrolled {
+  background-color: color-mix(in srgb, var(--color-bg) 88%, transparent);
+  backdrop-filter: blur(10px);
+  border-bottom-color: var(--color-border);
+}
+
+.inner {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  height: var(--header-height);
+}
+
+.brand {
+  flex-shrink: 0;
+  color: var(--color-text);
+}
+
+.brand:hover {
+  color: var(--color-primary);
+}
+
+/* ── Navegación ──────────────────────────────────────────────────────────── */
+
+.nav {
+  display: flex;
+  align-items: center;
+  gap: var(--space-6);
+  margin-right: auto;
+}
+
+.navLink {
+  position: relative;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  padding: var(--space-2) 0;
+  transition: color var(--duration-fast) var(--ease-out);
+}
+
+.navLink:hover {
+  color: var(--color-text);
+}
+
+/* Subrayado con el punto de hilvanada, no una línea plena. */
+.navLinkActive {
+  color: var(--color-primary);
+}
+
+.navLinkActive::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  background-image: repeating-linear-gradient(
+    to right,
+    var(--color-primary) 0 var(--pattern-stitch),
+    transparent var(--pattern-stitch) calc(var(--pattern-stitch) + var(--pattern-stitch-gap))
+  );
+}
+
+/* En escritorio, las acciones de cuenta viven en la barra, no en el menú. */
+.navFooter {
+  display: none;
+}
+
+/* ── Acciones ────────────────────────────────────────────────────────────── */
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: var(--space-1);
+  flex-shrink: 0;
+}
+
+.iconLink {
+  display: grid;
+  place-items: center;
+  width: 40px;
+  height: 40px;
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out);
+}
+
+.iconLink:hover {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.menuToggle {
+  display: none;
+}
+
+/* ── Móvil ───────────────────────────────────────────────────────────────── */
+
+@media (max-width: 960px) {
+  .inner {
+    gap: var(--space-3);
+  }
+
+  .menuToggle {
+    display: grid;
+  }
+
+  .desktopOnly {
+    display: none;
+  }
+
+  /* El menú baja como una cortina desde la cabecera. */
+  .nav {
+    position: fixed;
+    inset: var(--header-height) 0 auto 0;
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0;
+    margin-right: 0;
+    padding: var(--space-4) var(--space-5) var(--space-6);
+
+    background-color: var(--color-surface);
+    border-bottom: 1px solid var(--color-border);
+    box-shadow: var(--shadow-2);
+
+    /* Oculto por defecto, sin sacarlo del árbol de accesibilidad de golpe. */
+    visibility: hidden;
+    opacity: 0;
+    transform: translateY(-8px);
+    transition:
+      opacity var(--duration-base) var(--ease-out),
+      transform var(--duration-base) var(--ease-out),
+      visibility var(--duration-base);
+  }
+
+  .navOpen {
+    visibility: visible;
+    opacity: 1;
+    transform: translateY(0);
+  }
+
+  .navLink {
+    padding: var(--space-4) 0;
+    border-bottom: 1px solid var(--color-border-subtle);
+    font-size: var(--text-sm);
+  }
+
+  .navLinkActive::after {
+    display: none;
+  }
+
+  .navFooter {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--space-3);
+    margin-top: var(--space-4);
+  }
+}

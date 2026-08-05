@@ -1,0 +1,94 @@
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: var(--z-drawer);
+  display: flex;
+  background-color: var(--color-overlay);
+  backdrop-filter: blur(3px);
+  animation: fade var(--duration-base) var(--ease-out);
+}
+
+.panel {
+  display: flex;
+  flex-direction: column;
+  width: min(440px, 100vw);
+  height: 100dvh;
+  background-color: var(--color-surface);
+  box-shadow: var(--shadow-2);
+}
+
+.right {
+  margin-left: auto;
+  border-left: 1px solid var(--color-border-strong);
+  animation: slide-in-right var(--duration-base) var(--ease-out);
+}
+
+.left {
+  margin-right: auto;
+  border-right: 1px solid var(--color-border-strong);
+  animation: slide-in-left var(--duration-base) var(--ease-out);
+}
+
+/* ── Cabecera ────────────────────────────────────────────────────────────── */
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: var(--space-4);
+  flex-shrink: 0;
+  padding: var(--space-5);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.title {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-regular);
+  color: var(--color-text);
+}
+
+/* ── Cuerpo ──────────────────────────────────────────────────────────────── */
+
+.body {
+  flex: 1;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  padding: var(--space-5);
+}
+
+/* ── Pie ─────────────────────────────────────────────────────────────────── */
+
+.footer {
+  flex-shrink: 0;
+  padding: var(--space-5);
+  border-top: 1px solid var(--color-border);
+  background-color: var(--color-surface-raised);
+}
+
+/* ── Animaciones ─────────────────────────────────────────────────────────── */
+
+@keyframes fade {
+  from {
+    opacity: 0;
+  }
+}
+
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+}
+
+@keyframes slide-in-left {
+  from {
+    transform: translateX(-100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overlay,
+  .panel {
+    animation: none;
+  }
+}

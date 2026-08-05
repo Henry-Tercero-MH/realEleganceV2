@@ -1,0 +1,42 @@
+.price {
+  display: inline-flex;
+  align-items: baseline;
+  gap: var(--space-2);
+  font-variant-numeric: tabular-nums;
+  white-space: nowrap;
+}
+
+.amount {
+  color: var(--color-text);
+  font-family: var(--font-display);
+  font-weight: var(--weight-regular);
+  letter-spacing: var(--tracking-tight);
+  line-height: 1;
+}
+
+.sm .amount {
+  font-size: var(--text-base);
+}
+.md .amount {
+  font-size: var(--text-xl);
+}
+.lg .amount {
+  font-size: var(--text-3xl);
+}
+
+.prefix,
+.suffix {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.compare {
+  color: var(--color-text-muted);
+  font-family: var(--font-sans);
+  font-size: var(--text-xs);
+  text-decoration: line-through;
+  text-decoration-color: var(--color-danger);
+}

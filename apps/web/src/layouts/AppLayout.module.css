@@ -1,0 +1,15 @@
+.shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100dvh;
+}
+
+.main {
+  flex: 1;
+}
+
+/* El contenido no debe mostrar el anillo de foco cuando lo recibe por el
+   enlace de salto: ya está claro dónde estamos. */
+.main:focus {
+  outline: none;
+}

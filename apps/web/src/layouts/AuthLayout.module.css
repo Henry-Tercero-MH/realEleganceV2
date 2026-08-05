@@ -1,0 +1,106 @@
+.layout {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  min-height: 100dvh;
+}
+
+/* ── Panel de marca ──────────────────────────────────────────────────────── */
+
+.brandPanel {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-8);
+  padding: var(--space-7);
+
+  background-color: var(--color-surface);
+  border-right: 1px solid var(--color-border);
+  /* La trama de espiga, muy tenue, como el forro de una chaqueta. */
+  background-image: var(--pattern-herringbone);
+}
+
+.brandLink {
+  color: var(--color-text);
+  align-self: flex-start;
+}
+
+.quote {
+  margin-top: auto;
+  max-width: 34ch;
+}
+
+.quote p {
+  font-family: var(--font-display);
+  font-size: var(--text-2xl);
+  font-weight: var(--weight-light);
+  line-height: var(--leading-snug);
+  color: var(--color-text);
+}
+
+.quote footer {
+  margin-top: var(--space-4);
+  color: var(--color-primary);
+  font-size: var(--text-xs);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.points {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  list-style: none;
+  padding: 0;
+  padding-top: var(--space-5);
+  border-top: 1px solid var(--color-border);
+}
+
+.points li {
+  position: relative;
+  padding-left: var(--space-5);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+/* Viñeta: un tick de cinta métrica, no un punto genérico. */
+.points li::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0.7em;
+  width: 12px;
+  height: 1px;
+  background-color: var(--color-primary);
+}
+
+/* ── Panel del formulario ────────────────────────────────────────────────── */
+
+.formPanel {
+  display: grid;
+  place-items: center;
+  padding: var(--space-7) var(--space-5);
+}
+
+.formInner {
+  width: 100%;
+  max-width: 420px;
+}
+
+/* ── Móvil: el panel de marca se reduce a la cabecera ────────────────────── */
+
+@media (max-width: 900px) {
+  .layout {
+    grid-template-columns: 1fr;
+  }
+
+  .brandPanel {
+    gap: var(--space-5);
+    padding: var(--space-5);
+    border-right: none;
+    border-bottom: 1px solid var(--color-border);
+  }
+
+  .quote,
+  .points {
+    display: none;
+  }
+}

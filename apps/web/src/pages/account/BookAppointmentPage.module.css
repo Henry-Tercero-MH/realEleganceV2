@@ -1,0 +1,95 @@
+.form {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-5);
+}
+
+.typeGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap: var(--space-3);
+}
+
+.filters {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: var(--space-4);
+  margin-bottom: var(--space-5);
+}
+
+.slotsLabel {
+  margin-bottom: var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+  letter-spacing: var(--tracking-widest);
+  text-transform: uppercase;
+}
+
+.slots {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(120px, 1fr));
+  gap: var(--space-2);
+}
+
+/* Los huecos se leen como las marcas de una cinta métrica: regulares, en fila. */
+.slot {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  background-color: var(--color-surface-sunken);
+  text-align: center;
+  transition:
+    border-color var(--duration-fast) var(--ease-out),
+    background-color var(--duration-fast) var(--ease-out);
+}
+
+.slot:hover {
+  border-color: var(--color-border-strong);
+}
+
+.slot strong {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+  font-variant-numeric: tabular-nums;
+}
+
+.slot small {
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+}
+
+.slotActive {
+  border-color: var(--color-primary);
+  background-color: var(--color-primary-soft);
+}
+
+.slotActive strong {
+  color: var(--color-primary);
+}
+
+.footer {
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.confirmation {
+  display: flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+}
+
+.confirmation svg {
+  color: var(--color-primary);
+  flex-shrink: 0;
+}
+
+@media (max-width: 640px) {
+  .filters {
+    grid-template-columns: 1fr;
+  }
+}

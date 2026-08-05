@@ -1,0 +1,43 @@
+.wrapper {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 0;
+}
+
+.svg {
+  animation: spin 900ms linear infinite;
+}
+
+.track {
+  stroke: currentColor;
+  opacity: 0.22;
+}
+
+.arc {
+  stroke: currentColor;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Con movimiento reducido no giramos: pulsamos la opacidad, que sigue
+   comunicando «esto está trabajando» sin provocar mareo. */
+@media (prefers-reduced-motion: reduce) {
+  .svg {
+    animation: pulse 1.4s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%,
+    100% {
+      opacity: 0.45;
+    }
+    50% {
+      opacity: 1;
+    }
+  }
+}

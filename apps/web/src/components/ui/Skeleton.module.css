@@ -1,0 +1,66 @@
+.skeleton {
+  display: block;
+  background-color: var(--color-surface-raised);
+  /* Un brillo dorado muy tenue recorre la pieza: la carga también es de marca. */
+  background-image: linear-gradient(
+    90deg,
+    transparent 0%,
+    var(--color-primary-soft) 50%,
+    transparent 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  animation: shimmer 1.6s var(--ease-in-out) infinite;
+}
+
+.text {
+  height: 1em;
+  border-radius: var(--radius-sm);
+}
+
+.block {
+  border-radius: var(--radius-sm);
+}
+
+.circle {
+  border-radius: 50%;
+  aspect-ratio: 1;
+}
+
+.textGroup {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-2);
+}
+
+.card {
+  display: block;
+  overflow: hidden;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface);
+}
+
+.cardBody {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+  padding: var(--space-5);
+}
+
+@keyframes shimmer {
+  from {
+    background-position: 200% 0;
+  }
+  to {
+    background-position: -200% 0;
+  }
+}
+
+/* Sin animación: queda el bloque plano, que ya comunica «aquí va contenido». */
+@media (prefers-reduced-motion: reduce) {
+  .skeleton {
+    animation: none;
+    background-image: none;
+  }
+}

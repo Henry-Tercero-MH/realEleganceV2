@@ -1,0 +1,170 @@
+/* Botón — la pieza más repetida del sistema, así que aquí se define el ritmo
+   (altura, tracking en versalitas, transición) que heredan los demás controles. */
+
+.button {
+  --_bg: transparent;
+  --_fg: var(--color-text);
+  --_border: transparent;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-2);
+  position: relative;
+
+  border: 1px solid var(--_border);
+  border-radius: var(--radius-sm);
+  background-color: var(--_bg);
+  color: var(--_fg);
+
+  font-family: var(--font-sans);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+  white-space: nowrap;
+  text-align: center;
+
+  cursor: pointer;
+  user-select: none;
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    border-color var(--duration-fast) var(--ease-out),
+    color var(--duration-fast) var(--ease-out),
+    box-shadow var(--duration-base) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.button:disabled,
+.button[aria-disabled='true'] {
+  opacity: 0.45;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* ── Tamaños ─────────────────────────────────────────────────────────────── */
+
+.sm {
+  min-height: 34px;
+  padding: 0 var(--space-4);
+  font-size: var(--text-2xs);
+}
+
+.md {
+  min-height: 44px;
+  padding: 0 var(--space-5);
+  font-size: var(--text-xs);
+}
+
+.lg {
+  min-height: 54px;
+  padding: 0 var(--space-6);
+  font-size: var(--text-sm);
+}
+
+/* ── Variantes ───────────────────────────────────────────────────────────── */
+
+/* Primaria: dorado sólido. Una sola por vista — es la acción de la página. */
+.primary {
+  --_bg: var(--color-primary);
+  --_fg: var(--color-on-primary);
+  --_border: var(--color-primary);
+  font-weight: var(--weight-semibold);
+}
+
+.primary:hover:not(:disabled) {
+  --_bg: var(--color-primary-hover);
+  --_border: var(--color-primary-hover);
+  box-shadow: 0 6px 24px var(--color-primary-soft);
+}
+
+/* Secundaria: filete dorado sobre el fondo. El caballo de batalla. */
+.secondary {
+  --_fg: var(--color-primary);
+  --_border: var(--color-border-strong);
+}
+
+.secondary:hover:not(:disabled) {
+  --_bg: var(--color-primary-soft);
+  --_fg: var(--color-primary-hover);
+  --_border: var(--color-primary);
+}
+
+/* Fantasma: sin caja hasta el hover. Para acciones terciarias y barras densas. */
+.ghost {
+  --_fg: var(--color-text-muted);
+}
+
+.ghost:hover:not(:disabled) {
+  --_bg: var(--color-primary-soft);
+  --_fg: var(--color-text);
+}
+
+/* Peligro: reservada a destrucción confirmada (eliminar imagen, cancelar pedido). */
+.danger {
+  --_fg: var(--color-danger);
+  --_border: var(--color-danger);
+}
+
+.danger:hover:not(:disabled) {
+  --_bg: var(--color-danger);
+  --_fg: var(--color-text);
+}
+
+/* Enlace: se comporta como texto, conserva el área de toque. */
+.link {
+  --_fg: var(--color-primary);
+  min-height: auto;
+  padding: var(--space-1) 0;
+  text-transform: none;
+  letter-spacing: var(--tracking-normal);
+  border-radius: var(--radius-sm);
+}
+
+.link:hover:not(:disabled) {
+  --_fg: var(--color-primary-hover);
+  text-decoration: underline;
+  text-underline-offset: 4px;
+}
+
+.link:active:not(:disabled) {
+  transform: none;
+}
+
+/* ── Modificadores ───────────────────────────────────────────────────────── */
+
+.fullWidth {
+  width: 100%;
+}
+
+/* `display: contents` deja que el icono y el texto sean hijos directos del flex
+   del botón, para que el `gap` los separe sin envoltorios extra. */
+.label {
+  display: contents;
+}
+
+/* Durante la carga el texto sigue ocupando su sitio (evita el salto de layout)
+   pero se vuelve invisible; el spinner se superpone centrado. */
+.loading {
+  cursor: progress;
+  pointer-events: none;
+}
+
+.loadingLabel {
+  visibility: hidden;
+  display: contents;
+}
+
+.spinner {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+}
+
+.icon {
+  flex-shrink: 0;
+}
