@@ -11,22 +11,16 @@
     "node": ">=20"
   },
   "scripts": {
-    "build": "npm run build -w @real-elegance/shared && npm run build -w @real-elegance/api && npm run build -w @real-elegance/web",
+    "build": "npm run build:shared && npm run build -w @real-elegance/web",
     "build:shared": "npm run build -w @real-elegance/shared",
-    "dev": "npm run build:shared && concurrently -n api,web -c magenta,cyan \"npm run dev -w @real-elegance/api\" \"npm run dev -w @real-elegance/web\"",
-    "dev:api": "npm run dev -w @real-elegance/api",
+    "dev": "npm run build:shared && concurrently -n web -c cyan \"npm run dev -w @real-elegance/web\"",
     "dev:web": "npm run dev -w @real-elegance/web",
-    "test": "npm run test -w @real-elegance/shared && npm run test -w @real-elegance/api && npm run test -w @real-elegance/web",
+    "test": "npm run test -w @real-elegance/shared && npm run test -w @real-elegance/web",
     "typecheck": "npm run typecheck --workspaces --if-present",
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write \"**/*.{ts,tsx,json,css,md}\"",
     "format:check": "prettier --check \"**/*.{ts,tsx,json,css,md}\"",
-    "db:migrate": "npm run db:migrate -w @real-elegance/api",
-    "db:rollback": "npm run db:rollback -w @real-elegance/api",
-    "db:sql": "npm run db:sql -w @real-elegance/api",
-    "db:seed": "npm run db:seed -w @real-elegance/api",
-    "db:setup": "npm run db:setup -w @real-elegance/api",
     "prepare": "husky || true"
   },
   "devDependencies": {
