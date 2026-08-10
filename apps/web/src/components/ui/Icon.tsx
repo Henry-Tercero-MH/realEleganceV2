@@ -191,6 +191,15 @@ const PATHS = {
     </>
   ),
   moon: <path d="M20.5 14.5A8.5 8.5 0 0 1 9.5 3.5a8.5 8.5 0 1 0 11 11z" />,
+
+  // Redes
+  instagram: (
+    <>
+      <rect x="3" y="3" width="18" height="18" rx="5" />
+      <circle cx="12" cy="12" r="4" />
+      <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

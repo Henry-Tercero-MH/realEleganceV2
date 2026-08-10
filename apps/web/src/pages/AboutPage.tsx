@@ -38,6 +38,34 @@ export default function AboutPage() {
         description="Real Elegance es una sastrería pequeña y deliberadamente lenta. Tres personas, un cuarto lleno de telas y la convicción de que un traje se hace una vez y se lleva veinte años."
       />
 
+      <section className={cx(s.tailor, l.afterHeading)}>
+        <div className={s.tailorGallery}>
+          <img
+            src="/images/fotodueño3.png"
+            alt="El sastre de Real Elegance en el taller"
+            className={s.tailorImgMain}
+          />
+          <img
+            src="/images/fotodeueño.png"
+            alt="El sastre con un saco a medida, apoyado en un pasillo del taller"
+            className={s.tailorImgSmall}
+          />
+          <img
+            src="/images/fotodueño2.png"
+            alt="Detalle de los botones de manga de un saco a medida"
+            className={s.tailorImgSmall}
+          />
+        </div>
+        <div>
+          <h2 className={s.tailorTitle}>El sastre</h2>
+          <p className={s.tailorText}>
+            Cada traje que sale del taller pasa por las mismas manos que lo empezaron hace más de
+            veinticinco años. No delegamos el corte ni las pruebas: es la única forma que conocemos
+            de sostener la calidad.
+          </p>
+        </div>
+      </section>
+
       <div className={cx(s.grid, l.afterHeading)}>
         {STEPS.map((step, index) => (
           <Card key={step.title} variant="raised" className={s.card}>

@@ -31,21 +31,42 @@ import { placeholderImage } from './placeholder';
 
 let imageSeq = 1;
 
+/**
+ * Fotos reales del taller: se colocan en `apps/web/public/images/` y se
+ * referencian aquí por nombre de archivo. Vite las sirve tal cual desde `/images/…`.
+ * Si un modelo/tela/producto no tiene fotos propias todavía, se usa el
+ * placeholder SVG de marca mientras tanto.
+ */
+function localImage(fileName: string): string {
+  return `/images/${fileName}`;
+}
+
 function gallery(
   label: string,
-  options: { count?: number; tint?: string; motif?: 'suit' | 'swatch' | 'accessory' } = {},
+  options: {
+    count?: number;
+    tint?: string;
+    motif?: 'suit' | 'swatch' | 'accessory';
+    /** Nombres de archivo dentro de `public/images/`, uno por imagen. Si faltan, se rellena con el placeholder SVG. */
+    photos?: string[];
+  } = {},
 ): GalleryImage[] {
-  const { count = 2, tint, motif = 'suit' } = options;
+  const { count = 2, tint, motif = 'suit', photos = [] } = options;
+  const width = motif === 'swatch' ? 800 : 900;
+  const height = motif === 'swatch' ? 800 : 1200;
 
   return Array.from({ length: count }, (_, index) => {
     const id = imageSeq++;
-    const url = placeholderImage({
-      label: index === 0 ? label : `${label} · ${index + 1}`,
-      tint,
-      motif,
-      width: motif === 'swatch' ? 800 : 900,
-      height: motif === 'swatch' ? 800 : 1200,
-    });
+    const fileName = photos[index];
+    const url = fileName
+      ? localImage(fileName)
+      : placeholderImage({
+          label: index === 0 ? label : `${label} · ${index + 1}`,
+          tint,
+          motif,
+          width,
+          height,
+        });
 
     return {
       id,
@@ -95,8 +116,9 @@ function suit(
   basePrice: number,
   description: string,
   tint?: string,
+  photos?: string[],
 ): SuitModel {
-  const images = gallery(name, { count: 3, tint });
+  const images = gallery(name, { count: 3, tint, photos });
   return {
     id,
     styleId,
@@ -121,6 +143,7 @@ export const suitModels: SuitModel[] = [
     5400,
     'Dos botones, solapa de muesca y hombro natural. El traje que resuelve una oficina, una boda y una cena sin cambiar de registro.',
     '#1D1912',
+    ['fotodueño3.png'],
   ),
   suit(
     2,
@@ -130,6 +153,7 @@ export const suitModels: SuitModel[] = [
     7200,
     'Seis botones sobre dos, solapa de pico y talle marcado. Un dibujo de cuadro discreto que se agradece de cerca.',
     '#211C14',
+    ['fotodeueño.png'],
   ),
   suit(
     3,
@@ -139,6 +163,7 @@ export const suitModels: SuitModel[] = [
     8900,
     'Lana azul medianoche con solapa chal en seda. Bajo luz artificial se lee más negro que el negro.',
     '#12131C',
+    ['tuprimertrajebienconfeccionado.png'],
   ),
   suit(
     4,
@@ -148,6 +173,7 @@ export const suitModels: SuitModel[] = [
     5900,
     'Corte alto de sisa, cintura ceñida y pantalón sin pinzas. Silueta italiana para figuras esbeltas.',
     '#1A1710',
+    ['entalledeunsaco.png'],
   ),
   suit(
     5,
@@ -157,6 +183,7 @@ export const suitModels: SuitModel[] = [
     8400,
     'Chaleco de seis botones a juego, espalda de raso y solapa de pico. La opción cuando la ocasión pide chaqueta abierta.',
     '#1C1811',
+    ['coloresdetraje.png'],
   ),
   suit(
     6,
@@ -166,6 +193,7 @@ export const suitModels: SuitModel[] = [
     6100,
     'Lana fría de gramaje ligero, media forrería y hombro sin hombrera. Pensado para el calor del trópico.',
     '#1E1B15',
+    ['fotodueño2.png'],
   ),
   suit(
     7,
@@ -175,6 +203,7 @@ export const suitModels: SuitModel[] = [
     5700,
     'Gris grafito liso, un botón y bolsillos de ribete. El más sobrio del taller, y el más difícil de coser.',
     '#171614',
+    ['telaazulconocinta.png'],
   ),
   suit(
     8,
@@ -184,6 +213,7 @@ export const suitModels: SuitModel[] = [
     7600,
     'Espiga ancha tejida en telar de lanzadera. Cae con peso y envejece bien.',
     '#20190F',
+    ['telatijerasycinta.png'],
   ),
 ];
 
@@ -205,8 +235,9 @@ function fabric(
   colorHex: string,
   pricePerMeter: number,
   stockMeters: number,
+  photos?: string[],
 ): Fabric {
-  const images = gallery(name, { count: 1, tint: colorHex, motif: 'swatch' });
+  const images = gallery(name, { count: 1, tint: colorHex, motif: 'swatch', photos });
   return {
     id,
     categoryId,
@@ -224,16 +255,16 @@ function fabric(
 }
 
 export const fabrics: Fabric[] = [
-  fabric(1, 1, 'LN-S110-NG', 'Súper 110 Negro', '100 % lana virgen', '#14120F', 420, 68),
-  fabric(2, 1, 'LN-S130-AZ', 'Súper 130 Azul noche', '100 % lana virgen', '#171C2A', 560, 42),
-  fabric(3, 1, 'LN-S120-GR', 'Súper 120 Gris humo', '100 % lana virgen', '#2A2926', 480, 55),
-  fabric(4, 1, 'LN-PDG-CF', 'Príncipe de Gales café', '95 % lana, 5 % seda', '#2C2318', 640, 24),
-  fabric(5, 2, 'LI-IR-ARE', 'Lino irlandés arena', '100 % lino', '#5C513C', 380, 36),
-  fabric(6, 2, 'LI-MZ-BLC', 'Lino mezcla blanco hueso', '55 % lino, 45 % algodón', '#6B6350', 340, 18),
-  fabric(7, 3, 'TW-DN-VRD', 'Tweed Donegal verde', '100 % lana Donegal', '#28301F', 590, 12),
-  fabric(8, 3, 'TW-ESP-GR', 'Espiga gris carbón', '100 % lana', '#232323', 520, 31),
-  fabric(9, 4, 'SD-BAR-NG', 'Barathea negro seda', '70 % lana, 30 % seda', '#100F10', 780, 9),
-  fabric(10, 4, 'SD-MOH-AZ', 'Mohair azul medianoche', '60 % lana, 40 % mohair', '#141A2B', 860, 6),
+  fabric(1, 1, 'LN-S110-NG', 'Súper 110 Negro', '100 % lana virgen', '#14120F', 420, 68, ['telatijerasycinta.png']),
+  fabric(2, 1, 'LN-S130-AZ', 'Súper 130 Azul noche', '100 % lana virgen', '#171C2A', 560, 42, ['telaazulconocinta.png']),
+  fabric(3, 1, 'LN-S120-GR', 'Súper 120 Gris humo', '100 % lana virgen', '#2A2926', 480, 55, ['telatijerasycinta.png']),
+  fabric(4, 1, 'LN-PDG-CF', 'Príncipe de Gales café', '95 % lana, 5 % seda', '#2C2318', 640, 24, ['coloresdetraje.png']),
+  fabric(5, 2, 'LI-IR-ARE', 'Lino irlandés arena', '100 % lino', '#5C513C', 380, 36, ['entalledeunsaco.png']),
+  fabric(6, 2, 'LI-MZ-BLC', 'Lino mezcla blanco hueso', '55 % lino, 45 % algodón', '#6B6350', 340, 18, ['telaazulconocinta.png']),
+  fabric(7, 3, 'TW-DN-VRD', 'Tweed Donegal verde', '100 % lana Donegal', '#28301F', 590, 12, ['telatijerasycinta.png']),
+  fabric(8, 3, 'TW-ESP-GR', 'Espiga gris carbón', '100 % lana', '#232323', 520, 31, ['coloresdetraje.png']),
+  fabric(9, 4, 'SD-BAR-NG', 'Barathea negro seda', '70 % lana, 30 % seda', '#100F10', 780, 9, ['telaazulconocinta.png']),
+  fabric(10, 4, 'SD-MOH-AZ', 'Mohair azul medianoche', '60 % lana, 40 % mohair', '#141A2B', 860, 6, ['telatijerasycinta.png']),
 ];
 
 // ── Catálogo: opciones de personalización ──────────────────────────────────
@@ -337,8 +368,9 @@ function product(
   stock: number,
   description: string,
   tint: string,
+  photos?: string[],
 ): Product {
-  const images = gallery(name, { count: 2, tint, motif: 'accessory' });
+  const images = gallery(name, { count: 2, tint, motif: 'accessory', photos });
   return {
     id,
     categoryId,
@@ -355,14 +387,14 @@ function product(
 }
 
 export const products: Product[] = [
-  product(1, 1, 'CB-SD-001', 'Corbata de seda granadina', 480, 24, 'Tejida en Como, nudo firme y caída limpia.', '#2A1B1B'),
-  product(2, 1, 'CB-LN-002', 'Corbata de lana espigada', 420, 16, 'Para el invierno y los trajes de tweed.', '#2A2620'),
-  product(3, 2, 'PN-SD-003', 'Pañuelo de bolsillo marfil', 260, 40, 'Dobladillo cosido a mano, 33 × 33 cm.', '#3A352A'),
-  product(4, 2, 'PN-LI-004', 'Pañuelo de lino blanco', 210, 52, 'El que siempre funciona, con doblez recto.', '#3D3A31'),
-  product(5, 3, 'CM-AL-005', 'Camisa de algodón egipcio', 890, 18, 'Popelín de dos cabos, cuello semiitaliano.', '#26282C'),
-  product(6, 3, 'CM-OX-006', 'Camisa Oxford azul', 760, 22, 'Tejido rústico, cuello con botones.', '#1E2735'),
-  product(7, 4, 'CP-GM-007', 'Gemelos de nácar y plata', 640, 9, 'Cierre basculante, presentados en estuche.', '#2C2A24'),
-  product(8, 4, 'CP-TR-008', 'Tirantes de cuero y algodón', 520, 14, 'Pinzas de botón, ajuste de latón envejecido.', '#241C15'),
+  product(1, 1, 'CB-SD-001', 'Corbata de seda granadina', 480, 24, 'Tejida en Como, nudo firme y caída limpia.', '#2A1B1B', ['fotodueño2.png']),
+  product(2, 1, 'CB-LN-002', 'Corbata de lana espigada', 420, 16, 'Para el invierno y los trajes de tweed.', '#2A2620', ['entalledeunsaco.png']),
+  product(3, 2, 'PN-SD-003', 'Pañuelo de bolsillo marfil', 260, 40, 'Dobladillo cosido a mano, 33 × 33 cm.', '#3A352A', ['tuprimertrajebienconfeccionado.png']),
+  product(4, 2, 'PN-LI-004', 'Pañuelo de lino blanco', 210, 52, 'El que siempre funciona, con doblez recto.', '#3D3A31', ['telaazulconocinta.png']),
+  product(5, 3, 'CM-AL-005', 'Camisa de algodón egipcio', 890, 18, 'Popelín de dos cabos, cuello semiitaliano.', '#26282C', ['fotodeueño.png']),
+  product(6, 3, 'CM-OX-006', 'Camisa Oxford azul', 760, 22, 'Tejido rústico, cuello con botones.', '#1E2735', ['fotodueño3.png']),
+  product(7, 4, 'CP-GM-007', 'Gemelos de nácar y plata', 640, 9, 'Cierre basculante, presentados en estuche.', '#2C2A24', ['fotodueño2.png']),
+  product(8, 4, 'CP-TR-008', 'Tirantes de cuero y algodón', 520, 14, 'Pinzas de botón, ajuste de latón envejecido.', '#241C15', ['coloresdetraje.png']),
 ];
 
 // ── Cupones ────────────────────────────────────────────────────────────────

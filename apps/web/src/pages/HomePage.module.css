@@ -2,15 +2,51 @@
 
 .hero {
   position: relative;
+  isolation: isolate;
   overflow: hidden;
-  padding-block: var(--space-9) var(--space-8);
+  min-height: min(88vh, 780px);
+  display: flex;
+  align-items: center;
   border-bottom: 1px solid var(--color-border);
+}
+
+/* Foto real del taller, a pantalla completa detrás del contenido. */
+.heroDecor {
+  position: absolute;
+  inset: 0;
+  z-index: -2;
+  background-color: var(--color-surface-sunken);
+  pointer-events: none;
+}
+
+.heroDecorImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 25%;
+}
+
+/* Degradado que hunde la imagen en el fondo negro para que el texto respire. */
+.heroDecor::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(to right, var(--color-bg) 8%, rgba(10, 10, 10, 0.78) 42%, rgba(10, 10, 10, 0.32) 68%, rgba(10, 10, 10, 0.55) 100%),
+    linear-gradient(to top, var(--color-bg) 0%, rgba(10, 10, 10, 0.05) 30%, rgba(10, 10, 10, 0.35) 100%);
+}
+
+[data-theme='light'] .heroDecor::after {
+  background:
+    linear-gradient(to right, var(--color-bg) 10%, rgba(248, 248, 248, 0.9) 42%, rgba(248, 248, 248, 0.55) 68%, rgba(248, 248, 248, 0.72) 100%),
+    linear-gradient(to top, var(--color-bg) 0%, rgba(248, 248, 248, 0.05) 30%, rgba(248, 248, 248, 0.45) 100%);
 }
 
 .heroInner {
   position: relative;
   z-index: 1;
-  max-width: 760px;
+  max-width: 620px;
+  padding-block: var(--space-9);
 }
 
 .heroEyebrow {
@@ -48,7 +84,7 @@
 }
 
 .heroText {
-  max-width: 54ch;
+  max-width: 50ch;
   margin-top: var(--space-5);
   color: var(--color-text-muted);
   font-size: var(--text-lg);
@@ -86,15 +122,6 @@
   font-size: var(--text-3xl);
   font-weight: var(--weight-light);
   line-height: 1;
-}
-
-/* Trama de espiga que se desvanece hacia la izquierda: el paño de fondo. */
-.heroDecor {
-  position: absolute;
-  inset: 0 0 0 45%;
-  background-image: var(--pattern-herringbone);
-  mask-image: linear-gradient(to right, transparent, black 40%, black 85%, transparent);
-  pointer-events: none;
 }
 
 /* ═══ Cómo funciona ══════════════════════════════════════════════════════ */
@@ -146,6 +173,38 @@
   line-height: var(--leading-normal);
 }
 
+/* ═══ Instagram ══════════════════════════════════════════════════════════ */
+
+.igGrid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-3);
+}
+
+.igItem {
+  aspect-ratio: 4 / 5;
+  overflow: hidden;
+  border-radius: var(--radius-md);
+  border: 1px solid var(--color-border);
+}
+
+.igItem img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform var(--duration-slow) var(--ease-out);
+}
+
+.igItem:hover img {
+  transform: scale(1.04);
+}
+
+@media (max-width: 720px) {
+  .igGrid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
 /* ═══ Llamada final ══════════════════════════════════════════════════════ */
 
 .cta {
@@ -189,7 +248,11 @@
 
 @media (max-width: 900px) {
   .hero {
-    padding-block: var(--space-7) var(--space-6);
+    min-height: auto;
+  }
+
+  .heroInner {
+    padding-block: var(--space-8) var(--space-7);
   }
 
   .heroTitle {
@@ -205,14 +268,30 @@
     margin-top: var(--space-6);
   }
 
-  .heroDecor {
-    display: none;
+  .heroDecor::after {
+    background:
+      linear-gradient(to right, var(--color-bg) 0%, rgba(10, 10, 10, 0.55) 55%, rgba(10, 10, 10, 0.7) 100%),
+      linear-gradient(to top, var(--color-bg) 0%, rgba(10, 10, 10, 0.1) 35%, rgba(10, 10, 10, 0.4) 100%);
+  }
+
+  [data-theme='light'] .heroDecor::after {
+    background:
+      linear-gradient(to right, var(--color-bg) 0%, rgba(248, 248, 248, 0.62) 55%, rgba(248, 248, 248, 0.78) 100%),
+      linear-gradient(to top, var(--color-bg) 0%, rgba(248, 248, 248, 0.1) 35%, rgba(248, 248, 248, 0.5) 100%);
   }
 }
 
 @media (max-width: 560px) {
+  .heroInner {
+    padding-block: var(--space-7) var(--space-6);
+  }
+
   .heroTitle {
     font-size: var(--text-3xl);
+  }
+
+  .heroStats {
+    gap: var(--space-5);
   }
 
   .heroActions > * {

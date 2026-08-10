@@ -26,6 +26,13 @@ const JOURNEY = [
   { id: '8', label: 'Entrega', description: 'Pagas el saldo y te lo llevas' },
 ];
 
+const INSTAGRAM_POSTS = [
+  { image: '/images/coloresdetraje.png', alt: 'El color: por qué el azul marino es la elección más segura' },
+  { image: '/images/entalledeunsaco.png', alt: 'El entalle: los hombros limpios y la silueta que sigue el cuerpo' },
+  { image: '/images/telatijerasycinta.png', alt: 'La tela: lana al 100% o mezclas de alta calidad' },
+  { image: '/images/tuprimertrajebienconfeccionado.png', alt: 'Tu primer traje bien confeccionado' },
+];
+
 const CRAFT = [
   {
     icon: 'scissors' as const,
@@ -103,7 +110,13 @@ export default function HomePage() {
           </dl>
         </div>
 
-        <div className={s.heroDecor} aria-hidden="true" />
+        <div className={s.heroDecor} aria-hidden="true">
+          <img
+            src="/images/telaazulconocinta.png"
+            alt=""
+            className={s.heroDecorImg}
+          />
+        </div>
       </section>
 
       {/* ── Destacados ───────────────────────────────────────────────────── */}
@@ -171,6 +184,24 @@ export default function HomePage() {
               <h3 className={s.craftTitle}>{item.title}</h3>
               <p className={s.craftText}>{item.text}</p>
             </article>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Instagram ────────────────────────────────────────────────────── */}
+      <section className={cx('re-container', l.section)}>
+        <SectionHeading
+          align="center"
+          eyebrow="@realelegance"
+          title="Síguenos en Instagram"
+          description="Consejos de sastrería y un vistazo al taller, publicados cada semana."
+        />
+
+        <div className={cx(s.igGrid, l.afterHeading)}>
+          {INSTAGRAM_POSTS.map((post) => (
+            <div key={post.image} className={s.igItem}>
+              <img src={post.image} alt={post.alt} loading="lazy" />
+            </div>
           ))}
         </div>
       </section>

@@ -15,13 +15,12 @@ const ThemeContext = createContext<ThemeContextValue | null>(null);
 /**
  * Tema de la interfaz.
  *
- * La marca es oscura por naturaleza (negro cálido y dorado), así que ese es el
- * valor por defecto; el tema «lino» existe para quien necesita más contraste
- * ambiental o va a imprimir una ficha del taller.
+ * El tema «lino» (claro) es el valor por defecto; el tema oscuro existe para
+ * quien lo prefiera.
  */
 export function ThemeProvider({ children }: { children: ReactNode }) {
   const [theme, setThemeState] = useState<Theme>(() =>
-    readStorage<Theme>(STORAGE_KEYS.theme, 'dark'),
+    readStorage<Theme>(STORAGE_KEYS.theme, 'light'),
   );
 
   // El atributo vive en <html>, que es donde `tokens.css` remapea los semánticos.
