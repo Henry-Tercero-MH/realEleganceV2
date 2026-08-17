@@ -41,11 +41,18 @@ export interface CartState {
   sessionToken: string;
   lines: CartLine[];
   coupon: AppliedCoupon | null;
+  /** Puntos de fidelización que el cliente eligió canjear en este pedido. */
+  redeemedPoints: number;
 }
 
 /** Totales derivados. Nunca se guardan en el estado: se calculan. */
 export interface CartTotals {
   subtotal: number;
+  /** Descuento del cupón, sin contar los puntos canjeados. */
+  couponDiscount: number;
+  /** Descuento en quetzales de los puntos canjeados. */
+  pointsDiscount: number;
+  /** couponDiscount + pointsDiscount. */
   discount: number;
   taxableBase: number;
   tax: number;
@@ -56,4 +63,6 @@ export interface CartTotals {
   balanceLater: number;
   itemCount: number;
   requiresAppointment: boolean;
+  /** Puntos que este pedido va a sumar al saldo del cliente, en su estado actual. */
+  estimatedPointsEarned: number;
 }

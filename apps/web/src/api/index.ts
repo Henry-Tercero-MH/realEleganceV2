@@ -48,12 +48,21 @@ export const queryKeys = {
   myMeasurements: (customerId: number) => ['measurements', 'mine', customerId] as const,
   measurementTypes: ['measurements', 'types'] as const,
 
+  loyaltySettings: ['loyalty', 'settings'] as const,
+  myLoyalty: (customerId: number) => ['loyalty', 'mine', customerId] as const,
+  myLoyaltyMovements: (customerId: number) => ['loyalty', 'mine', customerId, 'movements'] as const,
+  adminLoyaltyAccounts: ['admin', 'loyalty', 'accounts'] as const,
+
+  adminCustomers: (filters?: unknown) => ['admin', 'customers', filters ?? {}] as const,
+  adminCustomer: (id: number) => ['admin', 'customers', id] as const,
+
   adminStats: ['admin', 'stats'] as const,
   adminSuits: ['admin', 'suits'] as const,
   adminFabrics: ['admin', 'fabrics'] as const,
   adminProducts: ['admin', 'products'] as const,
   adminCoupons: ['admin', 'coupons'] as const,
   adminOrders: ['admin', 'orders'] as const,
+  adminOrder: (orderNumber: string) => ['admin', 'orders', orderNumber] as const,
   adminAppointments: ['admin', 'appointments'] as const,
   productionBoard: ['admin', 'production-board'] as const,
   tailorWorkload: ['admin', 'tailor-workload'] as const,

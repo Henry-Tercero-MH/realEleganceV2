@@ -1,6 +1,7 @@
 import { Link, useParams } from 'react-router-dom';
 import {
   Badge,
+  Button,
   ButtonLink,
   Card,
   EmptyState,
@@ -10,14 +11,21 @@ import {
   SectionHeading,
   Skeleton,
 } from '@/components/ui';
-import { useOrder } from '@/features/orders/hooks';
+import { useOrder, useResendConfirmation } from '@/features/orders/hooks';
+import { useMyAppointments } from '@/features/appointments/hooks';
+import { useToast } from '@/context/ToastContext';
+import { ApiError } from '@/api';
 import { paths } from '@/routes/paths';
-import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
+import { formatCurrency, formatDate, formatDateTime, formatPoints } from '@/lib/format';
+import { downloadReceipt } from '@/lib/receipt';
 import s from './account.module.css';
 
 export default function OrderDetailPage() {
   const { orderNumber } = useParams<{ orderNumber: string }>();
   const { data: order, isLoading, isError } = useOrder(orderNumber);
+  const { data: appointments } = useMyAppointments();
+  const resendConfirmation = useResendConfirmation();
+  const toast = useToast();
 
   if (isLoading) return <Skeleton height="420px" radius="var(--radius-md)" />;
 
@@ -34,6 +42,23 @@ export default function OrderDetailPage() {
         }
       />
     );
+  }
+
+  const nextAppointment = (appointments ?? [])
+    .filter((item) => item.orderId === order.id && item.status === 'scheduled')
+    .sort((a, b) => a.scheduledAt.localeCompare(b.scheduledAt))[0];
+
+  async function handleResend() {
+    if (!order) return;
+    try {
+      const { sentTo } = await resendConfirmation.mutateAsync(order.orderNumber);
+      toast.success('Confirmación reenviada', `La enviamos a ${sentTo}.`);
+    } catch (error) {
+      toast.error(
+        'No se pudo reenviar',
+        error instanceof ApiError ? error.message : 'Inténtalo de nuevo.',
+      );
+    }
   }
 
   return (
@@ -66,9 +91,38 @@ export default function OrderDetailPage() {
               <dt>Entrega prevista</dt>
               <dd>{formatDate(order.promisedDate)}</dd>
             </div>
+            {order.deliveryAddress ? (
+              <div>
+                <dt>Dirección de entrega</dt>
+                <dd>
+                  {order.deliveryAddress.line1}, {order.deliveryAddress.city}
+                </dd>
+              </div>
+            ) : null}
+            {nextAppointment ? (
+              <div>
+                <dt>Próxima cita</dt>
+                <dd>
+                  {nextAppointment.appointmentTypeName} · {formatDate(nextAppointment.scheduledAt)}
+                </dd>
+              </div>
+            ) : null}
+            {order.pointsEarned > 0 ? (
+              <div>
+                <dt>Puntos ganados</dt>
+                <dd>{formatPoints(order.pointsEarned)}</dd>
+              </div>
+            ) : null}
           </dl>
+
+          {order.pointsRedeemed > 0 ? (
+            <p className={s.itemSub} style={{ marginTop: 'var(--space-4)' }}>
+              Pagaste {formatCurrency(order.pointsDiscount)} de este pedido con{' '}
+              {formatPoints(order.pointsRedeemed)}.
+            </p>
+          ) : null}
         </Card.Body>
-        <Card.Footer>
+        <Card.Footer className={s.orderActions}>
           <ButtonLink
             to={paths.trackingFor(order.orderNumber)}
             variant="secondary"
@@ -76,6 +130,12 @@ export default function OrderDetailPage() {
           >
             Ver el avance en el taller
           </ButtonLink>
+          <Button variant="ghost" leftIcon={<Icon name="download" size={16} />} onClick={() => downloadReceipt(order)}>
+            Descargar comprobante
+          </Button>
+          <Button variant="ghost" isLoading={resendConfirmation.isPending} onClick={handleResend}>
+            Reenviar confirmación
+          </Button>
         </Card.Footer>
       </Card>
 

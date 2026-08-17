@@ -1,5 +1,5 @@
 import { Link } from 'react-router-dom';
-import { OrderStatusBadge, SectionHeading, Skeleton, Table } from '@/components/ui';
+import { ButtonLink, Icon, OrderStatusBadge, SectionHeading, Skeleton, Table } from '@/components/ui';
 import type { Column } from '@/components/ui';
 import type { OrderSummary } from '@real-elegance/shared';
 import { useAdminOrders } from '@/features/admin/hooks';
@@ -12,7 +12,7 @@ const COLUMNS: Array<Column<OrderSummary>> = [
     id: 'orderNumber',
     header: 'Pedido',
     cell: (row) => (
-      <Link to={paths.order(row.orderNumber)} className={s.mono}>
+      <Link to={paths.adminOrder(row.orderNumber)} className={s.mono}>
         {row.orderNumber}
       </Link>
     ),
@@ -50,6 +50,11 @@ export default function AdminOrdersPage() {
         eyebrow="Operación"
         title="Pedidos"
         description="Todos los encargos, con su estado y su saldo."
+        action={
+          <ButtonLink to={paths.adminNewOrder} variant="primary" leftIcon={<Icon name="plus" size={16} />}>
+            Nuevo pedido
+          </ButtonLink>
+        }
       />
 
       {isLoading ? (

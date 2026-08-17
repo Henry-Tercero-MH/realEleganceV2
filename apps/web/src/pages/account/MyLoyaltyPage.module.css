@@ -1,0 +1,90 @@
+.explainer {
+  display: flex;
+  align-items: flex-start;
+  gap: var(--space-3);
+  padding: var(--space-4);
+  border-left: 2px solid var(--color-primary);
+  background-color: var(--color-primary-soft);
+  border-radius: var(--radius-sm);
+  color: var(--color-text-muted);
+  font-size: var(--text-sm);
+  line-height: var(--leading-normal);
+}
+
+.explainer svg {
+  flex-shrink: 0;
+  margin-top: 2px;
+  color: var(--color-primary);
+}
+
+.movements {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-1);
+  list-style: none;
+  padding: 0;
+}
+
+.movement {
+  display: flex;
+  align-items: center;
+  gap: var(--space-4);
+  padding: var(--space-3) 0;
+  border-bottom: 1px solid var(--color-border-subtle);
+}
+
+.movement:last-child {
+  border-bottom: none;
+}
+
+.iconEarn,
+.iconRedeem {
+  display: grid;
+  place-items: center;
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+}
+
+.iconEarn {
+  background-color: var(--color-success-soft);
+  color: var(--color-success);
+}
+
+.iconRedeem {
+  background-color: var(--color-primary-soft);
+  color: var(--color-primary);
+}
+
+.movementBody {
+  flex: 1;
+  min-width: 0;
+}
+
+.movementTitle {
+  color: var(--color-text);
+  font-size: var(--text-sm);
+}
+
+.movementDate {
+  margin-top: 2px;
+  color: var(--color-text-muted);
+  font-size: var(--text-xs);
+}
+
+.pointsPositive,
+.pointsNegative {
+  flex-shrink: 0;
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  font-variant-numeric: tabular-nums;
+}
+
+.pointsPositive {
+  color: var(--color-success);
+}
+
+.pointsNegative {
+  color: var(--color-text-muted);
+}

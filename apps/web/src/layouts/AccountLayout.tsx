@@ -11,6 +11,7 @@ const SECTIONS: SidebarSection[] = [
       { to: paths.orders, label: 'Mis pedidos', icon: 'package' },
       { to: paths.appointments, label: 'Mis citas', icon: 'calendar' },
       { to: paths.measurements, label: 'Mis medidas', icon: 'ruler' },
+      { to: paths.myLoyalty, label: 'Mis puntos', icon: 'sparkle' },
     ],
   },
 ];

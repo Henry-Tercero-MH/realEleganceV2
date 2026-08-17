@@ -8,12 +8,13 @@ export type CartAction =
   | { type: 'REMOVE_ITEM'; lineId: string }
   | { type: 'APPLY_COUPON'; coupon: AppliedCoupon }
   | { type: 'REMOVE_COUPON' }
+  | { type: 'REDEEM_POINTS'; points: number }
   | { type: 'CLEAR' }
   /** Sustituye el carrito completo: rehidratación o fusión con el del servidor. */
   | { type: 'REPLACE'; state: CartState };
 
 export function createEmptyCart(sessionToken = randomId('cart')): CartState {
-  return { sessionToken, lines: [], coupon: null };
+  return { sessionToken, lines: [], coupon: null, redeemedPoints: 0 };
 }
 
 /**
@@ -85,8 +86,13 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
 
     case 'REMOVE_ITEM': {
       const lines = state.lines.filter((line) => line.lineId !== action.lineId);
-      // Sin artículos no hay cupón que aplicar.
-      return { ...state, lines, coupon: lines.length === 0 ? null : state.coupon };
+      // Sin artículos no hay cupón ni puntos que aplicar.
+      return {
+        ...state,
+        lines,
+        coupon: lines.length === 0 ? null : state.coupon,
+        redeemedPoints: lines.length === 0 ? 0 : state.redeemedPoints,
+      };
     }
 
     case 'APPLY_COUPON':
@@ -95,9 +101,14 @@ export function cartReducer(state: CartState, action: CartAction): CartState {
     case 'REMOVE_COUPON':
       return { ...state, coupon: null };
 
+    case 'REDEEM_POINTS':
+      // El tope real (saldo del cliente, valor del pedido) lo aplica quien
+      // dispara la acción — aquí solo se descarta un negativo por seguridad.
+      return { ...state, redeemedPoints: Math.max(0, Math.floor(action.points)) };
+
     case 'CLEAR':
       // Se conserva el `sessionToken`: sigue siendo el mismo visitante.
-      return { ...state, lines: [], coupon: null };
+      return { ...state, lines: [], coupon: null, redeemedPoints: 0 };
 
     case 'REPLACE':
       return action.state;

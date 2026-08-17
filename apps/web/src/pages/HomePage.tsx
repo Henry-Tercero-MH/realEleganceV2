@@ -33,6 +33,14 @@ const INSTAGRAM_POSTS = [
   { image: '/images/tuprimertrajebienconfeccionado.png', alt: 'Tu primer traje bien confeccionado' },
 ];
 
+/** La franja de beneficios del hero (§ misma referencia visual). */
+const FEATURES = [
+  { icon: 'hanger' as const, title: 'Hecho a medida', text: 'Ajuste perfecto para ti' },
+  { icon: 'needle' as const, title: '100% artesanal', text: 'Hecho a mano, puntada a puntada' },
+  { icon: 'star' as const, title: 'Telas premium', text: 'Selección de las mejores telas' },
+  { icon: 'checkCircle' as const, title: 'Garantía de calidad', text: 'Satisfacción garantizada' },
+];
+
 const CRAFT = [
   {
     icon: 'scissors' as const,
@@ -64,58 +72,85 @@ export default function HomePage() {
     <>
       {/* ── Hero ─────────────────────────────────────────────────────────── */}
       <section className={s.hero}>
-        <div className={cx('re-container', s.heroInner)}>
-          <p className={s.heroEyebrow}>
-            <span className={s.heroTick} aria-hidden="true" />
-            Sastrería artesanal · Guatemala
-          </p>
+        <div className={cx('re-container', s.heroGrid)}>
+          <div className={s.heroContent}>
+            <p className={s.heroEyebrow}>
+              <span className={s.heroTick} aria-hidden="true" />
+              Sastrería artesanal · Guatemala
+            </p>
 
-          <h1 className={s.heroTitle}>
-            Un traje que no se parece a ningún otro
-            <span className={s.heroTitleAccent}> porque no lo es.</span>
-          </h1>
+            <h1 className={s.heroTitle}>
+              Un traje que no se parece a ningún otro
+              <span className={s.heroTitleAccent}> porque no lo es.</span>
+            </h1>
 
-          <p className={s.heroText}>
-            Elige el modelo, la tela y cada detalle. Nosotros lo cortamos a mano sobre tus medidas y
-            tú sigues en línea cómo avanza, puntada a puntada.
-          </p>
+            <p className={s.heroText}>
+              Elige el modelo, la tela y cada detalle. Nosotros lo cortamos a mano sobre tus medidas
+              y tú sigues en línea cómo avanza, puntada a puntada.
+            </p>
 
-          <div className={s.heroActions}>
-            <ButtonLink to={paths.catalog} variant="primary" size="lg">
-              Diseñar mi traje
-            </ButtonLink>
-            <ButtonLink
-              to={paths.bookAppointment}
-              variant="secondary"
-              size="lg"
-              leftIcon={<Icon name="calendar" size={17} />}
-            >
-              Agendar una cita
-            </ButtonLink>
+            <div className={s.heroActions}>
+              <ButtonLink
+                to={paths.catalog}
+                variant="primary"
+                size="lg"
+                leftIcon={<Icon name="scissors" size={17} />}
+              >
+                Diseñar mi traje
+              </ButtonLink>
+              <ButtonLink
+                to={paths.bookAppointment}
+                variant="secondary"
+                size="lg"
+                leftIcon={<Icon name="calendar" size={17} />}
+              >
+                Agendar una cita
+              </ButtonLink>
+            </div>
           </div>
 
+          <div className={s.heroPhotoWrap}>
+            <figure className={s.heroPhoto}>
+              <img src="/images/telaazulconocinta.png" alt="" className={s.heroPhotoImg} />
+            </figure>
+          </div>
+        </div>
+
+        <div className="re-container">
+          <ul role="list" className={s.featureStrip}>
+            {FEATURES.map((feature) => (
+              <li key={feature.title} className={s.featureItem}>
+                <Icon name={feature.icon} size={26} className={s.featureIcon} />
+                <div>
+                  <p className={s.featureTitle}>{feature.title}</p>
+                  <p className={s.featureText}>{feature.text}</p>
+                </div>
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        <div className="re-container">
           <dl className={s.heroStats}>
             <div>
               <dt>Años cosiendo</dt>
-              <dd>27</dd>
+              <dd>
+                27<span className={s.statTick} aria-hidden="true" />
+              </dd>
             </div>
             <div>
               <dt>Trajes entregados</dt>
-              <dd>4 200+</dd>
+              <dd>
+                4 200+<span className={s.statTick} aria-hidden="true" />
+              </dd>
             </div>
             <div>
               <dt>Telas en muestrario</dt>
-              <dd>60</dd>
+              <dd>
+                60<span className={s.statTick} aria-hidden="true" />
+              </dd>
             </div>
           </dl>
-        </div>
-
-        <div className={s.heroDecor} aria-hidden="true">
-          <img
-            src="/images/telaazulconocinta.png"
-            alt=""
-            className={s.heroDecorImg}
-          />
         </div>
       </section>
 

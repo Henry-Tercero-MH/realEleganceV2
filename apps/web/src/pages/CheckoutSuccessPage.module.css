@@ -63,6 +63,14 @@
   font-size: var(--text-sm);
 }
 
+.points {
+  display: inline-flex;
+  align-items: center;
+  gap: var(--space-2);
+  color: var(--color-primary);
+  font-size: var(--text-sm);
+}
+
 .next {
   margin-bottom: var(--space-6);
 }

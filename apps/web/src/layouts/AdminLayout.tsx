@@ -10,12 +10,17 @@ const SECTIONS: SidebarSection[] = [
     items: [{ to: paths.admin, label: 'Panel', icon: 'dashboard', end: true }],
   },
   {
+    title: 'Clientela',
+    items: [{ to: paths.adminCustomers, label: 'Clientes', icon: 'users' }],
+  },
+  {
     title: 'Catálogo',
     items: [
       { to: paths.adminSuits, label: 'Trajes', icon: 'hanger' },
       { to: paths.adminFabrics, label: 'Telas', icon: 'spool' },
       { to: paths.adminProducts, label: 'Accesorios', icon: 'tag' },
       { to: paths.adminCoupons, label: 'Cupones', icon: 'creditCard' },
+      { to: paths.adminLoyalty, label: 'Fidelización', icon: 'star' },
     ],
   },
   {

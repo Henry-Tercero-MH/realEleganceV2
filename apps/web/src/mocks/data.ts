@@ -7,13 +7,18 @@
  * archivo se borra sin tocar ni una pantalla.
  */
 import type {
+  Address,
   Appointment,
   AdminDashboardStats,
   Coupon,
   Customer,
+  CustomerNote,
   Fabric,
   FabricCategory,
   GalleryImage,
+  LoyaltyAccount,
+  LoyaltyMovement,
+  LoyaltySettings,
   MeasurementSet,
   MeasurementType,
   Order,
@@ -500,6 +505,40 @@ export const customers: Customer[] = [
   },
 ];
 
+// ── Direcciones ────────────────────────────────────────────────────────────
+
+/** Se llena en cuanto un cliente hace su primer checkout con entrega. */
+export const addresses: Address[] = [];
+
+// ── Notas de mostrador ─────────────────────────────────────────────────────
+
+export const customerNotes: CustomerNote[] = [
+  {
+    id: 1,
+    customerId: 1,
+    authorId: 1,
+    authorName: 'Marta Quiñónez',
+    note: 'Prefiere hombro natural, sin hombrera — lo pidió expresamente en su primer traje.',
+    createdAt: daysFromNow(-140, 11, 40),
+  },
+  {
+    id: 2,
+    customerId: 1,
+    authorId: 2,
+    authorName: 'Julián Estrada',
+    note: 'Cliente frecuente, siempre puntual a las pruebas. Buen candidato para telas nuevas de temporada.',
+    createdAt: daysFromNow(-20, 9),
+  },
+  {
+    id: 3,
+    customerId: 2,
+    authorId: 1,
+    authorName: 'Marta Quiñónez',
+    note: 'Boda en diciembre — confirmar fecha de entrega con holgura de dos semanas.',
+    createdAt: daysFromNow(-26, 14, 15),
+  },
+];
+
 // ── Medidas ────────────────────────────────────────────────────────────────
 
 export const measurementTypes: MeasurementType[] = [
@@ -546,12 +585,17 @@ export const orders: Order[] = [
     statusName: 'En confección',
     quoteId: null,
     couponCode: 'PRIMERTRAJE',
+    deliveryAddress: null,
     subtotal: 7830,
     discountAmount: 783,
     tax: 845.64,
     total: 7892.64,
     depositPaid: 3946.32,
     balanceDue: 3946.32,
+    // (7830 - 783) / 10 = 704.7 → floor
+    pointsEarned: 704,
+    pointsRedeemed: 0,
+    pointsDiscount: 0,
     promisedDate: dateOnly(18),
     createdAt: daysFromNow(-32, 16, 20),
     updatedAt: daysFromNow(-3, 9, 15),
@@ -623,12 +667,17 @@ export const orders: Order[] = [
     statusName: 'Entregado',
     quoteId: null,
     couponCode: null,
+    deliveryAddress: null,
     subtotal: 5400,
     discountAmount: 0,
     tax: 648,
     total: 6048,
     depositPaid: 6048,
     balanceDue: 0,
+    // 5400 / 10 = 540
+    pointsEarned: 540,
+    pointsRedeemed: 0,
+    pointsDiscount: 0,
     promisedDate: dateOnly(-95),
     createdAt: daysFromNow(-140, 11),
     updatedAt: daysFromNow(-94, 17),
@@ -672,12 +721,17 @@ export const orders: Order[] = [
     statusName: 'Prueba y ajustes',
     quoteId: null,
     couponCode: null,
+    deliveryAddress: null,
     subtotal: 8900,
     discountAmount: 0,
     tax: 1068,
     total: 9968,
     depositPaid: 4984,
     balanceDue: 4984,
+    // 8900 / 10 = 890
+    pointsEarned: 890,
+    pointsRedeemed: 0,
+    pointsDiscount: 0,
     promisedDate: dateOnly(9),
     createdAt: daysFromNow(-26, 14),
     updatedAt: daysFromNow(-1, 10),
@@ -711,6 +765,88 @@ export const orders: Order[] = [
       { id: 6, statusCode: 'in_production', statusName: 'En confección', changedBy: 1, changedByName: 'Marta Quiñónez', changedAt: daysFromNow(-18, 9), note: null },
       { id: 7, statusCode: 'fitting', statusName: 'Prueba y ajustes', changedBy: 2, changedByName: 'Julián Estrada', changedAt: daysFromNow(-1, 10), note: 'Primera prueba agendada.' },
     ],
+  },
+];
+
+// ── Fidelización ───────────────────────────────────────────────────────────
+// El valor del punto lo ajusta el administrador desde `/admin/fidelizacion`
+// (mutable a propósito, como `workOrders`: el mock API lo modifica en sitio).
+
+export const loyaltySettings: LoyaltySettings = {
+  earnRateQuetzalPerPoint: 10,
+  redemptionValueQuetzalPerPoint: 0.05,
+  isActive: true,
+  updatedAt: daysFromNow(-10, 9),
+};
+
+export const loyaltyAccounts: LoyaltyAccount[] = [
+  {
+    customerId: 1,
+    customerName: 'Henry Tercero',
+    customerEmail: 'cliente@realelegance.com',
+    pointsBalance: 844,
+    pointsLifetime: 1244,
+    updatedAt: daysFromNow(-3, 9, 15),
+  },
+  {
+    customerId: 2,
+    customerName: 'Andrea Solís',
+    customerEmail: 'andrea@ejemplo.com',
+    pointsBalance: 890,
+    pointsLifetime: 890,
+    updatedAt: daysFromNow(-26, 14, 10),
+  },
+  {
+    customerId: 3,
+    customerName: 'Diego Ramírez',
+    customerEmail: 'diego@ejemplo.com',
+    pointsBalance: 0,
+    pointsLifetime: 0,
+    updatedAt: daysFromNow(-40),
+  },
+];
+
+/** `points` va con signo: positivo suma al saldo, negativo resta. */
+export const loyaltyMovements: LoyaltyMovement[] = [
+  {
+    id: 1,
+    customerId: 1,
+    orderId: 1,
+    orderNumber: 'RE-2026-01024',
+    type: 'earned',
+    points: 704,
+    note: null,
+    createdAt: daysFromNow(-32, 16, 22),
+  },
+  {
+    id: 2,
+    customerId: 1,
+    orderId: 2,
+    orderNumber: 'RE-2025-00871',
+    type: 'earned',
+    points: 540,
+    note: null,
+    createdAt: daysFromNow(-140, 11, 30),
+  },
+  {
+    id: 3,
+    customerId: 1,
+    orderId: null,
+    orderNumber: null,
+    type: 'redeemed',
+    points: -400,
+    note: 'Canjeados como descuento en el mostrador.',
+    createdAt: daysFromNow(-60, 12),
+  },
+  {
+    id: 4,
+    customerId: 2,
+    orderId: 3,
+    orderNumber: 'RE-2026-01031',
+    type: 'earned',
+    points: 890,
+    note: null,
+    createdAt: daysFromNow(-26, 14, 10),
   },
 ];
 
@@ -788,6 +924,7 @@ export const appointments: Appointment[] = [
     appointmentTypeCode: 'prueba',
     appointmentTypeName: 'Prueba de traje',
     orderId: 1,
+    orderNumber: 'RE-2026-01024',
     scheduledAt: daysFromNow(4, 10, 30),
     durationMin: 45,
     status: 'scheduled',
@@ -803,6 +940,7 @@ export const appointments: Appointment[] = [
     appointmentTypeCode: 'prueba',
     appointmentTypeName: 'Prueba de traje',
     orderId: 3,
+    orderNumber: 'RE-2026-01031',
     scheduledAt: daysFromNow(1, 16, 0),
     durationMin: 45,
     status: 'scheduled',
@@ -818,6 +956,7 @@ export const appointments: Appointment[] = [
     appointmentTypeCode: 'medidas',
     appointmentTypeName: 'Toma de medidas',
     orderId: null,
+    orderNumber: null,
     scheduledAt: daysFromNow(0, 15, 0),
     durationMin: 60,
     status: 'scheduled',
@@ -833,6 +972,7 @@ export const appointments: Appointment[] = [
     appointmentTypeCode: 'medidas',
     appointmentTypeName: 'Toma de medidas',
     orderId: 1,
+    orderNumber: 'RE-2026-01024',
     scheduledAt: daysFromNow(-38, 11, 0),
     durationMin: 60,
     status: 'completed',

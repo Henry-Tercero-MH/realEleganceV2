@@ -1,4 +1,4 @@
-import { useQuery } from '@tanstack/react-query';
+import { useMutation, useQuery } from '@tanstack/react-query';
 import { api, queryKeys } from '@/api';
 import { useAuth } from '@/context/AuthContext';
 
@@ -35,5 +35,12 @@ export function useOrderTracking(orderNumber: string | undefined) {
     refetchInterval: 2 * 60 * 1000,
     // Un número inexistente es un 404 legítimo: no tiene sentido reintentar.
     retry: false,
+  });
+}
+
+/** Reenvía el correo de confirmación de un pedido. */
+export function useResendConfirmation() {
+  return useMutation({
+    mutationFn: (orderNumber: string) => api.orders.resendConfirmation(orderNumber),
   });
 }

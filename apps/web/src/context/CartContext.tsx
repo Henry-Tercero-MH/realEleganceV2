@@ -19,6 +19,8 @@ interface CartContextValue {
   removeItem: (lineId: string) => void;
   applyCoupon: (coupon: AppliedCoupon) => void;
   removeCoupon: () => void;
+  /** Cuántos puntos de fidelización usar como descuento. Ya acotados por quien llama. */
+  redeemPoints: (points: number) => void;
   clear: () => void;
 }
 
@@ -37,8 +39,12 @@ const CartContext = createContext<CartContextValue | null>(null);
 export function CartProvider({ children }: { children: ReactNode }) {
   const [cart, dispatch] = useReducer(cartReducer, undefined, () => {
     const stored = readStorage<CartState | null>(STORAGE_KEYS.cart, null);
-    // Un carrito guardado por una versión anterior puede no tener `lines`.
-    if (stored && Array.isArray(stored.lines) && stored.sessionToken) return stored;
+    // Un carrito guardado por una versión anterior puede no tener `lines` ni
+    // `redeemedPoints` (se añadió después): sin este resguardo, un carrito
+    // viejo en localStorage produciría NaN en los totales.
+    if (stored && Array.isArray(stored.lines) && stored.sessionToken) {
+      return { ...stored, redeemedPoints: stored.redeemedPoints ?? 0 };
+    }
     return createEmptyCart();
   });
 
@@ -73,6 +79,9 @@ export function CartProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const removeCoupon = useCallback(() => dispatch({ type: 'REMOVE_COUPON' }), []);
+  const redeemPoints = useCallback((points: number) => {
+    dispatch({ type: 'REDEEM_POINTS', points });
+  }, []);
   const clear = useCallback(() => dispatch({ type: 'CLEAR' }), []);
 
   // El value se memoiza: sin esto, cada render del provider volvería a pintar
@@ -89,6 +98,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       applyCoupon,
       removeCoupon,
+      redeemPoints,
       clear,
     }),
     [
@@ -102,6 +112,7 @@ export function CartProvider({ children }: { children: ReactNode }) {
       removeItem,
       applyCoupon,
       removeCoupon,
+      redeemPoints,
       clear,
     ],
   );

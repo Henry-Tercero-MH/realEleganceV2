@@ -1,4 +1,5 @@
 import { z } from 'zod';
+import { PHONE_GT_REGEX, POSTAL_CODE_GT_REGEX } from '@/lib/validation';
 
 /**
  * Esquema del formulario de pago.
@@ -15,12 +16,22 @@ export const checkoutSchema = z.object({
     .string()
     .trim()
     .min(8, 'Necesitamos un teléfono para avisarte de las pruebas.')
-    .regex(/^[+\d\s()-]+$/, 'El teléfono solo puede llevar números y los signos + ( ) −.'),
+    .regex(PHONE_GT_REGEX, 'Ingresa un teléfono válido de 8 dígitos (ej. 5555-1234).'),
 
   addressLine1: z.string().trim().min(5, 'Escribe la dirección de entrega.'),
   city: z.string().trim().min(2, 'Escribe la ciudad.'),
-  state: z.string().trim().optional(),
-  postalCode: z.string().trim().optional(),
+  state: z
+    .string()
+    .trim()
+    .max(60, 'El departamento no puede pasar de 60 caracteres.')
+    .optional(),
+  postalCode: z
+    .string()
+    .trim()
+    .optional()
+    .refine((value) => !value || POSTAL_CODE_GT_REGEX.test(value), {
+      message: 'El código postal debe tener 5 dígitos.',
+    }),
 
   paymentMethod: z.enum(['card', 'transfer', 'cash'], {
     errorMap: () => ({ message: 'Elige una forma de pago.' }),

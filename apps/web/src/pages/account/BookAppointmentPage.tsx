@@ -12,9 +12,11 @@ import {
   Skeleton,
   Textarea,
 } from '@/components/ui';
-import { APPOINTMENT_TYPES, APPOINTMENT_TYPE_LABELS } from '@real-elegance/shared';
+import { APPOINTMENT_TYPES, APPOINTMENT_TYPE_LABELS, CLOSED_ORDER_STATUSES } from '@real-elegance/shared';
 import type { AppointmentTypeCode } from '@real-elegance/shared';
 import { useAvailability, useCreateAppointment, useStaff } from '@/features/appointments/hooks';
+import { useMyOrders } from '@/features/orders/hooks';
+import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { ApiError } from '@/api';
 import { paths } from '@/routes/paths';
@@ -35,10 +37,13 @@ export default function BookAppointmentPage() {
   const [staffId, setStaffId] = useState<number | null>(null);
   const [slot, setSlot] = useState<string | null>(null);
   const [note, setNote] = useState('');
+  const [orderId, setOrderId] = useState<number | null>(null);
 
   const { data: staff } = useStaff();
   const { data: slots, isLoading } = useAvailability(date, staffId);
+  const { data: orders } = useMyOrders();
   const createAppointment = useCreateAppointment();
+  const { user } = useAuth();
   const toast = useToast();
   const navigate = useNavigate();
 
@@ -48,12 +53,19 @@ export default function BookAppointmentPage() {
     event.preventDefault();
     if (!chosen) return;
 
+    if (!user?.customerId) {
+      toast.error('No pudimos agendar la cita', 'Esta cuenta no tiene una ficha de cliente asociada.');
+      return;
+    }
+
     try {
       await createAppointment.mutateAsync({
+        customerId: user.customerId,
         appointmentTypeCode: type,
         staffId: chosen.staffId,
         scheduledAt: chosen.startsAt,
         note: note || undefined,
+        orderId: orderId ?? undefined,
       });
       toast.success('Cita agendada', `${formatWeekday(chosen.startsAt)} a las ${formatTime(chosen.startsAt)}.`);
       navigate(paths.appointments);
@@ -161,6 +173,18 @@ export default function BookAppointmentPage() {
         {/* ── Nota y confirmación ──────────────────────────────────────── */}
         <Card variant="raised">
           <Card.Body>
+            {orders && orders.filter((order) => !CLOSED_ORDER_STATUSES.includes(order.statusCode)).length > 0 ? (
+              <Select
+                label="Pedido relacionado"
+                placeholder="Ninguno en particular"
+                value={orderId ?? ''}
+                onChange={(event) => setOrderId(event.target.value ? Number(event.target.value) : null)}
+                hint="Si es una prueba o una entrega, dinos de qué pedido."
+                options={orders
+                  .filter((order) => !CLOSED_ORDER_STATUSES.includes(order.statusCode))
+                  .map((order) => ({ value: order.id, label: order.orderNumber }))}
+              />
+            ) : null}
             <Textarea
               label="¿Algo que debamos saber?"
               placeholder="Por ejemplo: vengo con poco tiempo, o quiero ver linos."

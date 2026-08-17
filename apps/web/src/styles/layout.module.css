@@ -84,6 +84,12 @@
   flex-wrap: wrap;
 }
 
+/** Ocupa el espacio sobrante en un `.row`/`.rowBetween` — p. ej. un `<Select>` junto a un botón. */
+.grow {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
 @media (max-width: 1024px) {
   .withSummary {
     grid-template-columns: 1fr;

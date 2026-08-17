@@ -36,6 +36,7 @@ const OrderDetailPage = lazy(() => import('@/pages/account/OrderDetailPage'));
 const AppointmentsPage = lazy(() => import('@/pages/account/AppointmentsPage'));
 const BookAppointmentPage = lazy(() => import('@/pages/account/BookAppointmentPage'));
 const MeasurementsPage = lazy(() => import('@/pages/account/MeasurementsPage'));
+const MyLoyaltyPage = lazy(() => import('@/pages/account/MyLoyaltyPage'));
 
 // Sesión
 const LoginPage = lazy(() => import('@/pages/auth/LoginPage'));
@@ -47,9 +48,14 @@ const AdminSuitsPage = lazy(() => import('@/pages/admin/AdminSuitsPage'));
 const AdminFabricsPage = lazy(() => import('@/pages/admin/AdminFabricsPage'));
 const AdminProductsPage = lazy(() => import('@/pages/admin/AdminProductsPage'));
 const AdminCouponsPage = lazy(() => import('@/pages/admin/AdminCouponsPage'));
+const AdminCustomersPage = lazy(() => import('@/pages/admin/AdminCustomersPage'));
+const AdminCustomerDetailPage = lazy(() => import('@/pages/admin/AdminCustomerDetailPage'));
 const AdminOrdersPage = lazy(() => import('@/pages/admin/AdminOrdersPage'));
+const AdminNewOrderPage = lazy(() => import('@/pages/admin/AdminNewOrderPage'));
+const AdminOrderDetailPage = lazy(() => import('@/pages/admin/AdminOrderDetailPage'));
 const AdminAppointmentsPage = lazy(() => import('@/pages/admin/AdminAppointmentsPage'));
 const AdminProductionPage = lazy(() => import('@/pages/admin/AdminProductionPage'));
+const AdminLoyaltyPage = lazy(() => import('@/pages/admin/AdminLoyaltyPage'));
 
 const NotFoundPage = lazy(() => import('@/pages/NotFoundPage'));
 
@@ -91,6 +97,7 @@ export const router = createBrowserRouter([
           { path: 'citas', element: <AppointmentsPage /> },
           { path: 'citas/agendar', element: <BookAppointmentPage /> },
           { path: 'medidas', element: <MeasurementsPage /> },
+          { path: 'puntos', element: <MyLoyaltyPage /> },
         ],
       },
 
@@ -108,9 +115,14 @@ export const router = createBrowserRouter([
           { path: 'telas', element: <AdminFabricsPage /> },
           { path: 'accesorios', element: <AdminProductsPage /> },
           { path: 'cupones', element: <AdminCouponsPage /> },
+          { path: 'clientes', element: <AdminCustomersPage /> },
+          { path: 'clientes/:id', element: <AdminCustomerDetailPage /> },
           { path: 'taller', element: <AdminProductionPage /> },
           { path: 'pedidos', element: <AdminOrdersPage /> },
+          { path: 'pedidos/nuevo', element: <AdminNewOrderPage /> },
+          { path: 'pedidos/:orderNumber', element: <AdminOrderDetailPage /> },
           { path: 'citas', element: <AdminAppointmentsPage /> },
+          { path: 'fidelizacion', element: <AdminLoyaltyPage /> },
         ],
       },
 

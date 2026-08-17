@@ -147,3 +147,10 @@ export function truncate(text: string, maxChars: number): string {
   const lastSpace = cut.lastIndexOf(' ');
   return `${cut.slice(0, lastSpace > 0 ? lastSpace : maxChars).trimEnd()}…`;
 }
+
+const pointsFormatter = new Intl.NumberFormat(LOCALE, { maximumFractionDigits: 0 });
+
+/** `850` → `850 pts` */
+export function formatPoints(points: number): string {
+  return `${pointsFormatter.format(Math.round(points))} pts`;
+}

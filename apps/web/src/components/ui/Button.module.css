@@ -34,6 +34,15 @@
     transform var(--duration-fast) var(--ease-out);
 }
 
+/* `ButtonLink` renderiza un <a>: el `a:hover { color }` global (pensado para
+   enlaces de texto) tiene más especificidad que `.button { color: var(--_fg) }`
+   —element+pseudo-clase vs. una sola clase— y le pisaba el color de texto a
+   cada variante en hover. En el botón primario eso dejaba fondo y texto con
+   el mismo tono: letras invisibles. Se reafirma aquí con especificidad mayor. */
+.button:hover {
+  color: var(--_fg);
+}
+
 .button:active:not(:disabled) {
   transform: translateY(1px);
 }
@@ -111,7 +120,10 @@
 
 .danger:hover:not(:disabled) {
   --_bg: var(--color-danger);
-  --_fg: var(--color-text);
+  /* --color-text NO sirve aquí: se invierte por tema, pero el rojo no, así
+     que el par podía caer hasta 2.8:1 (falla WCAG 1.4.3). --color-on-danger
+     es fijo y mantiene ≥4.5:1 en los dos temas. */
+  --_fg: var(--color-on-danger);
 }
 
 /* Enlace: se comporta como texto, conserva el área de toque. */

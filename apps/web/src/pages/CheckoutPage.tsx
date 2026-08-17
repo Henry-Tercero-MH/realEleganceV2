@@ -23,7 +23,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useToast } from '@/context/ToastContext';
 import { api, ApiError } from '@/api';
 import { paths } from '@/routes/paths';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency, formatPoints } from '@/lib/format';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './CheckoutPage.module.css';
@@ -56,18 +56,40 @@ export default function CheckoutPage() {
 
   async function onSubmit(values: CheckoutFormValues) {
     try {
-      // Equivale a `POST /api/v1/checkout` → `sp_checkout`.
+      // Equivale a `POST /api/v1/checkout` → `sp_checkout`. Los puntos van con
+      // `taxableBase` (para ganar) y `redeemedPoints` (para canjear): el
+      // servidor los recalcula con su propia tasa, nunca confía en la del cliente.
       const result = await api.cart.checkout({
+        items: cart.lines.map((line) => ({
+          itemType: line.itemType,
+          suitModelId: line.suitModelId,
+          fabricId: line.fabricId,
+          productId: line.productId,
+          quantity: line.quantity,
+          unitPrice: line.unitPrice,
+          selectedOptions: line.selectedOptions,
+        })),
+        subtotal: totals.subtotal,
+        discountAmount: totals.couponDiscount,
+        taxableBase: totals.taxableBase,
+        tax: totals.tax,
         total: totals.total,
         dueNow: totals.dueNow,
         requiresAppointment: totals.requiresAppointment,
+        customerId: user?.customerId ?? null,
+        pointsToRedeem: cart.redeemedPoints,
+        couponCode: cart.coupon?.code ?? null,
         contact: values,
       });
 
       clear();
       toast.success('Pedido confirmado', `Tu número de pedido es ${result.orderNumber}.`);
       navigate(paths.checkoutSuccess(result.orderNumber), {
-        state: { dueNow: result.dueNow, requiresAppointment: result.requiresAppointment },
+        state: {
+          dueNow: result.dueNow,
+          requiresAppointment: result.requiresAppointment,
+          pointsEarned: result.pointsEarned,
+        },
         replace: true,
       });
     } catch (error) {
@@ -232,10 +254,16 @@ export default function CheckoutPage() {
                   <dt>Subtotal</dt>
                   <dd>{formatCurrency(totals.subtotal)}</dd>
                 </div>
-                {totals.discount > 0 ? (
+                {totals.couponDiscount > 0 ? (
                   <div className={s.discount}>
-                    <dt>Descuento</dt>
-                    <dd>−{formatCurrency(totals.discount)}</dd>
+                    <dt>Descuento del cupón</dt>
+                    <dd>−{formatCurrency(totals.couponDiscount)}</dd>
+                  </div>
+                ) : null}
+                {totals.pointsDiscount > 0 ? (
+                  <div className={s.discount}>
+                    <dt>Descuento por puntos</dt>
+                    <dd>−{formatCurrency(totals.pointsDiscount)}</dd>
                   </div>
                 ) : null}
                 <div>
@@ -256,6 +284,12 @@ export default function CheckoutPage() {
               {totals.balanceLater > 0 ? (
                 <p className={s.balance}>
                   Quedan {formatCurrency(totals.balanceLater)} para la entrega.
+                </p>
+              ) : null}
+
+              {totals.estimatedPointsEarned > 0 ? (
+                <p className={s.balance}>
+                  Este pedido te dejará {formatPoints(totals.estimatedPointsEarned)}.
                 </p>
               ) : null}
             </Card.Body>

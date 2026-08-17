@@ -27,6 +27,7 @@ export const paths = {
   appointments: '/mi-cuenta/citas',
   bookAppointment: '/mi-cuenta/citas/agendar',
   measurements: '/mi-cuenta/medidas',
+  myLoyalty: '/mi-cuenta/puntos',
 
   // Público sin sesión
   tracking: '/seguimiento',
@@ -43,7 +44,12 @@ export const paths = {
   adminFabrics: '/admin/telas',
   adminProducts: '/admin/accesorios',
   adminCoupons: '/admin/cupones',
+  adminCustomers: '/admin/clientes',
+  adminCustomer: (id: number | string) => `/admin/clientes/${id}`,
   adminOrders: '/admin/pedidos',
+  adminNewOrder: '/admin/pedidos/nuevo',
+  adminOrder: (orderNumber: string) => `/admin/pedidos/${orderNumber}`,
   adminAppointments: '/admin/citas',
   adminProduction: '/admin/taller',
+  adminLoyalty: '/admin/fidelizacion',
 } as const;

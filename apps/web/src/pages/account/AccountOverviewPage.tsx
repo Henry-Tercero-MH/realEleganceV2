@@ -10,15 +10,17 @@ import {
 } from '@/components/ui';
 import { useMyOrders } from '@/features/orders/hooks';
 import { useMyAppointments } from '@/features/appointments/hooks';
+import { useMyLoyalty } from '@/features/loyalty/hooks';
 import { useAuth } from '@/context/AuthContext';
 import { paths } from '@/routes/paths';
-import { formatCurrency, formatDate, formatDateTime } from '@/lib/format';
+import { formatCurrency, formatDate, formatDateTime, formatPoints } from '@/lib/format';
 import s from './account.module.css';
 
 export default function AccountOverviewPage() {
   const { user } = useAuth();
   const { data: orders, isLoading: loadingOrders } = useMyOrders();
   const { data: appointments, isLoading: loadingAppointments } = useMyAppointments();
+  const { data: loyalty, isLoading: loadingLoyalty } = useMyLoyalty();
 
   const openOrders = orders?.filter(
     (order) => order.statusCode !== 'delivered' && order.statusCode !== 'cancelled',
@@ -55,6 +57,15 @@ export default function AccountOverviewPage() {
           <p className={s.statLabel}>Saldo pendiente</p>
           <p className={s.statValue}>{loadingOrders ? '—' : formatCurrency(pendingBalance)}</p>
           <p className={s.statHint}>Se paga en la entrega</p>
+        </div>
+        <div className={s.stat}>
+          <p className={s.statLabel}>Puntos disponibles</p>
+          <p className={s.statValue}>
+            {loadingLoyalty ? '—' : formatPoints(loyalty?.pointsBalance ?? 0)}
+          </p>
+          <p className={s.statHint}>
+            <Link to={paths.myLoyalty}>Ver mi historial</Link>
+          </p>
         </div>
       </div>
 

@@ -40,6 +40,32 @@ export function useCreateAppointment() {
     onSuccess: () => {
       // Tras agendar, la agenda y los huecos quedan obsoletos por definición.
       queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      // La agenda del taller (`/admin/citas`) vive bajo su propia clave.
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminAppointments });
+    },
+  });
+}
+
+export function useUpdateAppointmentStatus() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.appointments.updateStatus,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminAppointments });
+    },
+  });
+}
+
+export function useRescheduleAppointment() {
+  const queryClient = useQueryClient();
+
+  return useMutation({
+    mutationFn: api.appointments.reschedule,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['appointments'] });
+      queryClient.invalidateQueries({ queryKey: queryKeys.adminAppointments });
     },
   });
 }

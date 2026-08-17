@@ -1,7 +1,11 @@
 import { useLocation, useParams } from 'react-router-dom';
-import { ButtonLink, Card, Icon, Stepper } from '@/components/ui';
+import { Button, ButtonLink, Card, Icon, Stepper } from '@/components/ui';
+import { useOrder, useResendConfirmation } from '@/features/orders/hooks';
+import { useToast } from '@/context/ToastContext';
+import { ApiError } from '@/api';
 import { paths } from '@/routes/paths';
-import { formatCurrency } from '@/lib/format';
+import { formatCurrency, formatPoints } from '@/lib/format';
+import { downloadReceipt } from '@/lib/receipt';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './CheckoutSuccessPage.module.css';
@@ -9,6 +13,7 @@ import s from './CheckoutSuccessPage.module.css';
 interface SuccessState {
   dueNow?: number;
   requiresAppointment?: boolean;
+  pointsEarned?: number;
 }
 
 const NEXT_STEPS = [
@@ -21,6 +26,21 @@ const NEXT_STEPS = [
 export default function CheckoutSuccessPage() {
   const { orderNumber = '' } = useParams<{ orderNumber: string }>();
   const state = (useLocation().state ?? {}) as SuccessState;
+  const { data: order } = useOrder(orderNumber);
+  const resendConfirmation = useResendConfirmation();
+  const toast = useToast();
+
+  async function handleResend() {
+    try {
+      const { sentTo } = await resendConfirmation.mutateAsync(orderNumber);
+      toast.success('Confirmación reenviada', `La enviamos a ${sentTo}.`);
+    } catch (error) {
+      toast.error(
+        'No se pudo reenviar',
+        error instanceof ApiError ? error.message : 'Inténtalo de nuevo.',
+      );
+    }
+  }
 
   return (
     <div className={cx('re-container', 're-container--narrow', l.section)}>
@@ -41,6 +61,13 @@ export default function CheckoutSuccessPage() {
 
         {typeof state.dueNow === 'number' ? (
           <p className={s.paid}>Cobrado hoy: {formatCurrency(state.dueNow)}</p>
+        ) : null}
+
+        {typeof state.pointsEarned === 'number' && state.pointsEarned > 0 ? (
+          <p className={s.points}>
+            <Icon name="sparkle" size={15} />
+            Ganaste {formatPoints(state.pointsEarned)} de fidelización.
+          </p>
         ) : null}
       </div>
 
@@ -70,6 +97,19 @@ export default function CheckoutSuccessPage() {
         <ButtonLink to={paths.trackingFor(orderNumber)} variant="secondary" size="lg">
           Ver el seguimiento
         </ButtonLink>
+        {order ? (
+          <Button
+            variant="ghost"
+            size="lg"
+            leftIcon={<Icon name="download" size={16} />}
+            onClick={() => downloadReceipt(order)}
+          >
+            Descargar comprobante
+          </Button>
+        ) : null}
+        <Button variant="ghost" size="lg" isLoading={resendConfirmation.isPending} onClick={handleResend}>
+          Reenviar confirmación
+        </Button>
       </div>
     </div>
   );

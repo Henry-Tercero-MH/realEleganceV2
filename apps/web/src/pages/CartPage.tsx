@@ -13,11 +13,12 @@ import {
 } from '@/components/ui';
 import { CartLineRow } from '@/features/cart/CartLineRow';
 import { DEPOSIT_RATE } from '@/features/cart/pricing';
+import { PointsRedeemBox } from '@/features/loyalty/PointsRedeemBox';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
 import { api } from '@/api';
 import { paths } from '@/routes/paths';
-import { formatCurrency, formatPercent } from '@/lib/format';
+import { formatCurrency, formatPercent, formatPoints } from '@/lib/format';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './CartPage.module.css';
@@ -146,6 +147,8 @@ export default function CartPage() {
                 </form>
               )}
 
+              <PointsRedeemBox />
+
               <Rule variant="stitch" className={s.rule} />
 
               <dl className={s.totals}>
@@ -153,10 +156,16 @@ export default function CartPage() {
                   <dt>Subtotal</dt>
                   <dd>{formatCurrency(totals.subtotal)}</dd>
                 </div>
-                {totals.discount > 0 ? (
+                {totals.couponDiscount > 0 ? (
                   <div className={s.discount}>
-                    <dt>Descuento</dt>
-                    <dd>−{formatCurrency(totals.discount)}</dd>
+                    <dt>Descuento del cupón</dt>
+                    <dd>−{formatCurrency(totals.couponDiscount)}</dd>
+                  </div>
+                ) : null}
+                {totals.pointsDiscount > 0 ? (
+                  <div className={s.discount}>
+                    <dt>Descuento por puntos</dt>
+                    <dd>−{formatCurrency(totals.pointsDiscount)}</dd>
                   </div>
                 ) : null}
                 <div>
@@ -170,6 +179,13 @@ export default function CartPage() {
                   </dd>
                 </div>
               </dl>
+
+              {totals.estimatedPointsEarned > 0 ? (
+                <p className={s.earnNote}>
+                  <Icon name="sparkle" size={14} />
+                  Este pedido te dejará {formatPoints(totals.estimatedPointsEarned)}.
+                </p>
+              ) : null}
 
               {totals.requiresAppointment ? (
                 <div className={s.split}>
