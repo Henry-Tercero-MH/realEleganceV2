@@ -13,10 +13,6 @@
   min-width: 0;
 }
 
-.clear {
-  height: 46px;
-}
-
 .count {
   margin-block: var(--space-5) var(--space-4);
   color: var(--color-text-muted);

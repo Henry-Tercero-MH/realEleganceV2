@@ -63,6 +63,13 @@ export default function AdminProductsPage() {
           caption="Accesorios listos para llevar"
         />
       )}
+
+      <p className={s.designNote}>
+        <Icon name="info" size={15} />
+        En esta fase la tabla es de solo lectura. Crear/editar accesorios y subir imágenes
+        (<code>POST /admin/products</code>, <code>POST /admin/products/:id/images</code>) llegan
+        con el backend y el bucket de MinIO.
+      </p>
     </div>
   );
 }

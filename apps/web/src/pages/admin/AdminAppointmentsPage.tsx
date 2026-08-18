@@ -86,7 +86,7 @@ export default function AdminAppointmentsPage() {
             </Button>
             <Select
               aria-label={`Cambiar estado de la cita de ${row.customerName}`}
-              placeholder="Cambiar a…"
+              placeholder="Elige un estado"
               value=""
               onChange={(event) => handleStatusChange(row.id, event.target.value as AppointmentStatus)}
               options={STATUS_OPTIONS}

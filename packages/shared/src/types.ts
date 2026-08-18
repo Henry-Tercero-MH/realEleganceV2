@@ -248,6 +248,37 @@ export interface MeasurementSet {
   values: MeasurementValue[];
 }
 
+// ── Clientela (CRM del taller) ─────────────────────────────────────────────
+
+/** Nota libre de mostrador: preferencias, alergias, quién lo refirió. */
+export interface CustomerNote {
+  id: number;
+  customerId: number;
+  authorId: number | null;
+  authorName: string | null;
+  note: string;
+  createdAt: string;
+}
+
+/** Fila de la lista `/admin/clientes`: el cliente más lo que resume su relación con el taller. */
+export interface CustomerListItem extends Customer {
+  totalOrders: number;
+  totalSpent: number;
+  lastOrderAt: string | null;
+  pointsBalance: number;
+}
+
+/** Ficha completa de un cliente para `/admin/clientes/:id`. */
+export interface CustomerDetail extends Customer {
+  totalOrders: number;
+  totalSpent: number;
+  lastOrderAt: string | null;
+  pointsBalance: number;
+  notes: CustomerNote[];
+  measurementSets: MeasurementSet[];
+  orders: OrderSummary[];
+}
+
 // ── Carrito ────────────────────────────────────────────────────────────────
 
 /** Snapshot de las opciones de personalización de un traje a medida. */
@@ -379,6 +410,8 @@ export interface Order {
   statusName: string;
   quoteId: number | null;
   couponCode: string | null;
+  /** `null` en pedidos de mostrador: se recogen en el taller, no se envían. */
+  deliveryAddress: Address | null;
   subtotal: number;
   discountAmount: number;
   tax: number;
@@ -391,6 +424,12 @@ export interface Order {
   items: OrderItem[];
   payments: Payment[];
   history: OrderStatusHistoryEntry[];
+  /** Puntos de fidelización que este pedido sumó al saldo del cliente. */
+  pointsEarned: number;
+  /** Puntos que el cliente canjeó como parte del pago de este pedido. */
+  pointsRedeemed: number;
+  /** Descuento en quetzales que representaron esos puntos canjeados. */
+  pointsDiscount: number;
 }
 
 /** Fila ligera para listados / historial. */
@@ -417,6 +456,50 @@ export interface CheckoutResult {
     reference: string;
     amount: number;
   };
+  pointsEarned: number;
+  pointsRedeemed: number;
+  pointsDiscount: number;
+  /** Saldo de puntos del cliente después de este pedido. */
+  pointsBalanceAfter: number;
+}
+
+// ── Fidelización ─────────────────────────────────────────────────────────
+
+/**
+ * Reglas del programa de puntos. Las ajusta el administrador desde
+ * `/admin/fidelizacion` — no son un valor fijo en el código.
+ */
+export interface LoyaltySettings {
+  /** Quetzales gastados (sobre la base gravable) que otorgan 1 punto. */
+  earnRateQuetzalPerPoint: number;
+  /** Cuántos quetzales vale 1 punto al canjearlo como descuento. */
+  redemptionValueQuetzalPerPoint: number;
+  /** Apagado, el carrito deja de ofrecer canje y los pedidos no acumulan. */
+  isActive: boolean;
+  updatedAt: string;
+}
+
+/** Saldo de puntos de un cliente. */
+export interface LoyaltyAccount {
+  customerId: number;
+  customerName: string;
+  customerEmail: string;
+  pointsBalance: number;
+  /** Puntos acumulados históricamente, sin restar lo ya canjeado. */
+  pointsLifetime: number;
+  updatedAt: string;
+}
+
+/** Un movimiento del historial de puntos de un cliente (gana o canjea). */
+export interface LoyaltyMovement {
+  id: number;
+  customerId: number;
+  orderId: number | null;
+  orderNumber: string | null;
+  type: 'earned' | 'redeemed' | 'adjustment';
+  points: number;
+  note: string | null;
+  createdAt: string;
 }
 
 // ── Seguimiento ────────────────────────────────────────────────────────────
@@ -486,6 +569,7 @@ export interface Appointment {
   appointmentTypeCode: AppointmentTypeCode;
   appointmentTypeName: string;
   orderId: number | null;
+  orderNumber: string | null;
   scheduledAt: string;
   durationMin: number;
   status: AppointmentStatus;

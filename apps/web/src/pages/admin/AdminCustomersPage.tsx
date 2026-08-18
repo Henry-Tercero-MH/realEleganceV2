@@ -98,11 +98,11 @@ export default function AdminCustomersPage() {
       return;
     }
     if (!isValidEmail(email)) {
-      toast.error('Revisa el correo', 'Ingresa un correo válido, ej. nombre@dominio.com.');
+      toast.error('Revisa el correo', 'Ingresa un correo válido. Por ejemplo: nombre@dominio.com.');
       return;
     }
     if (phone.trim() && !isValidPhoneGT(phone)) {
-      toast.error('Revisa el teléfono', 'Ingresa un teléfono válido de 8 dígitos (ej. 5555-1234).');
+      toast.error('Revisa el teléfono', 'Ingresa un teléfono válido de 8 dígitos. Por ejemplo: 5555-1234.');
       return;
     }
 

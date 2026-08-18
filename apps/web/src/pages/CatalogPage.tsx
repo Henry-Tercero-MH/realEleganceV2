@@ -106,7 +106,6 @@ export default function CatalogPage() {
         {hasFilters ? (
           <Button
             variant="ghost"
-            className={s.clear}
             onClick={() => {
               setSearch('');
               setParams(new URLSearchParams(), { replace: true });

@@ -43,8 +43,11 @@ export function Footer() {
             Trajes cortados a mano, uno cada vez. Desde 1998 en la Ciudad de Guatemala.
           </p>
           <address className={s.contact}>
-            <a href="tel:+50222345678">
+            <p className={s.hours}>
               <Icon name="clock" size={15} /> Lun a sáb · 9:00 – 18:00
+            </p>
+            <a href="tel:+50222345678">
+              <Icon name="phone" size={15} /> 2234-5678
             </a>
             <a href="mailto:contacto@realelegance.com">
               <Icon name="info" size={15} /> contacto@realelegance.com

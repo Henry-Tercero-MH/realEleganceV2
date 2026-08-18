@@ -124,10 +124,7 @@ export default function AdminDashboardPage() {
       </div>
 
       <Card variant="raised">
-        <Card.Header
-          title="Carga por sastre"
-          subtitle="Equivale a la vista vw_tailor_workload"
-        />
+        <Card.Header title="Carga por sastre" subtitle="Órdenes activas y fuera de plazo, por persona" />
         <Card.Body>
           {loadingWorkload ? (
             <Skeleton height="180px" radius="var(--radius-md)" />
@@ -144,9 +141,10 @@ export default function AdminDashboardPage() {
 
       <p className={s.designNote}>
         <Icon name="info" size={15} />
-        Fase de diseño: los datos son de demostración y las acciones de escritura (crear, subir
-        imágenes, editar) llegarán con el backend. La navegación y los estados de cada pantalla ya
-        son los definitivos.
+        Fase de diseño: los datos son de demostración (la carga por sastre equivale a la vista{' '}
+        <code>vw_tailor_workload</code>) y las acciones de escritura (crear, subir imágenes,
+        editar) llegarán con el backend. La navegación y los estados de cada pantalla ya son los
+        definitivos.
       </p>
     </div>
   );

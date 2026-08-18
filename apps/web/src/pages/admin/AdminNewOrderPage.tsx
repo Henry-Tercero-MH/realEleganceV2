@@ -229,11 +229,11 @@ export default function AdminNewOrderPage() {
           return;
         }
         if (!isValidEmail(newEmail)) {
-          toast.error('Revisa el correo', 'Ingresa un correo válido, ej. nombre@dominio.com.');
+          toast.error('Revisa el correo', 'Ingresa un correo válido. Por ejemplo: nombre@dominio.com.');
           return;
         }
         if (newPhone.trim() && !isValidPhoneGT(newPhone)) {
-          toast.error('Revisa el teléfono', 'Ingresa un teléfono válido de 8 dígitos (ej. 5555-1234).');
+          toast.error('Revisa el teléfono', 'Ingresa un teléfono válido de 8 dígitos. Por ejemplo: 5555-1234.');
           return;
         }
         const created = await createCustomer.mutateAsync({

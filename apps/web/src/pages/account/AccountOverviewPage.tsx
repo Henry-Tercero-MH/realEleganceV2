@@ -108,7 +108,7 @@ export default function AccountOverviewPage() {
             <EmptyState
               size="sm"
               icon="hanger"
-              title="No hay pedidos aún. Diseña tu primer traje."
+              title="No hay pedidos aún"
               description="Cuando encargues uno, aquí verás su avance etapa por etapa."
               action={
                 <ButtonLink to={paths.catalog} variant="primary">

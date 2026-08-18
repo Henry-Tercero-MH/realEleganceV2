@@ -18,6 +18,7 @@ import { ApiError } from '@/api';
 import { paths } from '@/routes/paths';
 import { formatCurrency, formatDate, formatDateTime, formatPoints } from '@/lib/format';
 import { downloadReceipt } from '@/lib/receipt';
+import { cx } from '@/lib/cx';
 import s from './account.module.css';
 
 export default function OrderDetailPage() {
@@ -116,7 +117,7 @@ export default function OrderDetailPage() {
           </dl>
 
           {order.pointsRedeemed > 0 ? (
-            <p className={s.itemSub} style={{ marginTop: 'var(--space-4)' }}>
+            <p className={cx(s.itemSub, 're-mt-4')}>
               Pagaste {formatCurrency(order.pointsDiscount)} de este pedido con{' '}
               {formatPoints(order.pointsRedeemed)}.
             </p>

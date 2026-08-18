@@ -16,7 +16,7 @@ export const checkoutSchema = z.object({
     .string()
     .trim()
     .min(8, 'Necesitamos un teléfono para avisarte de las pruebas.')
-    .regex(PHONE_GT_REGEX, 'Ingresa un teléfono válido de 8 dígitos (ej. 5555-1234).'),
+    .regex(PHONE_GT_REGEX, 'Ingresa un teléfono válido de 8 dígitos. Por ejemplo: 5555-1234.'),
 
   addressLine1: z.string().trim().min(5, 'Escribe la dirección de entrega.'),
   city: z.string().trim().min(2, 'Escribe la ciudad.'),

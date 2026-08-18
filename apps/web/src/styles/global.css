@@ -185,6 +185,12 @@ a:hover {
   overflow: hidden;
 }
 
+/* Separación superior cuando un párrafo secundario sigue a un bloque sin
+   `gap` propio (nota de nota, aviso de pago, medida sin registrar…). */
+.re-mt-4 {
+  margin-top: var(--space-4);
+}
+
 /* ── Scrollbar con la firma de la marca ──────────────────────────────────── */
 
 * {

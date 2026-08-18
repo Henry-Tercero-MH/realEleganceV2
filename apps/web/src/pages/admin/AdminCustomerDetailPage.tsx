@@ -38,6 +38,7 @@ import { ApiError } from '@/api';
 import { paths } from '@/routes/paths';
 import { formatCurrency, formatDate, formatDateTime, formatPoints, formatTime, formatWeekday } from '@/lib/format';
 import { isValidEmail, isValidName, isValidPhoneGT } from '@/lib/validation';
+import { cx } from '@/lib/cx';
 import s from './admin.module.css';
 
 /** Mañana, en `YYYY-MM-DD`: el hueco más cercano razonable para el selector de día. */
@@ -221,7 +222,7 @@ export default function AdminCustomerDetailPage() {
                       ))}
                     </dl>
                     {set.note ? (
-                      <p className={s.noteText} style={{ marginTop: 'var(--space-4)' }}>
+                      <p className={cx(s.noteText, 're-mt-4')}>
                         <Icon name="info" size={14} /> {set.note}
                       </p>
                     ) : null}
@@ -422,11 +423,11 @@ function CustomerEditModal({
       return;
     }
     if (!isValidEmail(email)) {
-      toast.error('Revisa el correo', 'Ingresa un correo válido, ej. nombre@dominio.com.');
+      toast.error('Revisa el correo', 'Ingresa un correo válido. Por ejemplo: nombre@dominio.com.');
       return;
     }
     if (phone.trim() && !isValidPhoneGT(phone)) {
-      toast.error('Revisa el teléfono', 'Ingresa un teléfono válido de 8 dígitos (ej. 5555-1234).');
+      toast.error('Revisa el teléfono', 'Ingresa un teléfono válido de 8 dígitos. Por ejemplo: 5555-1234.');
       return;
     }
 

@@ -55,7 +55,7 @@ export default function OrdersPage() {
       {!isLoading && visible.length === 0 ? (
         <EmptyState
           icon="package"
-          title="No hay pedidos aún. Diseña tu primer traje."
+          title="No hay pedidos aún"
           description="En cuanto encargues uno aparecerá aquí, con su avance en el taller."
           action={
             <ButtonLink to={paths.catalog} variant="primary">

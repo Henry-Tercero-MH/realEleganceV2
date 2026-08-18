@@ -27,6 +27,7 @@ import { ApiError } from '@/api';
 import { paths } from '@/routes/paths';
 import { formatCurrency, formatDate, formatDateTime, formatPoints } from '@/lib/format';
 import { downloadReceipt } from '@/lib/receipt';
+import { cx } from '@/lib/cx';
 import s from './admin.module.css';
 
 /** Mismos ids que usa el pedido de mostrador: un pago no distingue de dónde vino. */
@@ -274,7 +275,7 @@ function StatusForm({
 
   if (isClosed) {
     return (
-      <p className={s.cellSub} style={{ marginTop: 'var(--space-4)' }}>
+      <p className={cx(s.cellSub, 're-mt-4')}>
         Este pedido está cerrado y ya no cambia de estado.
       </p>
     );
@@ -408,7 +409,7 @@ function PaymentModal({ open, onClose, order }: { open: boolean; onClose: () => 
           min="0"
           max={order.balanceDue}
           required
-          endAdornment="GTQ"
+          endAdornment="Q"
           value={amount}
           onChange={(event) => setAmount(event.target.value)}
         />

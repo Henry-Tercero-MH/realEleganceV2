@@ -4,6 +4,7 @@ import { api, queryKeys } from '@/api';
 import { useAuth } from '@/context/AuthContext';
 import { paths } from '@/routes/paths';
 import { formatDate, formatMeasurement } from '@/lib/format';
+import { cx } from '@/lib/cx';
 import s from './account.module.css';
 
 export default function MeasurementsPage() {
@@ -59,7 +60,7 @@ export default function MeasurementsPage() {
             </dl>
 
             {set.note ? (
-              <p className={s.itemSub} style={{ marginTop: 'var(--space-4)' }}>
+              <p className={cx(s.itemSub, 're-mt-4')}>
                 <Icon name="info" size={14} /> {set.note}
               </p>
             ) : null}

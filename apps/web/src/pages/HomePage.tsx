@@ -141,7 +141,7 @@ export default function HomePage() {
             <div>
               <dt>Trajes entregados</dt>
               <dd>
-                4 200+<span className={s.statTick} aria-hidden="true" />
+                4,200+<span className={s.statTick} aria-hidden="true" />
               </dd>
             </div>
             <div>

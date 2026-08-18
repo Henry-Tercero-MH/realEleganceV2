@@ -63,7 +63,7 @@
 }
 
 .md {
-  min-height: 44px;
+  min-height: var(--control-height-md);
   padding: 0 var(--space-5);
   font-size: var(--text-xs);
 }
