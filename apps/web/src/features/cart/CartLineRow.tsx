@@ -3,6 +3,7 @@ import { CART_ITEM_TYPE_LABELS } from '@real-elegance/shared';
 import { lineTotal } from './pricing';
 import type { CartLine } from './types';
 import { cx } from '@/lib/cx';
+import { formatCurrency } from '@/lib/format';
 import s from './CartLineRow.module.css';
 
 export interface CartLineRowProps {
@@ -55,7 +56,8 @@ export function CartLineRow({
                   {option.name}
                   {option.priceDelta !== 0 ? (
                     <span className={s.delta}>
-                      {option.priceDelta > 0 ? '+' : '−'}Q{Math.abs(option.priceDelta)}
+                      {option.priceDelta > 0 ? '+' : '−'}
+                      {formatCurrency(Math.abs(option.priceDelta))}
                     </span>
                   ) : null}
                 </dd>
@@ -69,7 +71,7 @@ export function CartLineRow({
             value={line.quantity}
             onChange={(quantity) => onQuantityChange(line.lineId, quantity)}
             max={line.maxQuantity}
-            size={variant === 'compact' ? 'sm' : 'md'}
+            size="md"
             label={line.displayName}
           />
           <Price amount={lineTotal(line)} size={variant === 'compact' ? 'sm' : 'md'} />
@@ -80,7 +82,7 @@ export function CartLineRow({
         label={`Quitar ${line.displayName} del carrito`}
         icon={<Icon name="trash" size={16} />}
         variant="danger"
-        size="sm"
+        size="md"
         onClick={() => onRemove(line.lineId)}
         className={s.remove}
       />

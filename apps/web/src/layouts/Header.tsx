@@ -78,7 +78,7 @@ export function Header() {
                 <NavLink to={paths.login} className={s.navLink}>
                   Entrar
                 </NavLink>
-                <ButtonLink to={paths.register} variant="primary" size="sm">
+                <ButtonLink to={paths.register} variant="primary" size="md">
                   Crear cuenta
                 </ButtonLink>
               </>

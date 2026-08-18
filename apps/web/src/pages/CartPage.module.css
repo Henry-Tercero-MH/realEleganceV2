@@ -6,6 +6,52 @@
   margin-top: var(--space-5);
 }
 
+/* ── Barra fija de pago (móvil/tablet) ──────────────────────────────────── */
+
+.mobileCheckoutBar {
+  display: none;
+}
+
+@media (max-width: 1024px) {
+  .mobileCheckoutBar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    position: fixed;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: var(--z-sticky);
+    padding: var(--space-4) var(--space-5);
+    padding-bottom: max(var(--space-4), env(safe-area-inset-bottom));
+    background-color: var(--color-surface);
+    border-top: 1px solid var(--color-border);
+    box-shadow: var(--shadow-2);
+  }
+
+  .mobileCheckoutTotal {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+    color: var(--color-text-muted);
+    font-size: var(--text-xs);
+    letter-spacing: var(--tracking-wide);
+    text-transform: uppercase;
+  }
+
+  /* El botón "Ir al pago" ya vive en la barra fija: se oculta el de la
+     tarjeta de resumen para no repetir el mismo CTA dos veces en pantalla. */
+  .footer > button {
+    display: none;
+  }
+
+  /* Deja sitio para que la barra fija no tape el final de la página. */
+  .body {
+    padding-bottom: 96px;
+  }
+}
+
 /* ── Cupón ───────────────────────────────────────────────────────────────── */
 
 .couponForm {
@@ -19,7 +65,6 @@
 }
 
 .couponButton {
-  height: 46px;
   flex-shrink: 0;
 }
 

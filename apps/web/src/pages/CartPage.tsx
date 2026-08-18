@@ -68,8 +68,8 @@ export default function CartPage() {
         <div className={l.afterHeading}>
           <EmptyState
             icon="cart"
-            title="No hay pedidos aún. Diseña tu primer traje."
-            description="Elige un modelo del catálogo, escoge la tela y los acabados, y lo verás aquí antes de confirmar."
+            title="No hay pedidos aún"
+            description="Diseña tu primer traje: elige un modelo del catálogo, escoge la tela y los acabados, y lo verás aquí antes de confirmar."
             action={
               <ButtonLink to={paths.catalog} variant="primary" size="lg">
                 Ver el catálogo
@@ -215,6 +215,19 @@ export default function CartPage() {
             </Card.Footer>
           </Card>
         </aside>
+      </div>
+
+      {/* Barra fija solo en móvil/tablet: el resumen deja de ser sticky bajo
+          1024px, así que sin esto el CTA de pago solo se alcanza tras
+          desplazarse por todas las líneas del carrito. */}
+      <div className={s.mobileCheckoutBar}>
+        <div className={s.mobileCheckoutTotal}>
+          <span>Total</span>
+          <Price amount={totals.total} size="md" />
+        </div>
+        <Button variant="primary" size="lg" onClick={() => navigate(paths.checkout)}>
+          Ir al pago
+        </Button>
       </div>
     </div>
   );
