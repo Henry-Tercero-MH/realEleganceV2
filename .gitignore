@@ -5,6 +5,14 @@ coverage/
 .vite/
 *.tsbuildinfo
 
+# `tsc -b` a veces emite .js/.js.map sueltos junto a los .ts/.tsx fuente en
+# vez de solo a dist/ (ver memoria del proyecto: "Build tooling gotcha").
+# Estos directorios son TypeScript puro: cualquier .js aquí es un artefacto.
+apps/web/src/**/*.js
+apps/web/src/**/*.js.map
+packages/shared/src/**/*.js
+packages/shared/src/**/*.js.map
+
 .env
 .env.local
 .env.*.local
