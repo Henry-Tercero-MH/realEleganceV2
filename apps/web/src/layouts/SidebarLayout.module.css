@@ -107,6 +107,11 @@
   .sidebar {
     position: static;
     gap: var(--space-4);
+    /* Por defecto, un ítem de grid no encoge por debajo del ancho mínimo de
+       su contenido: la tira de pestañas (`.items`, con su propio scroll
+       horizontal) empujaba TODA la página a desbordar en vez de scrollear
+       solo ella. Sin esto, `/mi-cuenta` y `/admin` se ven anchos en móvil. */
+    min-width: 0;
   }
 
   .nav {

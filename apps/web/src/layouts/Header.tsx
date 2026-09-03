@@ -76,6 +76,10 @@ export function Header() {
           id={MOBILE_NAV_ID}
           className={cx(s.nav, isMenuOpen && s.navOpen)}
           aria-label="Navegación principal"
+          // Respaldo de useFocusTrap cuando aún no hay ningún enlace enfocable
+          // a tiempo (mismo patrón que el panel de Modal.tsx): sin esto,
+          // container.focus() no hace nada porque un <nav> no es enfocable.
+          tabIndex={-1}
         >
           {NAV_LINKS.map((link) => (
             <NavLink

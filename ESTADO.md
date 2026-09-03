@@ -137,7 +137,14 @@ checklists directamente en lugar de despacharlos como subagentes aislados.
   asociados incluso en las páginas nuevas de CRM.
 - **`navegacion`**: el menú móvil del `Header` no atrapaba foco ni cerraba con Escape. Se añadió
   `useFocusTrap` (activo solo bajo 960px, el breakpoint real del CSS) y cierre con Escape, mismo
-  patrón que `Modal.tsx`, más `aria-controls` en el botón hamburguesa.
+  patrón que `Modal.tsx`, más `aria-controls` en el botón hamburguesa. **La verificación en
+  navegador destapó un bug real** que `tsc` no podía ver: `useFocusTrap` movía el foco de forma
+  síncrona al abrir, pero el nav del `Header` (a diferencia de `Modal`/`Drawer`, que ni existen en
+  el DOM mientras están cerrados) sigue siempre montado y solo se hace visible por una transición
+  CSS de `visibility` — mientras dura, el navegador no deja enfocar nada de dentro y `.focus()` no
+  hacía nada. Se corrigió en el hook compartido (`apps/web/src/hooks/useFocusTrap.ts`): si el
+  contenedor está `visibility: hidden` al montarse, espera al evento `transitionend` real (con un
+  plazo de respaldo de 400ms) antes de mover el foco, en vez de asumir que ya es enfocable.
 - **`catalogo-filtros`**: `FabricsPage.tsx` y `AccessoriesPage.tsx` guardaban su filtro de categoría
   en `useState` en vez de la URL — la decisión vigente del proyecto solo se cumplía en
   `CatalogPage.tsx`. Se movieron ambas a `useSearchParams` (`?categoria=`), mismo patrón que el
@@ -145,11 +152,26 @@ checklists directamente en lugar de despacharlos como subagentes aislados.
 - **`accesibilidad`** (diagnóstico): confirmado que el `Stepper` no necesita `useFocusTrap` (no es
   un diálogo); `Drawer` ya lleva `role="dialog"`/`aria-modal`; skip-link a `<main id="contenido">`
   correcto. Pendiente real: medir contraste con axe/Lighthouse en vez de solo leer `tokens.css`.
+- **Desbordamiento horizontal en `/mi-cuenta` y `/admin`** (reportado por el usuario tras probar la
+  app de verdad — la primera pasada de esta sesión no había abierto `/mi-cuenta`): `SidebarLayout`
+  (compartido por ambos) tiene, en móvil, una tira de pestañas con scroll horizontal propio
+  (`.items { overflow-x: auto }`). Pero `.sidebar` es un ítem de grid y por defecto no encoge por
+  debajo del ancho mínimo de su contenido: esa tira empujaba **toda la página** a 591px en vez de
+  scrollear ella sola, causando scroll horizontal en las cinco pantallas de cuenta y en `/admin`.
+  Arreglado con `min-width: 0` en `.sidebar` dentro de `apps/web/src/layouts/SidebarLayout.module.css`
+  (`@media max-width: 1024px`). Verificado con Playwright en las 6 pantallas de `/mi-cuenta` y 4 de
+  `/admin`: `document.documentElement.scrollWidth` volvió a igualar el viewport en todas.
 
-**Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio tras cada tanda de cambios.
-**No verificado:** recorrido visual en navegador/dispositivo real de los seis archivos tocados
-(`admin.module.css`, `Header.tsx`, `FabricsPage.tsx`, `AccessoriesPage.tsx`) — los agentes no pueden
-ver el render, según sus propios límites documentados en `.claude/agents/README.md`.
+**Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio tras cada tanda de cambios,
+y además — a diferencia de sesiones anteriores — un recorrido real en navegador con Playwright
+(Vite dev server + Chromium headless, viewport 375px) contra los cinco cambios de esta sesión:
+menú móvil (foco atrapado + Escape), `/telas` y `/accesorios` (filtro en la URL, sobrevive a
+recargar y al botón atrás) y `/admin/pedidos/nuevo` (el grid de dos columnas sí colapsa a una en
+móvil). Los cinco pasaron tras corregir el bug de `useFocusTrap` descrito arriba — que **no** se
+habría detectado solo con `tsc`. También se confirmó que `Modal` y el `Drawer` del carrito (que se
+montan ya visibles) no se vieron afectados por el cambio al hook compartido.
+**No verificado:** dispositivo móvil real (solo viewport emulado) y medición de contraste con
+axe/Lighthouse.
 
 ---
 
