@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import type { Product } from '@real-elegance/shared';
 import { EmptyState, SectionHeading, SkeletonCard, Tabs } from '@/components/ui';
 import { ProductCard } from '@/features/catalog/ProductCards';
@@ -9,7 +9,18 @@ import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 
 export default function AccessoriesPage() {
-  const [categoryId, setCategoryId] = useState<string>('todos');
+  // El filtro vive en la URL, no en `useState`: se puede compartir por enlace
+  // y el botón «atrás» funciona (misma decisión que en CatalogPage).
+  const [params, setParams] = useSearchParams();
+  const categoryId = params.get('categoria') ?? 'todos';
+
+  function setCategoryId(value: string) {
+    const next = new URLSearchParams(params);
+    if (value === 'todos') next.delete('categoria');
+    else next.set('categoria', value);
+    setParams(next, { replace: true });
+  }
+
   const { data: categories } = useProductCategories();
   const { data: products, isLoading, isError } = useProducts({
     categoryId: categoryId === 'todos' ? null : Number(categoryId),

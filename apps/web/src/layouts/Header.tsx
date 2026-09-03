@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { Link, NavLink, useLocation } from 'react-router-dom';
 import { Icon, IconButton, ButtonLink, Button } from '@/components/ui';
 import { Logo } from '@/components/Logo';
@@ -6,8 +6,12 @@ import { paths } from '@/routes/paths';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useFocusTrap } from '@/hooks/useFocusTrap';
+import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { cx } from '@/lib/cx';
 import s from './Header.module.css';
+
+const MOBILE_NAV_ID = 'site-nav';
 
 const NAV_LINKS = [
   { to: paths.catalog, label: 'Trajes' },
@@ -25,9 +29,30 @@ export function Header() {
 
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setScrolled] = useState(false);
+  const navRef = useRef<HTMLElement>(null);
+
+  // Mismo punto de corte que `.menuToggle`/`.nav` en Header.module.css: por
+  // debajo de 960px el <nav> pasa a ser el menú desplegable, y solo ahí tiene
+  // sentido atraparle el foco (en escritorio son enlaces normales en fila).
+  const isMobileNav = useMediaQuery('(max-width: 960px)');
+  const menuTrapActive = isMenuOpen && isMobileNav;
+
+  useFocusTrap(navRef, menuTrapActive);
 
   // Al navegar, el menú móvil debe cerrarse solo.
   useEffect(() => setMenuOpen(false), [location.pathname]);
+
+  useEffect(() => {
+    if (!menuTrapActive) return;
+    function handleKey(event: KeyboardEvent) {
+      if (event.key === 'Escape') {
+        event.stopPropagation();
+        setMenuOpen(false);
+      }
+    }
+    document.addEventListener('keydown', handleKey);
+    return () => document.removeEventListener('keydown', handleKey);
+  }, [menuTrapActive]);
 
   // La cabecera gana fondo y filete al despegarse del hero.
   useEffect(() => {
@@ -46,7 +71,12 @@ export function Header() {
           <Logo />
         </Link>
 
-        <nav className={cx(s.nav, isMenuOpen && s.navOpen)} aria-label="Navegación principal">
+        <nav
+          ref={navRef}
+          id={MOBILE_NAV_ID}
+          className={cx(s.nav, isMenuOpen && s.navOpen)}
+          aria-label="Navegación principal"
+        >
           {NAV_LINKS.map((link) => (
             <NavLink
               key={link.to}
@@ -117,6 +147,7 @@ export function Header() {
             icon={<Icon name={isMenuOpen ? 'close' : 'menu'} size={20} />}
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={isMenuOpen}
+            aria-controls={MOBILE_NAV_ID}
             className={s.menuToggle}
           />
         </div>

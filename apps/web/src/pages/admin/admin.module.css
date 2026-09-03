@@ -551,3 +551,16 @@
   font-variant-numeric: tabular-nums;
   white-space: nowrap;
 }
+
+/* Este archivo no tenía ninguna media query pese a servir 13 pantallas de
+   `/admin`: las rejillas de 2 columnas de formularios (clientes, pedido de
+   mostrador) se apretaban en tablet/móvil. */
+@media (max-width: 640px) {
+  .formGrid2 {
+    grid-template-columns: 1fr;
+  }
+
+  .lineItem {
+    grid-template-columns: 1fr;
+  }
+}

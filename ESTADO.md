@@ -50,9 +50,11 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 | `apps/web` — páginas públicas | ✅ Hecho | Home, catálogo, detalle, personalizar, telas, accesorios, taller, 404 |
 | `apps/web` — carrito y checkout | ✅ Hecho | `CartContext` (`useReducer` + `localStorage`), drawer, `/carrito`, `/checkout`, confirmación |
 | `apps/web` — seguimiento | ✅ Hecho | Público por número de pedido, con timeline y bitácora |
-| `apps/web` — cuenta del cliente | ✅ Hecho | Resumen, pedidos, detalle, citas, agendar, medidas |
-| `apps/web` — back-office `/admin` | ✅ Hecho | Panel, trajes, telas, accesorios, cupones, taller, pedidos, citas |
-| `apps/web` — `<ImageUploader />` | ⬜ Pendiente | Necesita bucket real; las tablas de admin son de solo lectura por ahora |
+| `apps/web` — cuenta del cliente | ✅ Hecho | Resumen, pedidos, detalle, citas, agendar, medidas, `/mi-cuenta/puntos` (fidelización) |
+| `apps/web` — fidelización (puntos) | ✅ Hecho | `PointsRedeemBox` en el carrito, `MyLoyaltyPage`, `AdminLoyaltyPage` (reglas de acumulación/canje); tipos `LoyaltySettings`/`LoyaltyAccount` en `packages/shared` |
+| `apps/web` — clientela / CRM admin | ✅ Hecho | `/admin/clientes` y `/admin/clientes/:id` (historial, notas de mostrador, medidas, saldo de puntos) |
+| `apps/web` — back-office `/admin` | ✅ Hecho | 13 pantallas: panel, trajes, telas, accesorios, cupones, clientes (+ficha), taller, pedidos, pedido nuevo (mostrador), detalle de pedido, citas, fidelización |
+| `apps/web` — `<ImageUploader />` | ⬜ Pendiente | Necesita bucket real; las tablas de trajes/accesorios en admin siguen siendo de solo lectura |
 | `apps/web` — simulador 2D | ⛔ Fuera de alcance | Tarjeta «Próximamente» en `/personalizar`, según §13 |
 | Tests | ⬜ Pendiente | Falta cubrir `cartReducer`, `pricing` y el design system |
 | `apps/api` · `db/` · Docker | ⛔ No iniciado | Fuera del alcance de la fase actual |
@@ -86,15 +88,25 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 
 **Cerrar la fase de diseño:**
 
-1. Tests de Vitest sobre `cartReducer` y `calculateTotals` (lógica pura, alto valor).
+1. Tests de Vitest sobre `cartReducer` y `calculateTotals` (lógica pura, alto valor) — sigue sin
+   haber ni un solo archivo `*.test.*`/`*.spec.*` en el repo pese a que Vitest y RTL ya están
+   instalados y configurados (`src/test/setup.ts`).
 2. Tests de RTL sobre `Button`, `OptionCard` y el flujo «añadir al carrito».
-3. Repaso de accesibilidad con teclado en modal, drawer y stepper.
-4. Revisar el responsive real en móvil (hoy validado por media queries, no en dispositivo).
+3. ~~Repaso de accesibilidad con teclado en modal, drawer y stepper~~ — cerrado en la Sesión 4.
+   `useFocusTrap` ya cubre `Modal`/`Drawer`/menú móvil del `Header`; el `Stepper` (indicador de
+   progreso) no lo necesita: no es un diálogo, son `<button>` nativos. Pendiente real: pasar
+   axe/Lighthouse — la revisión de contraste fue por lectura de `tokens.css`, no medida.
+4. ~~Revisar el responsive real en móvil~~ — hecho en la Sesión 3 (logout oculto en «Mi cuenta»,
+   botones táctiles del carrito, contraste del botón primario, hueco del header en tablet/móvil,
+   barra fija de pago). En la Sesión 4 se cubrió también `/admin` (sin media queries hasta ahora).
+   Pendiente: repetirlo en dispositivo real tras los cambios de fidelización/CRM.
 
 **Fase siguiente (backend):**
 
 5. `packages/shared`: mover los esquemas Zod de `features/*/schema.ts` y compartirlos.
-6. `db/`: migraciones Knex en 3FN, los 9 triggers, funciones, procedimientos y vistas.
+6. `db/`: migraciones Knex en 3FN, los 9 triggers, funciones, procedimientos y vistas — deben
+   contemplar ya las reglas de fidelización (`LoyaltySettings`, `LoyaltyAccount`) y el CRM de
+   clientes (`CustomerNote`, `CustomerListItem`/`CustomerDetail`) añadidos en la Sesión 3.
 7. `apps/api`: capas config/routes/controllers/services/repositories + Swagger.
 8. Sustituir `src/api/mock.ts` por la implementación HTTP sobre `src/api/http.ts` (ya configurado).
 9. Docker + MinIO y el `<ImageUploader />` del CMS.
@@ -102,6 +114,83 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 ---
 
 ## Bitácora
+
+### Sesión 4 — 2026-09-03
+
+**Objetivo:** instalar `.claude/agents/` con 7 subagentes de revisión (responsive, controles,
+navegación, catálogo/filtros, accesibilidad, design tokens, calidad de código) y correr una pasada
+completa sobre `apps/web`. Los subagentes recién creados no los reconoció el `Agent tool` en esta
+misma sesión (el registro se lee al arrancar Claude Code), así que la pasada se hizo ejecutando sus
+checklists directamente en lugar de despacharlos como subagentes aislados.
+
+**Hecho:**
+
+- **`calidad-codigo`**: sin hallazgos — sin artefactos `.js` sueltos, `tsc` limpio en ambos paquetes,
+  sin `any`/`@ts-ignore`/`console.log`, `pricing.ts` ya coherente con IVA/anticipo/puntos.
+- **`design-tokens`**: sin hallazgos — cero colores hardcodeados en componentes; los únicos hex
+  encontrados son legítimos y fuera de alcance (`mocks/data.ts` son colores de tela/producto,
+  `lib/receipt.ts` es un HTML standalone para imprimir).
+- **`responsive-movil`**: `apps/web/src/pages/admin/admin.module.css` (13 pantallas de `/admin`) no
+  tenía **ninguna** media query. Se añadió una a 640px para que `.formGrid2` (formularios de
+  cliente/pedido) y `.lineItem` (pedido de mostrador) colapsen a una columna en vez de apretarse.
+- **`controles-interactivos`**: sin hallazgos — objetivos táctiles ≥24px (WCAG AA), labels bien
+  asociados incluso en las páginas nuevas de CRM.
+- **`navegacion`**: el menú móvil del `Header` no atrapaba foco ni cerraba con Escape. Se añadió
+  `useFocusTrap` (activo solo bajo 960px, el breakpoint real del CSS) y cierre con Escape, mismo
+  patrón que `Modal.tsx`, más `aria-controls` en el botón hamburguesa.
+- **`catalogo-filtros`**: `FabricsPage.tsx` y `AccessoriesPage.tsx` guardaban su filtro de categoría
+  en `useState` en vez de la URL — la decisión vigente del proyecto solo se cumplía en
+  `CatalogPage.tsx`. Se movieron ambas a `useSearchParams` (`?categoria=`), mismo patrón que el
+  catálogo.
+- **`accesibilidad`** (diagnóstico): confirmado que el `Stepper` no necesita `useFocusTrap` (no es
+  un diálogo); `Drawer` ya lleva `role="dialog"`/`aria-modal`; skip-link a `<main id="contenido">`
+  correcto. Pendiente real: medir contraste con axe/Lighthouse en vez de solo leer `tokens.css`.
+
+**Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio tras cada tanda de cambios.
+**No verificado:** recorrido visual en navegador/dispositivo real de los seis archivos tocados
+(`admin.module.css`, `Header.tsx`, `FabricsPage.tsx`, `AccessoriesPage.tsx`) — los agentes no pueden
+ver el render, según sus propios límites documentados en `.claude/agents/README.md`.
+
+---
+
+### Sesión 3 — 2026-08-09 a 2026-08-18
+
+**Objetivo:** ampliar el back-office más allá del alcance original de la Sesión 2 (fidelización,
+CRM de clientela, pedidos de mostrador) y luego cerrar con una pasada de accesibilidad táctil/móvil
+y revisión de código. Esta entrada se reconstruyó a partir de `git log` porque no se dejó registrada
+en su momento — los commits de esta sesión traían mensajes genéricos («se ajustó el diseño»).
+
+**Hecho:**
+
+- **Programa de fidelización (puntos):** `LoyaltySettings`/`LoyaltyAccount` en
+  `packages/shared/src/types.ts`; `pointsEarned`/`pointsRedeemed`/`pointsDiscount` añadidos a
+  `Order` y `CheckoutResult`. `PointsRedeemBox` integrado en `/carrito`; `MyLoyaltyPage`
+  (`/mi-cuenta/puntos`) para el cliente y `AdminLoyaltyPage` (`/admin/fidelizacion`) para ajustar
+  la tasa de acumulación/canje.
+- **CRM de clientela en el back-office:** `CustomerNote`, `CustomerListItem`, `CustomerDetail` en
+  `packages/shared`; `AdminCustomersPage` (`/admin/clientes`) y `AdminCustomerDetailPage`
+  (`/admin/clientes/:id`) con historial de pedidos, notas de mostrador, medidas y saldo de puntos.
+- **Pedidos de mostrador:** `AdminNewOrderPage` (`/admin/pedidos/nuevo`) para que el taller cree
+  pedidos manualmente; `Order.deliveryAddress` pasó a `Address | null` (`null` = se recoge en el
+  taller, no se envía).
+- **Accesibilidad táctil y responsive en móvil** (commit `403178c`): logout oculto en «Mi cuenta»
+  corregido, botones de eliminar/stepper del carrito agrandados, CTA de «Crear cuenta» y texto de
+  error de formularios más grandes, contraste del botón primario en tema claro corregido, hueco
+  vacío del header en tablet/móvil arreglado, barra fija de pago añadida al carrito.
+- **Artefactos de compilación sueltos** (commit `ef9338d`): `tsc -b` dejaba `.js`/`.js.map` sueltos
+  junto a los `.ts`/`.tsx` fuente sin que estuvieran en `.gitignore`; ya llegaron a colarse en un
+  commit anterior y llegaron a tapar código `.tsx` recién editado (Vite resuelve `.js` antes que
+  `.tsx`). Se añadió `apps/web/src/**/*.js(.map)` y `packages/shared/src/**/*.js(.map)` a
+  `.gitignore`. Sigue habiendo que borrar esos archivos sueltos a mano tras correr `tsc -b`.
+- **Revisión de código** (commit `fd8c298`): ajustes menores repartidos en páginas de cuenta y
+  admin, `Icon.tsx`, `Button.module.css`, y la tanda grande de tipos nuevos de `packages/shared`
+  descrita arriba.
+
+**Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio al momento de escribir esta
+entrada (Sesión 4). **No verificado en su momento:** no quedó registro de una prueba visual en
+dispositivo real tras estos cambios — sigue pendiente, ver «Próximos pasos».
+
+---
 
 ### Sesión 2 — 2026-08-05
 

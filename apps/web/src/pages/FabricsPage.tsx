@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { ButtonLink, EmptyState, Icon, SectionHeading, Skeleton, Tabs } from '@/components/ui';
 import { FabricCard } from '@/features/catalog/ProductCards';
 import { useFabricCategories, useFabrics } from '@/features/catalog/hooks';
@@ -7,7 +7,18 @@ import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 
 export default function FabricsPage() {
-  const [categoryId, setCategoryId] = useState<string>('todas');
+  // El filtro vive en la URL, no en `useState`: se puede compartir por enlace
+  // y el botón «atrás» funciona (misma decisión que en CatalogPage).
+  const [params, setParams] = useSearchParams();
+  const categoryId = params.get('categoria') ?? 'todas';
+
+  function setCategoryId(value: string) {
+    const next = new URLSearchParams(params);
+    if (value === 'todas') next.delete('categoria');
+    else next.set('categoria', value);
+    setParams(next, { replace: true });
+  }
+
   const { data: categories } = useFabricCategories();
   const { data: fabrics, isLoading, isError } = useFabrics({
     categoryId: categoryId === 'todas' ? null : Number(categoryId),
