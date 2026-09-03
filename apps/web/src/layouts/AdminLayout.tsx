@@ -1,6 +1,6 @@
 import { SidebarLayout } from './SidebarLayout';
 import type { SidebarSection } from './SidebarLayout';
-import { Badge } from '@/components/ui';
+import { Badge, Button } from '@/components/ui';
 import { useAuth } from '@/context/AuthContext';
 import { ROLE_LABELS } from '@real-elegance/shared';
 import { paths } from '@/routes/paths';
@@ -40,7 +40,7 @@ const SECTIONS: SidebarSection[] = [
  * navegación y se recuerda con qué rol se está trabajando.
  */
 export function AdminLayout() {
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
 
   return (
     <SidebarLayout
@@ -50,9 +50,17 @@ export function AdminLayout() {
       sections={SECTIONS}
       aside={
         user ? (
-          <Badge tone="gold" appearance="outline" size="sm">
-            {ROLE_LABELS[user.role]}
-          </Badge>
+          <>
+            <Badge tone="gold" appearance="outline" size="sm">
+              {ROLE_LABELS[user.role]}
+            </Badge>
+            {/* En escritorio la cabecera no repite "Cerrar sesión" (solo vive en
+                su menú móvil): sin este botón, salir desde el back-office en
+                escritorio exigía primero ir a "Mi cuenta". */}
+            <Button variant="link" onClick={logout}>
+              Cerrar sesión
+            </Button>
+          </>
         ) : null
       }
     />

@@ -103,6 +103,8 @@
 
 .error {
   padding-left: calc(20px + var(--space-3));
-  color: var(--color-danger);
+  /* Texto sobre el fondo de la página: usar --color-danger a secas falla AA
+     en tema oscuro. Ver comentario en tokens.css. */
+  color: var(--color-danger-text);
   font-size: var(--text-xs);
 }

@@ -13,6 +13,13 @@ apps/web/src/**/*.js.map
 packages/shared/src/**/*.js
 packages/shared/src/**/*.js.map
 
+# `tsconfig.node.json` incluye `vite.config.ts` sin outDir propio, así que
+# también puede emitir `vite.config.js(.map)` junto al `.ts` en la raíz de
+# apps/web (no solo dentro de src/). Volvió a colarse una vez, ver commit
+# 5b89d97 vs ef9338d: el patrón de arriba no cubría esta ruta.
+apps/web/vite.config.js
+apps/web/vite.config.js.map
+
 .env
 .env.local
 .env.*.local

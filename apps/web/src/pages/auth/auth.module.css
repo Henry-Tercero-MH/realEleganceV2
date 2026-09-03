@@ -41,7 +41,9 @@
   padding: var(--space-3) var(--space-4);
   border-left: 2px solid var(--color-danger);
   background-color: var(--color-danger-soft);
-  color: var(--color-danger);
+  /* --color-danger-text: como texto sobre este fondo translúcido,
+     --color-danger a secas falla AA en tema oscuro (~4.1:1). */
+  color: var(--color-danger-text);
   font-size: var(--text-sm);
   line-height: var(--leading-snug);
 }

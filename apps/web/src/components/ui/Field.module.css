@@ -35,7 +35,10 @@
   display: flex;
   align-items: flex-start;
   gap: var(--space-2);
-  color: var(--color-danger);
+  /* --color-danger-text, no --color-danger: este es texto sobre el fondo de
+     la página, y --color-danger a secas cae por debajo de AA en tema oscuro
+     (~4.1:1 de 4.5:1 requeridos). Ver comentario en tokens.css. */
+  color: var(--color-danger-text);
   font-size: var(--text-sm);
   line-height: var(--leading-snug);
 }

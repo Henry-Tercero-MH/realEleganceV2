@@ -112,9 +112,12 @@
   --_fg: var(--color-text);
 }
 
-/* Peligro: reservada a destrucción confirmada (eliminar imagen, cancelar pedido). */
+/* Peligro: reservada a destrucción confirmada (eliminar imagen, cancelar pedido).
+   El texto usa --color-danger-text (no --color-danger): el borde solo necesita
+   3:1 y --color-danger lo cumple, pero como color de TEXTO cae a ~4.1:1 en
+   tema oscuro, por debajo de AA. Ver comentario en tokens.css. */
 .danger {
-  --_fg: var(--color-danger);
+  --_fg: var(--color-danger-text);
   --_border: var(--color-danger);
 }
 

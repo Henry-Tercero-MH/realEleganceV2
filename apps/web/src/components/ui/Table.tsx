@@ -70,11 +70,15 @@ export function Table<T>({
               key={rowKey(row)}
               className={cx(onRowClick && s.clickable)}
               onClick={onRowClick ? () => onRowClick(row) : undefined}
+              role={onRowClick ? 'button' : undefined}
               tabIndex={onRowClick ? 0 : undefined}
               onKeyDown={
                 onRowClick
                   ? (event) => {
-                      if (event.key === 'Enter') onRowClick(row);
+                      if (event.key === 'Enter' || event.key === ' ') {
+                        event.preventDefault();
+                        onRowClick(row);
+                      }
                     }
                   : undefined
               }

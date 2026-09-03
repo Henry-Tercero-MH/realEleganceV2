@@ -65,6 +65,22 @@
      propio (fijo) en vez de reusar --color-text: por eso NO se remapea abajo
      en el tema claro. */
   --color-on-danger: #ffffff;
+  /* --color-danger en tema oscuro está calibrado para funcionar como RELLENO
+     sólido con --color-on-danger encima (≈4.5:1) y como borde (≥3:1); usado
+     como TEXTO sobre --color-bg/--color-surface cae a ~4.1–4.3:1, por debajo
+     de AA (4.5:1) para texto normal. Este token, más claro, es solo para
+     texto/etiquetas de peligro sobre fondo oscuro (mensajes de error, badge
+     "danger"). Da ≥4.5:1 como texto sólido sobre bg/surface/surface-raised,
+     pero Badge.danger lo usa sobre --color-danger-soft (translúcido)
+     compuesto sobre surface-raised (p. ej. dentro de Card variant="raised"):
+     esa mezcla caía a ~4.31:1 con el primer valor. Aclarado para cubrir
+     también ese caso (≈4.8:1 en el peor fondo, ≥5.3:1 sobre fondos sólidos). */
+  --color-danger-text: #dc7359;
+  /* Mismo caso que --color-danger-text pero para --color-info: como texto
+     sobre --color-info-soft compuesto sobre surface-raised (p. ej. el badge
+     de pedidos "confirmados" dentro de una Card variant="raised") caía a
+     ~4.27:1. */
+  --color-info-text: #86a8c2;
 
   /* Anillo de foco — accesibilidad, siempre visible por teclado. */
   --color-focus: var(--re-gold-bright);
@@ -204,6 +220,17 @@
   --color-danger: #a33f2b;
   --color-info: #4a6a82;
   --color-focus: #8c6e2e;
+  /* En claro --color-danger ya da ≥6:1 sobre fondos claros: no hace falta
+     aclararlo para texto, a diferencia del tema oscuro. */
+  --color-danger-text: var(--color-danger);
+  --color-info-text: var(--color-info);
+  /* --color-warning se quedaba sin remapear aquí: heredaba --re-gold-bright
+     (#e6cc86), pensado para resaltar sobre fondo OSCURO. Como texto sobre el
+     tema claro (el que ve cualquier cuenta nueva por defecto, ver
+     ThemeContext.tsx) caía a ~1.4:1 — el badge «Anticipo pendiente», uno de
+     los estados más comunes de un pedido, quedaba casi invisible. Ámbar
+     oscuro, ≥4.5:1 sobre bg/surface/surface-raised claros. */
+  --color-warning: #8a5a12;
 
   --shadow-1: 0 2px 12px rgba(60, 48, 25, 0.1);
   --shadow-2: 0 12px 40px rgba(60, 48, 25, 0.16);

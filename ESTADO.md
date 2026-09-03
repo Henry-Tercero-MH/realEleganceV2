@@ -104,8 +104,11 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
    `Stepper`…).
 3. ~~Repaso de accesibilidad con teclado en modal, drawer y stepper~~ — cerrado en la Sesión 4.
    `useFocusTrap` ya cubre `Modal`/`Drawer`/menú móvil del `Header`; el `Stepper` (indicador de
-   progreso) no lo necesita: no es un diálogo, son `<button>` nativos. Pendiente real: pasar
-   axe/Lighthouse — la revisión de contraste fue por lectura de `tokens.css`, no medida.
+   progreso) no lo necesita: no es un diálogo, son `<button>` nativos. En la Sesión 5 se recalculó
+   el contraste a mano (no con herramientas) y se corrigieron 4 problemas reales, el más grave un
+   `--color-warning` sin remapear en el tema claro (el que ve cualquier cuenta nueva por defecto).
+   Pendiente real: pasar axe/Lighthouse y probar con lector de pantalla — la revisión sigue siendo
+   lectura de código + cálculo manual, no medición con herramientas.
 4. ~~Revisar el responsive real en móvil~~ — hecho en la Sesión 3 (logout oculto en «Mi cuenta»,
    botones táctiles del carrito, contraste del botón primario, hueco del header en tablet/móvil,
    barra fija de pago). En la Sesión 4 se cubrió también `/admin` (sin media queries hasta ahora).
@@ -124,6 +127,70 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 ---
 
 ## Bitácora
+
+### Sesión 5 — 2026-09-03
+
+**Objetivo:** ahora que la sesión de Claude Code sí reconocía los 7 subagentes de `.claude/agents/`
+como agentes reales y aislados (en la Sesión 4 se habían corrido «a mano», simulándolos), correr una
+segunda pasada de verdad con `calidad-codigo`, `design-tokens`, `controles-interactivos`,
+`navegacion` y `accesibilidad` (`responsive-movil` y `catalogo-filtros` ya habían corrido aislados al
+final de la Sesión 4). Con contexto fresco y aislado, cada uno encontró cosas que la primera pasada
+manual no había visto.
+
+**Hecho:**
+
+- **`calidad-codigo`**: 🔴 `apps/web/vite.config.js`/`.js.map` estaban **committeados en git** —
+  mismo patrón recurrente de la Sesión 3 (`tsc -b` genera un `.js` suelto junto al `.ts`), pero el
+  `.gitignore` de esa sesión solo cubrió `apps/web/src/**`, no la raíz de `apps/web`. Borrados y
+  reforzado `.gitignore`. 🔴 `npm test` de la raíz se cortaba en silencio porque
+  `packages/shared` no tiene tests todavía y Vitest 2.x sale con código 1 al no encontrar
+  ninguno — **los 54 tests de `web` nunca llegaban a correr vía `npm test`**, solo si alguien
+  corría `vitest` directamente dentro de `apps/web`. Arreglado con `packages/shared/vitest.config.ts`
+  (`passWithNoTests: true`, a quitar en cuanto haya un primer test ahí). Más un `eslint`
+  (`triple-slash-reference` redundante) y un `toLocaleString('es-GT')` hardcodeado en
+  `api/mock.ts` reemplazado por `formatCurrency`.
+- **`design-tokens`**: sin hallazgos nuevos.
+- **`controles-interactivos`**: 🟠 `--color-danger` usado como **texto** (no como fondo/borde)
+  caía a ~4.1–4.3:1 en tema oscuro, por debajo de AA. Token nuevo `--color-danger-text` en
+  `packages/shared/tokens.css`, aplicado en `Field`, `Checkbox`, `Button.danger`, `Badge.danger`,
+  el banner de error de `/entrar` y el botón de quitar cupón del carrito.
+- **`navegacion`**: 🟠 en escritorio, dentro de `/admin`, **no había ningún botón de «Cerrar
+  sesión» visible** — solo vivía en el menú móvil del `Header` (`display:none` en desktop). Un
+  admin/sastre solo podía salir yendo primero a «Mi cuenta». Agregado a `AdminLayout.tsx`, mismo
+  patrón que ya usaba `AccountLayout`. También confirmó, revisando a propósito el fix de
+  `useFocusTrap.ts` de la Sesión 4, que el cambio a `transitionend` **no afecta** a `Modal`/`Drawer`
+  (se montan ya visibles, entran por la rama síncrona de siempre) — sin regresión.
+- **`accesibilidad`** (diagnóstico — no edita): recalculó el contraste a mano en vez de confiar en
+  los cálculos de otros agentes y encontró 4 problemas, el primero crítico:
+  1. 🔴 **`--color-warning` no estaba remapeado para el tema claro** — y claro es el tema por
+     defecto (`ThemeContext.tsx`). Heredaba `--re-gold-bright` (`#e6cc86`, pensado para fondo
+     oscuro): como texto sobre el badge «Anticipo pendiente» (uno de los estados más comunes de un
+     pedido) el contraste real era ~1.35:1, prácticamente invisible.
+  2. 🟠 El fix de `--color-danger-text` de `controles-interactivos` no cubría `Badge.danger` dentro
+     de `Card variant="raised"` (color translúcido compuesto sobre un fondo ya no puro): caía a
+     ~4.31:1. Mismo problema, nunca antes detectado, para `--color-info`/`Badge.info` (~4.27:1).
+  3. 🟠 Doble `<h1>` en las ~19 pantallas de `/admin` y `/mi-cuenta`: `SidebarLayout` ponía uno
+     genérico («Back-office»/«Mi cuenta») y cada página hija otro con `SectionHeading as="h1"`.
+  4. 🟠 Una fila de tabla clicable (`Table.tsx`, usado en `/admin/clientes`) entraba al tabulador y
+     respondía a Enter, pero sin `role="button"` ni soporte de tecla Espacio.
+- **Arreglados los 4 hallazgos de `accesibilidad`** (ese agente no edita, solo diagnostica):
+  `--color-warning` remapeado en `[data-theme='light']` (`#8a5a12`, ≥4.5:1 verificado); aclarado
+  `--color-danger-text` (`#dc7359`) y agregado `--color-info-text` (`#86a8c2`), aplicado en
+  `Badge.module.css .info`; el `<h1>` de `SidebarLayout.tsx` pasó a `<p>` (cada página conserva su
+  propio `<h1>` más descriptivo); `Table.tsx` ganó `role="button"` y la tecla Espacio junto a Enter
+  en las filas clicables.
+
+**Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio tras cada tanda; `npx vitest
+run` 54/54 en verde (y confirmado que `npm test` desde la raíz ya los corre, tras el fix de
+`calidad-codigo`); `npx eslint` sin errores en los archivos tocados. En navegador real (Playwright):
+`data-theme` es `light` por defecto (confirma que el bug del punto 1 sí aplicaba a cualquier cuenta
+nueva), el `--color-warning` computado ya resuelve a `#8a5a12`, el botón «Cerrar sesión» es visible
+en `/admin` en escritorio, y solo hay un `<h1>` por página.
+**No verificado:** el resto de la lista de `accesibilidad` — contraste con axe/Lighthouse en vez de
+cálculo manual, comportamiento con lector de pantalla real, y los puntos 🟡 menores que quedaron sin
+tocar (ver el informe completo del agente si se retoma esto).
+
+---
 
 ### Sesión 4 — 2026-09-03
 

@@ -43,7 +43,10 @@ export function SidebarLayout({ title, subtitle, sections, aside, feature }: Sid
     <div className={cx('re-container', s.layout)}>
       <aside className={s.sidebar}>
         <div className={s.heading}>
-          <h1 className={s.title}>{title}</h1>
+          {/* Rótulo de sección ("Back-office"/"Mi cuenta"), no el título de la
+              página: cada página hija ya pone su propio <h1> vía SectionHeading,
+              y dos <h1> por vista rompía la navegación por encabezados. */}
+          <p className={s.title}>{title}</p>
           {subtitle ? <p className={s.subtitle}>{subtitle}</p> : null}
         </div>
 

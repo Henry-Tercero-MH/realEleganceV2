@@ -53,12 +53,16 @@
 }
 
 .danger {
-  --_fg: var(--color-danger);
+  /* Texto pequeño (2xs/xs): --color-danger a secas falla AA en tema oscuro
+     sobre este fondo translúcido. Ver comentario en tokens.css. */
+  --_fg: var(--color-danger-text);
   --_bg: var(--color-danger-soft);
 }
 
 .info {
-  --_fg: var(--color-info);
+  /* Mismo caso que .danger: --color-info a secas falla AA en tema oscuro
+     sobre este fondo translúcido. Ver comentario en tokens.css. */
+  --_fg: var(--color-info-text);
   --_bg: var(--color-info-soft);
 }
 

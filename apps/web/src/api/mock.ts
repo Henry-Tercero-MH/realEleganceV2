@@ -53,6 +53,7 @@ import {
   PRODUCTION_STAGE_LABELS,
 } from '@real-elegance/shared';
 import { TAX_RATE } from '@/features/cart/pricing';
+import { formatCurrency } from '@/lib/format';
 import { isMeasurementValueValid, isValidEmail, isValidName, isValidPhoneGT } from '@/lib/validation';
 import * as db from '@/mocks/data';
 import { ApiError } from './http';
@@ -301,7 +302,7 @@ const cart = {
       return {
         valid: false,
         discount: 0,
-        reason: `Requiere un subtotal mínimo de Q ${coupon.minSubtotal.toLocaleString('es-GT')}.`,
+        reason: `Requiere un subtotal mínimo de ${formatCurrency(coupon.minSubtotal)}.`,
       };
     }
     if (coupon.usageLimit !== null && coupon.timesUsed >= coupon.usageLimit) {
