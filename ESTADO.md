@@ -56,7 +56,7 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 | `apps/web` — back-office `/admin` | ✅ Hecho | 13 pantallas: panel, trajes, telas, accesorios, cupones, clientes (+ficha), taller, pedidos, pedido nuevo (mostrador), detalle de pedido, citas, fidelización |
 | `apps/web` — `<ImageUploader />` | ⬜ Pendiente | Necesita bucket real; las tablas de trajes/accesorios en admin siguen siendo de solo lectura |
 | `apps/web` — simulador 2D | ⛔ Fuera de alcance | Tarjeta «Próximamente» en `/personalizar`, según §13 |
-| Tests | ⬜ Pendiente | Falta cubrir `cartReducer`, `pricing` y el design system |
+| Tests | 🚧 En curso | `cartReducer` y `pricing` cubiertos (38 tests, Vitest). Falta el design system (RTL) |
 | `apps/api` · `db/` · Docker | ⛔ No iniciado | Fuera del alcance de la fase actual |
 
 Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera del alcance de la fase actual
@@ -88,10 +88,13 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 
 **Cerrar la fase de diseño:**
 
-1. Tests de Vitest sobre `cartReducer` y `calculateTotals` (lógica pura, alto valor) — sigue sin
-   haber ni un solo archivo `*.test.*`/`*.spec.*` en el repo pese a que Vitest y RTL ya están
-   instalados y configurados (`src/test/setup.ts`).
-2. Tests de RTL sobre `Button`, `OptionCard` y el flujo «añadir al carrito».
+1. ~~Tests de Vitest sobre `cartReducer` y `calculateTotals`~~ — hecho en la Sesión 4: 38 tests entre
+   `apps/web/src/features/cart/cartReducer.test.ts` y `pricing.test.ts` (fusión de líneas, tope de
+   `maxQuantity`, cupón y puntos topados correctamente, reparto a prorrata del anticipo entre a
+   medida y listo-para-llevar, fidelización apagada). `tsc` y `vitest run` en verde.
+2. Tests de RTL sobre `Button`, `OptionCard` y el flujo «añadir al carrito» — sigue pendiente; es el
+   primer archivo `*.test.*` que no es lógica pura, así que vale la pena revisar que el render con
+   `jsdom` funcione bien (tokens.css, temas) antes de escalarlo al resto del design system.
 3. ~~Repaso de accesibilidad con teclado en modal, drawer y stepper~~ — cerrado en la Sesión 4.
    `useFocusTrap` ya cubre `Modal`/`Drawer`/menú móvil del `Header`; el `Stepper` (indicador de
    progreso) no lo necesita: no es un diálogo, son `<button>` nativos. Pendiente real: pasar
@@ -160,7 +163,17 @@ checklists directamente en lugar de despacharlos como subagentes aislados.
   scrollear ella sola, causando scroll horizontal en las cinco pantallas de cuenta y en `/admin`.
   Arreglado con `min-width: 0` en `.sidebar` dentro de `apps/web/src/layouts/SidebarLayout.module.css`
   (`@media max-width: 1024px`). Verificado con Playwright en las 6 pantallas de `/mi-cuenta` y 4 de
-  `/admin`: `document.documentElement.scrollWidth` volvió a igualar el viewport en todas.
+  `/admin`: `document.documentElement.scrollWidth` volvió a igualar el viewport en todas. Un barrido
+  posterior del mismo patrón (contenedor flex/grid sin `min-width: 0` alrededor de un hijo con
+  `overflow-x: auto`) en el resto de `apps/web` no encontró más casos: las tablas de `/admin`, el
+  Kanban de `/admin/produccion` y las pestañas de categoría ponen el scroll directamente en el
+  elemento raíz del componente, no detrás de un envoltorio no-scrollable.
+- **Primeros tests del proyecto**: 38 tests de Vitest en `apps/web/src/features/cart/` —
+  `cartReducer.test.ts` (fusión de líneas por modelo/tela/opciones, tope de `maxQuantity`, quitar
+  cupón y puntos al vaciar el carrito, `REPLACE`/`CLEAR`) y `pricing.test.ts` (`priceMadeToMeasure`,
+  `calculateTotals`: reparto a prorrata del anticipo entre a medida y listo-para-llevar, tope del
+  descuento del cupón y de los puntos canjeados al subtotal, fidelización apagada). Hasta ahora el
+  repo no tenía ni un solo archivo `*.test.*` pese a tener Vitest y RTL configurados.
 
 **Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio tras cada tanda de cambios,
 y además — a diferencia de sesiones anteriores — un recorrido real en navegador con Playwright
@@ -170,6 +183,8 @@ recargar y al botón atrás) y `/admin/pedidos/nuevo` (el grid de dos columnas s
 móvil). Los cinco pasaron tras corregir el bug de `useFocusTrap` descrito arriba — que **no** se
 habría detectado solo con `tsc`. También se confirmó que `Modal` y el `Drawer` del carrito (que se
 montan ya visibles) no se vieron afectados por el cambio al hook compartido.
+También `npx vitest run` (38/38 verdes) y `npx eslint` sin errores sobre los dos archivos de test
+nuevos.
 **No verificado:** dispositivo móvil real (solo viewport emulado) y medición de contraste con
 axe/Lighthouse.
 
