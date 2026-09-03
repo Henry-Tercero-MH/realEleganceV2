@@ -56,7 +56,7 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 | `apps/web` — back-office `/admin` | ✅ Hecho | 13 pantallas: panel, trajes, telas, accesorios, cupones, clientes (+ficha), taller, pedidos, pedido nuevo (mostrador), detalle de pedido, citas, fidelización |
 | `apps/web` — `<ImageUploader />` | ⬜ Pendiente | Necesita bucket real; las tablas de trajes/accesorios en admin siguen siendo de solo lectura |
 | `apps/web` — simulador 2D | ⛔ Fuera de alcance | Tarjeta «Próximamente» en `/personalizar`, según §13 |
-| Tests | 🚧 En curso | `cartReducer` y `pricing` cubiertos (38 tests, Vitest). Falta el design system (RTL) |
+| Tests | 🚧 En curso | Lógica pura del carrito (38) + RTL de `Button`/`OptionCard`/flujo «añadir al carrito» (16) — 54 tests. Falta el resto del design system |
 | `apps/api` · `db/` · Docker | ⛔ No iniciado | Fuera del alcance de la fase actual |
 
 Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera del alcance de la fase actual
@@ -92,9 +92,16 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
    `apps/web/src/features/cart/cartReducer.test.ts` y `pricing.test.ts` (fusión de líneas, tope de
    `maxQuantity`, cupón y puntos topados correctamente, reparto a prorrata del anticipo entre a
    medida y listo-para-llevar, fidelización apagada). `tsc` y `vitest run` en verde.
-2. Tests de RTL sobre `Button`, `OptionCard` y el flujo «añadir al carrito» — sigue pendiente; es el
-   primer archivo `*.test.*` que no es lógica pura, así que vale la pena revisar que el render con
-   `jsdom` funcione bien (tokens.css, temas) antes de escalarlo al resto del design system.
+2. ~~Tests de RTL sobre `Button`, `OptionCard` y el flujo «añadir al carrito»~~ — hecho en la Sesión 4:
+   16 tests (`Button.test.tsx`, `OptionCard.test.tsx`, `context/CartContext.test.tsx` con un harness
+   mínimo sobre `CartProvider` real, sin montar una página entera). Dos gotchas de jsdom/RTL que
+   valen la pena si se sigue escalando al resto del design system: (1) `getByText` normaliza NBSP a
+   espacio normal pero no normaliza el string que le pasas — comparar precios formateados con
+   `Intl.NumberFormat` necesita una regex con `\s`, no el string exacto de `formatCurrency`; (2) el
+   `<input>` real de `OptionCard` tiene `pointer-events: none` (la tarjeta visible es el `<label>`),
+   así que `userEvent.click` debe apuntar al label/texto, no al radio, o revienta con «Unable to
+   perform pointer interaction». Sigue pendiente el resto del design system (`Card`, `Field`, `Modal`,
+   `Stepper`…).
 3. ~~Repaso de accesibilidad con teclado en modal, drawer y stepper~~ — cerrado en la Sesión 4.
    `useFocusTrap` ya cubre `Modal`/`Drawer`/menú móvil del `Header`; el `Stepper` (indicador de
    progreso) no lo necesita: no es un diálogo, son `<button>` nativos. Pendiente real: pasar
@@ -174,6 +181,14 @@ checklists directamente en lugar de despacharlos como subagentes aislados.
   `calculateTotals`: reparto a prorrata del anticipo entre a medida y listo-para-llevar, tope del
   descuento del cupón y de los puntos canjeados al subtotal, fidelización apagada). Hasta ahora el
   repo no tenía ni un solo archivo `*.test.*` pese a tener Vitest y RTL configurados.
+- **Primeros tests de RTL**: 16 tests más — `Button.test.tsx` (incluye `ButtonLink` con
+  `MemoryRouter`, y el nombre accesible «Procesando» que toma el botón mientras `isLoading` oculta
+  el texto con `visibility: hidden`), `OptionCard.test.tsx` (es un `<input type="radio">` real:
+  `name`/`value`/`checked`, `onChange`, `disabled`, las tres variantes de `priceDelta`) y
+  `context/CartContext.test.tsx` — el flujo «añadir al carrito» de verdad, con un harness mínimo
+  sobre `CartProvider` (sin montar página, router ni React Query): añadir suma a los totales y abre
+  el drawer, añadir dos veces fusiona la línea, y el carrito sobrevive a un remount vía
+  `localStorage`. 54/54 tests en verde, `tsc` y `eslint` limpios.
 
 **Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit` limpio tras cada tanda de cambios,
 y además — a diferencia de sesiones anteriores — un recorrido real en navegador con Playwright
