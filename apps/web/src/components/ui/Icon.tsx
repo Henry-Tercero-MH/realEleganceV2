@@ -144,6 +144,17 @@ const PATHS = {
       <circle cx="12" cy="9" r="2.3" />
     </>
   ),
+  wifiOff: (
+    <>
+      <path d="M8.5 14.5a5 5 0 0 1 7 0" />
+      <path d="M5.3 11.2a9.5 9.5 0 0 1 6.2-2.7" />
+      <path d="M16.2 10.4a9.5 9.5 0 0 1 2.5.8" />
+      <path d="M2.3 7.8a13.5 13.5 0 0 1 8-3.8" />
+      <path d="M19.2 6.3a13.5 13.5 0 0 1 2.5 1.5" />
+      <circle cx="12" cy="18" r="1" fill="currentColor" stroke="none" />
+      <path d="M3 3l18 18" />
+    </>
+  ),
   alert: (
     <>
       <path d="M12 3.5L22 20H2z" />

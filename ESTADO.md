@@ -196,6 +196,72 @@ renombrar un export con `sed` sobre los *usos*, tocar primero (o a la vez) la de
 **No verificado:** que Search Console termine aceptando el sitemap tras el reintento, y la URL real
 del horario virtual (sigue pendiente de que el usuario la cree y la pase).
 
+**Pulido de UX — barra de carga en vez de círculo**: `PageLoader.tsx` (el fallback de `<Suspense>`
+entre páginas, usado en `AppLayout`/`AccountLayout`/`AdminLayout`/`AuthLayout`) cambió el `Spinner`
+circular por una barra horizontal que se llena. Como no hay un porcentaje real (es la descarga de un
+chunk, no una subida medible), simula un "trickle" clásico: avanza rápido al principio y cada vez
+más despacio hacia 92 %, sin llegar nunca al 100 % — la página real la reemplaza antes de notarse el
+tope. Respeta `prefers-reduced-motion` (arranca directo en 92 %, sin el intervalo). El `Spinner`
+circular **no se tocó** en `Button.tsx` (loading de botones de formulario) — ese caso es distinto
+(indeterminado, espacio chico dentro de un botón) y hoy no es visible de todas formas porque las
+páginas con formularios siguen detrás de `SHOP_ENABLED`. Verificado en navegador real con la red
+estrangulada por CDP (Playwright) para poder ver la barra a medio llenar antes de que el chunk
+terminara de bajar.
+
+**"Sin conexión" — de aviso chico a pantalla completa**: el usuario preguntó si el sitio funcionaba
+sin internet — no, es una SPA normal sin ningún manejo de offline. Se le dieron tres niveles (aviso
+ligero / PWA instalable que funciona offline / ambos); eligió el ligero primero, pero en el siguiente
+mensaje pidió que en realidad ocupara toda la pantalla, no una barra. Quedó así:
+
+- `hooks/useOnlineStatus.ts` — mismo patrón `useSyncExternalStore` que `useMediaQuery`, escuchando
+  los eventos `online`/`offline` del navegador.
+- `components/OfflineScreen.tsx` (reemplaza al primer intento, `ConnectionBanner.tsx`, que se borró):
+  pantalla completa (`position: fixed; inset: 0`) que tapa **todo** el sitio —header, footer, todo—
+  mientras `navigator.onLine` sea `false`. Ícono nuevo `wifiOff` en `Icon.tsx` (señal de wifi
+  tachada). Sin botón de "reintentar": desaparece sola en cuanto `useOnlineStatus` detecta el evento
+  `online`, no hace falta simularlo.
+- Sigue sin intentar que el sitio sea navegable sin internet (eso sería el nivel "PWA completo", no
+  elegido) — solo dejarlo clarísimo cuando pasa, en vez de que algo falle en silencio.
+
+Verificado en navegador real alternando `context.setOffline(true/false)` con Playwright: aparece,
+desaparece, sin quedarse pegado.
+
+**De paso, un carrete de hilo roto para el 404**: al describir la idea de "sin conexión" el usuario
+pensó en un carrete con el hilo roto, pero decidió que encajaba mejor en el 404 ("esta página se
+descosió" — la copy ya usaba lenguaje de costura). `EmptyState.tsx` ganó una prop
+`illustration?: ReactNode` (si se pasa, reemplaza al `icon` chico y al círculo que lo envuelve) para
+poder usarla sin tocar las otras ~19 pantallas que ya usan `EmptyState` con `icon`; `NotFoundPage.tsx`
+la usa en vez de `icon="search"`. Tres versiones en la misma sesión:
+1. Ilustración SVG propia a mano (`components/SpoolBrokenThread.tsx`) — reemplazada enseguida.
+2. Una foto que el usuario generó/consiguió (`icono404.png`, 1536×1024, **RGB sin canal alfa** —
+   fondo negro pegado). En tema claro se habría visto como un rectángulo negro suelto, así que se
+   enmarcó en `.frame` con fondo fijo `var(--re-noir)` (el token crudo, no `--color-surface`, que
+   cambia con el tema) y borde/sombra dorada.
+3. **Versión final**: el usuario pasó otra imagen, `hilo404.png` (1774×887, **RGBA de verdad**, con
+   transparencia). Con canal alfa real no hace falta marco ni fondo propio — se ve bien tal cual
+   sobre el tema claro y el oscuro. Se simplificó `NotFoundPage.module.css` a un solo `.photo`
+   (`max-width: 320px`, sin fondo/borde) y se borraron `icono404.png` y `SpoolBrokenThread.tsx`, ya
+   sin uso.
+
+Verificado visualmente en navegador en tema claro y oscuro con la versión final.
+
+**Bug real: apagar el wifi no mostraba la pantalla de sin conexión.** El usuario lo probó en la
+práctica (no en Playwright) y nada pasaba. Causa: `navigator.onLine` y los eventos
+`online`/`offline` del navegador **no son confiables** — es un problema conocido, sobre todo en
+escritorio: reflejan si el adaptador de red sigue "activo" a ojos del sistema operativo, no si hay
+internet de verdad, y muchas veces ni siquiera se actualizan al apagar el wifi. Ahí es donde fallaba
+la primera versión de `useOnlineStatus.ts` (solo escuchaba esos eventos).
+
+Se reescribió para comprobar la conexión de verdad: cada 6s (si está en línea) o cada 3s (si se cree
+sin conexión), hace `fetch('/', { method: 'HEAD', cache: 'no-store' })` con un timeout de 4s — si el
+navegador no puede completar esa petición, no hay internet, sin importar lo que diga
+`navigator.onLine`. Los eventos del navegador se siguen escuchando (cuando sí disparan, como en modo
+avión de un celular, reacciona al instante en vez de esperar al siguiente ciclo), pero ya no son la
+única señal. Verificado reproduciendo el bug real: se bloquearon las peticiones de red con Playwright
+**sin** usar `context.setOffline` (que sí dispara el evento `offline` y habría ocultado el problema)
+— con las peticiones fallando de verdad pero sin el evento, la pantalla de sin conexión igual
+apareció a los ~8s, y desapareció al restaurar la red.
+
 ---
 
 ### Sesión 6 — 2026-09-29

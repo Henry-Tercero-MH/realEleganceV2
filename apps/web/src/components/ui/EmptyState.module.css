@@ -41,6 +41,14 @@
   color: var(--color-danger);
 }
 
+/* Una ilustración grande (p. ej. el carrete del 404) no lleva el círculo de
+   los iconos chicos — solo se centra, con su propio tamaño. */
+.illustrationWrap {
+  display: grid;
+  place-items: center;
+  color: var(--color-primary);
+}
+
 .title {
   font-family: var(--font-display);
   font-size: var(--text-xl);

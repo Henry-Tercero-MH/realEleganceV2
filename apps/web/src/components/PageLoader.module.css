@@ -5,7 +5,21 @@
   justify-content: center;
   gap: var(--space-4);
   min-height: 60dvh;
-  color: var(--color-primary);
+}
+
+.track {
+  width: 220px;
+  height: 3px;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-border);
+  overflow: hidden;
+}
+
+.fill {
+  height: 100%;
+  border-radius: var(--radius-pill);
+  background-color: var(--color-primary);
+  transition: width var(--duration-base) var(--ease-out);
 }
 
 .text {

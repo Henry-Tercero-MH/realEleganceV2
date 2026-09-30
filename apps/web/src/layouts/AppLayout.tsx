@@ -6,6 +6,7 @@ import { CartDrawer } from '@/features/cart/CartDrawer';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PageLoader } from '@/components/PageLoader';
 import { FloatingSocial } from '@/components/FloatingSocial';
+import { OfflineScreen } from '@/components/OfflineScreen';
 import s from './AppLayout.module.css';
 
 /**
@@ -23,6 +24,8 @@ export function AppLayout() {
 
   return (
     <div className={s.shell}>
+      <OfflineScreen />
+
       <a className="re-skip-link" href="#contenido">
         Saltar al contenido
       </a>

@@ -1,0 +1,10 @@
+/* Transparente de verdad (RGBA): a diferencia de la foto anterior, no
+   necesita marco ni fondo propio — se apoya igual de bien sobre el tema
+   claro que el oscuro. */
+.photo {
+  display: block;
+  width: 100%;
+  max-width: 320px;
+  height: auto;
+  margin-inline: auto;
+}

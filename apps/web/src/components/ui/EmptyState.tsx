@@ -6,6 +6,8 @@ import s from './EmptyState.module.css';
 
 export interface EmptyStateProps {
   icon?: IconName;
+  /** Gráfico propio más grande que un `Icon` (p. ej. el carrete del 404); si se pasa, reemplaza al `icon`. */
+  illustration?: ReactNode;
   title: string;
   /** Copy útil, no un «no hay datos»: di qué puede hacer la persona ahora. */
   description?: ReactNode;
@@ -23,6 +25,7 @@ export interface EmptyStateProps {
  */
 export function EmptyState({
   icon = 'hanger',
+  illustration,
   title,
   description,
   action,
@@ -35,8 +38,8 @@ export function EmptyState({
       className={cx(s.empty, s[tone], s[size], className)}
       role={tone === 'error' ? 'alert' : undefined}
     >
-      <span className={s.iconWrap}>
-        <Icon name={tone === 'error' ? 'alert' : icon} size={size === 'sm' ? 22 : 28} />
+      <span className={illustration ? s.illustrationWrap : s.iconWrap}>
+        {illustration ?? <Icon name={tone === 'error' ? 'alert' : icon} size={size === 'sm' ? 22 : 28} />}
       </span>
       <h3 className={s.title}>{title}</h3>
       {description ? <p className={s.description}>{description}</p> : null}
