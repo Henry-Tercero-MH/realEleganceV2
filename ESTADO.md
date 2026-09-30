@@ -262,6 +262,32 @@ avión de un celular, reacciona al instante en vez de esperar al siguiente ciclo
 — con las peticiones fallando de verdad pero sin el evento, la pantalla de sin conexión igual
 apareció a los ~8s, y desapareció al restaurar la red.
 
+**🔴 Bug de producción encontrado: cualquier página interior daba 404 de Vercel, no la nuestra.** El
+usuario mandó una captura del 404 genérico de Vercel ("This page doesn't exist" / `404 NOT_FOUND`).
+Se confirmó con `WebFetch` contra `https://realelegancegt.com/telas` (una ruta real, no un typo):
+**HTTP 404 de verdad**, la app de React nunca llega a cargar. Causa raíz: es una SPA con
+`createBrowserRouter` (rutas reales tipo `/telas`, no hash-routing); sin una regla de *rewrite* en
+el hosting, Vercel busca un archivo literal en esa ruta, no lo encuentra, y sirve su propio 404
+**sin pasarle la petición a `index.html`** — React Router nunca llega a decidir nada, así que ni
+nuestro `NotFoundPage` ni ninguna otra página interior cargan si se entra por URL directa (enlace
+compartido, marcador, o simplemente refrescar en `/telas`, `/accesorios`, `/el-taller`, etc.).
+
+El usuario no recordaba qué "Root Directory" tiene configurado el proyecto en Vercel (`apps/web` vs.
+la raíz del monorepo), y como el sitio ya está desplegado y sirviendo `/` y `/sitemap.xml`
+correctamente, **no se tocó nada del build** (arriesgar `buildCommand`/`outputDirectory` a ciegas
+podría romper un despliegue que ya funciona). Se agregó un `vercel.json` mínimo — solo la regla de
+*rewrite*, nada de build — en **los dos sitios posibles**: `/vercel.json` (raíz del repo) y
+`/apps/web/vercel.json`. Solo uno de los dos es el que Vercel realmente lee según su Root Directory;
+el otro queda inerte y no estorba. Contenido de ambos:
+```json
+{ "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }] }
+```
+**Pendiente de verdad**: esto no toma efecto hasta que el usuario lo despliegue (commit + push, o
+como sea su flujo con Vercel). Después de ese despliegue, volver a probar
+`https://realelegancegt.com/telas` — si sigue dando 404 de Vercel, hay que revisar a mano el Root
+Directory real en el dashboard de Vercel (Project Settings → General) para saber cuál de los dos
+`vercel.json` hay que editar o si hace falta otro ajuste.
+
 ---
 
 ### Sesión 6 — 2026-09-29
