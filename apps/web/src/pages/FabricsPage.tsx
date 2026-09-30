@@ -3,7 +3,7 @@ import { ButtonLink, EmptyState, Icon, SectionHeading, Skeleton, Tabs } from '@/
 import { FabricCard } from '@/features/catalog/ProductCards';
 import { useFabricCategories, useFabrics } from '@/features/catalog/hooks';
 import { paths } from '@/routes/paths';
-import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
+import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 
@@ -40,7 +40,7 @@ export default function FabricsPage() {
         description="Lanas frías para el trópico, linos irlandeses y tweeds tejidos en telar. Todas se pueden ver y tocar en el taller antes de decidir."
         action={
           <ButtonLink
-            to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
+            to={SHOP_ENABLED ? paths.bookAppointment : APPOINTMENT_IN_PERSON_URL}
             external={!SHOP_ENABLED}
             variant="secondary"
             leftIcon={<Icon name="calendar" size={16} />}

@@ -5,12 +5,15 @@
 
 **Fase actual:** 🎨 Diseño de frontend (con datos simulados, sin backend)
 
-**⚠️ Lanzamiento parcial en curso (2026-09-29):** el sitio se publica primero **solo informativo**.
-`apps/web/src/config/features.ts` tiene `SHOP_ENABLED = false`: carrito, checkout, `/mi-cuenta`,
-`/admin`, `/entrar`/`/crear-cuenta` y `/seguimiento` están **deliberadamente** ocultos de la
+**⚠️ Lanzamiento parcial en curso, ya desplegado en `realelegancegt.com` (desde 2026-09-29):** el
+sitio se publica primero **solo informativo**. `apps/web/src/config/features.ts` tiene
+`SHOP_ENABLED = false`: carrito, checkout, `/mi-cuenta`, `/admin`, `/entrar`/`/crear-cuenta`,
+`/seguimiento` y el catálogo de trajes (`/catalogo`) están **deliberadamente** ocultos de la
 navegación y bloqueados por ruta (redirigen a inicio). No es un bug ni algo a revertir — es la
-decisión vigente hasta que exista `apps/api`. Ver Sesión 6 para el detalle completo antes de tocar
-routing, `Header`/`Footer`, o cualquier CTA de "agendar cita"/"personalizar".
+decisión vigente hasta que exista `apps/api`. "Agendar cita/visita/consulta" abre un horario de
+**Google Calendar** (`APPOINTMENT_SCHEDULING_URL`), no WhatsApp — eso quedó solo para preguntas
+generales. Ver Sesiones 6 y 7 para el detalle completo antes de tocar routing, `Header`/`Footer`,
+o cualquier CTA de "agendar cita"/"personalizar".
 
 ---
 
@@ -47,7 +50,7 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 
 | Módulo | Estado | Notas |
 |---|---|---|
-| `apps/web` — fase solo informativa | ✅ Hecho | `config/features.ts` (`SHOP_ENABLED = false`) oculta compra/cuenta/admin/seguimiento/catálogo de trajes; "agendar cita" va por WhatsApp real (`+502 3074-5202`); contacto y redes reales en `Footer` + widget flotante `FloatingSocial`. Falta solo volver `true` cuando exista `apps/api` |
+| `apps/web` — fase solo informativa | 🚧 En curso | `config/features.ts` (`SHOP_ENABLED = false`) oculta compra/cuenta/admin/seguimiento/catálogo de trajes; "agendar cita" va a Google Calendar, WhatsApp (`+502 3074-5202`) queda para preguntas; contacto y redes reales en `Footer` + widget flotante `FloatingSocial`. Sitio ya desplegado en `realelegancegt.com`. Falta: `APPOINTMENT_VIRTUAL_URL` sigue apuntando al horario presencial (placeholder) hasta que el usuario cree el horario virtual con Meet en Google Calendar |
 | Raíz del monorepo | ✅ Hecho | npm workspaces, tsconfig base, ESLint 9 flat, Prettier, `.env.example` |
 | `packages/shared` — constantes y tipos | ✅ Hecho | Catálogos cerrados del dominio + DTOs de toda la API |
 | `packages/shared` — `tokens.css` | ✅ Hecho | Paleta §3 + escala, motivo de sastre y tema claro «lino» |
@@ -135,6 +138,65 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 ---
 
 ## Bitácora
+
+### Sesión 7 — 2026-09-30
+
+**Objetivo:** dos cosas del lanzamiento real (no de código per se, pero que sí tocaron código):
+configurar Google Search Console para `realelegancegt.com`, e integrar un horario de citas de
+Google Calendar para reemplazar el "agenda por WhatsApp y ya veremos hora" de la Sesión 6.
+
+**Hecho:**
+
+- **Google Search Console**: el usuario verificó el dominio por DNS (registro TXT) en vez de por
+  etiqueta HTML — esa parte no toca el repo. Al enviar `sitemap.xml` dio "No se ha podido obtener";
+  se verificó con `WebFetch` que tanto `/` como `/sitemap.xml` sí responden bien en
+  `realelegancegt.com` (el sitio **ya está desplegado**), así que el error fue casi seguro un tema
+  de tiempo (DNS recién propagado) — se le indicó reintentar el envío. De paso: como es una SPA de
+  React sin SSR/prerender, el HTML crudo que ve un fetcher sin JS está casi vacío (`<div id="root">`);
+  Google sí ejecuta JS para indexar pero más lento que un sitio estático — anotado como algo a
+  vigilar si la indexación tarda mucho, no como bug.
+- **Horario de citas de Google Calendar** (Google Calendar Appointment Schedules — la persona elige
+  día/hora ella misma, virtual o presencial): `APPOINTMENT_SCHEDULING_URL` nuevo en
+  `config/features.ts` (URL que dio el usuario, limpiada de un `fbclid` de rastreo de Meta que
+  traía). **Decisión del usuario** (preguntada explícitamente): Calendar **reemplaza** a WhatsApp en
+  todos los botones de "Agendar cita/visita/consulta" — `Header.tsx` (escritorio y menú móvil,
+  antes decía "Agendar por WhatsApp"), `HomePage.tsx` (hero y CTA final), `Footer.tsx`,
+  `FabricsPage.tsx` ("Ver el muestrario en persona"), `AboutPage.tsx` ("Agendar una visita") y
+  `CatalogPage.tsx` ("Agendar una consulta", aunque hoy está detrás de `/catalogo`, que sigue
+  oculto). WhatsApp no desapareció: se dejó como canal para preguntas generales — nuevo enlace
+  "Escríbenos por WhatsApp" en el `Footer` (mensaje genérico, no el de "agendar cita" de antes), y
+  `SuitDetailPage.tsx` ("Cotizar este traje por WhatsApp") se dejó igual a propósito, porque es una
+  consulta sobre un modelo, no agendar una hora.
+
+**Verificado:** `tsc`, `eslint` y `vitest` (54/54) limpios. En navegador real (Playwright) en `/`,
+`/telas` y `/el-taller`: todos los botones "Agendar…" apuntan a la URL limpia de Google Calendar
+(sin `fbclid`); el único `wa.me` que queda es "Escríbenos por WhatsApp" con el mensaje genérico. Con
+`WebFetch` se confirmó que el sitio en `realelegancegt.com` está desplegado y sirviendo el `index.html`
+y el `sitemap.xml` actuales.
+
+**Corrección sobre la marcha — "Agendar una cita" repetido, y virtual vs. presencial**: el usuario
+señaló que el botón se repetía igual en todos lados y que el hero de inicio debía ofrecer **dos
+horarios distintos** de Google Calendar — presencial y virtual (este último con videollamada de
+Meet generada automáticamente, que se configura en el propio horario de Google Calendar, no aquí).
+Un solo horario de Calendar no puede ofrecer ambas modalidades a la vez; hacen falta dos horarios
+(dos URLs) distintos. Se renombró `APPOINTMENT_SCHEDULING_URL` → `APPOINTMENT_IN_PERSON_URL` y se
+agregó `APPOINTMENT_VIRTUAL_URL` en `config/features.ts` (por ahora apunta al mismo horario
+presencial como placeholder — **el usuario todavía tiene que crear el horario virtual en Google
+Calendar con Meet activado y pasar esa URL**; buscar `APPOINTMENT_VIRTUAL_URL` cuando la tenga). Se
+agregaron los íconos `video` y `mapPin` a `Icon.tsx` (no existían). Solo el **hero de inicio**
+cambió a dos botones — "Cita presencial" / "Cita virtual" — porque fue lo único que pidió el
+usuario; Header, CTA final de Home, Footer, Telas y El taller se quedaron con un solo botón
+genérico apuntando a `APPOINTMENT_IN_PERSON_URL`, sin tocar.
+**Al corregir esto se rompió el build una vez**: se renombraron los usos en cada archivo (`sed`)
+antes de renombrar el `export const` real en `config/features.ts`, así que el módulo no exportaba
+`APPOINTMENT_IN_PERSON_URL` todavía — el usuario lo vio como un `SyntaxError` en consola del
+navegador y lo reportó; se corrigió en el siguiente turno y se verificó `tsc` limpio. Lección: al
+renombrar un export con `sed` sobre los *usos*, tocar primero (o a la vez) la declaración real.
+
+**No verificado:** que Search Console termine aceptando el sitemap tras el reintento, y la URL real
+del horario virtual (sigue pendiente de que el usuario la cree y la pase).
+
+---
 
 ### Sesión 6 — 2026-09-29
 

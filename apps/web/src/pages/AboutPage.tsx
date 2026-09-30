@@ -1,6 +1,6 @@
 import { ButtonLink, Card, Icon, SectionHeading } from '@/components/ui';
 import { paths } from '@/routes/paths';
-import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
+import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './AboutPage.module.css';
@@ -93,7 +93,7 @@ export default function AboutPage() {
           </p>
         </div>
         <ButtonLink
-          to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
+          to={SHOP_ENABLED ? paths.bookAppointment : APPOINTMENT_IN_PERSON_URL}
           external={!SHOP_ENABLED}
           variant="primary"
           size="lg"

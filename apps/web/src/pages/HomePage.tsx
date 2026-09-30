@@ -9,7 +9,7 @@ import {
 import { SuitCard } from '@/features/catalog/ProductCards';
 import { useSuits } from '@/features/catalog/hooks';
 import { paths } from '@/routes/paths';
-import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
+import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL, APPOINTMENT_VIRTUAL_URL } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './HomePage.module.css';
@@ -87,7 +87,7 @@ export default function HomePage() {
             <p className={s.heroText}>
               {SHOP_ENABLED
                 ? 'Elige el modelo, la tela y cada detalle. Nosotros lo cortamos a mano sobre tus medidas y tú sigues en línea cómo avanza, puntada a puntada.'
-                : 'Elegimos juntos el modelo, la tela y cada detalle, y lo cortamos a mano sobre tus medidas. Escríbenos por WhatsApp para empezar.'}
+                : 'Elegimos juntos el modelo, la tela y cada detalle, y lo cortamos a mano sobre tus medidas. Agenda tu cita, presencial o por videollamada.'}
             </p>
 
             <div className={s.heroActions}>
@@ -102,14 +102,25 @@ export default function HomePage() {
                 </ButtonLink>
               ) : null}
               <ButtonLink
-                to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
+                to={SHOP_ENABLED ? paths.bookAppointment : APPOINTMENT_IN_PERSON_URL}
                 external={!SHOP_ENABLED}
                 variant={SHOP_ENABLED ? 'secondary' : 'primary'}
                 size="lg"
-                leftIcon={<Icon name="calendar" size={17} />}
+                leftIcon={<Icon name="mapPin" size={17} />}
               >
-                Agendar una cita
+                Cita presencial
               </ButtonLink>
+              {SHOP_ENABLED ? null : (
+                <ButtonLink
+                  to={APPOINTMENT_VIRTUAL_URL}
+                  external
+                  variant="secondary"
+                  size="lg"
+                  leftIcon={<Icon name="video" size={17} />}
+                >
+                  Cita virtual
+                </ButtonLink>
+              )}
             </div>
           </div>
 
@@ -270,17 +281,18 @@ export default function HomePage() {
             <div>
               <h2 className={s.ctaTitle}>¿Listo para tu próximo traje?</h2>
               <p className={s.ctaText}>
-                Escríbenos por WhatsApp y agenda tu cita en el taller — sin trámites, sin cuenta.
+                Elige día y hora para tu cita en el taller — virtual o presencial, sin trámites, sin
+                cuenta.
               </p>
             </div>
             <ButtonLink
-              to={getWhatsAppUrl()}
+              to={APPOINTMENT_IN_PERSON_URL}
               external
               variant="primary"
               size="lg"
               leftIcon={<Icon name="calendar" size={17} />}
             >
-              Agendar por WhatsApp
+              Agendar una cita
             </ButtonLink>
           </div>
         )}

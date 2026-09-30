@@ -8,7 +8,7 @@ import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
-import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
+import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL } from '@/config/features';
 import { cx } from '@/lib/cx';
 import s from './Header.module.css';
 
@@ -133,13 +133,13 @@ export function Header() {
               )
             ) : (
               <ButtonLink
-                to={getWhatsAppUrl()}
+                to={APPOINTMENT_IN_PERSON_URL}
                 external
                 variant="primary"
                 size="md"
-                leftIcon={<Icon name="phone" size={16} />}
+                leftIcon={<Icon name="calendar" size={16} />}
               >
-                Agendar por WhatsApp
+                Agendar una cita
               </ButtonLink>
             )}
           </div>
@@ -175,14 +175,14 @@ export function Header() {
             </>
           ) : (
             <ButtonLink
-              to={getWhatsAppUrl()}
+              to={APPOINTMENT_IN_PERSON_URL}
               external
               variant="primary"
               size="md"
               className={s.desktopOnly}
-              leftIcon={<Icon name="phone" size={16} />}
+              leftIcon={<Icon name="calendar" size={16} />}
             >
-              Agendar por WhatsApp
+              Agendar una cita
             </ButtonLink>
           )}
 

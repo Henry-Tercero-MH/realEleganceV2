@@ -4,6 +4,7 @@ import { Icon } from '@/components/ui';
 import { paths } from '@/routes/paths';
 import {
   SHOP_ENABLED,
+  APPOINTMENT_IN_PERSON_URL,
   getWhatsAppUrl,
   CONTACT_EMAIL,
   CONTACT_PHONE_DISPLAY,
@@ -12,10 +13,10 @@ import {
 import s from './Footer.module.css';
 
 /*
- * Fase solo informativa: "Agendar una cita" pasa a ser un enlace externo de
- * WhatsApp (el flujo interno vive detrás de una cuenta), y se quitan las
- * columnas/enlaces que dependen del carrito, la cuenta o la sesión. Ver
- * config/features.ts.
+ * Fase solo informativa: "Agendar una cita" pasa a ser un enlace externo al
+ * horario de Google Calendar (el flujo interno vive detrás de una cuenta), y
+ * se quitan las columnas/enlaces que dependen del carrito, la cuenta o la
+ * sesión. Ver config/features.ts.
  */
 const COLUMNS = SHOP_ENABLED
   ? [
@@ -80,9 +81,18 @@ export function Footer() {
               <Icon name="info" size={15} /> {CONTACT_EMAIL}
             </a>
             {SHOP_ENABLED ? null : (
-              <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer noopener">
-                <Icon name="phone" size={15} /> Agendar una cita por WhatsApp
-              </a>
+              <>
+                <a href={APPOINTMENT_IN_PERSON_URL} target="_blank" rel="noreferrer noopener">
+                  <Icon name="calendar" size={15} /> Agendar una cita
+                </a>
+                <a
+                  href={getWhatsAppUrl('Hola, tengo una pregunta para Real Elegance.')}
+                  target="_blank"
+                  rel="noreferrer noopener"
+                >
+                  <Icon name="phone" size={15} /> Escríbenos por WhatsApp
+                </a>
+              </>
             )}
           </address>
         </div>
