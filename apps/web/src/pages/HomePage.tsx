@@ -1,4 +1,3 @@
-import { Link } from 'react-router-dom';
 import {
   ButtonLink,
   Icon,
@@ -10,6 +9,7 @@ import {
 import { SuitCard } from '@/features/catalog/ProductCards';
 import { useSuits } from '@/features/catalog/hooks';
 import { paths } from '@/routes/paths';
+import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './HomePage.module.css';
@@ -99,7 +99,8 @@ export default function HomePage() {
                 Diseñar mi traje
               </ButtonLink>
               <ButtonLink
-                to={paths.bookAppointment}
+                to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
+                external={!SHOP_ENABLED}
                 variant="secondary"
                 size="lg"
                 leftIcon={<Icon name="calendar" size={17} />}
@@ -243,25 +244,38 @@ export default function HomePage() {
 
       {/* ── Llamada final ────────────────────────────────────────────────── */}
       <section className={cx('re-container', l.section)}>
-        <div className={s.cta}>
-          <div>
-            <h2 className={s.ctaTitle}>¿Ya tienes un pedido en marcha?</h2>
-            <p className={s.ctaText}>
-              Consulta el avance de tu traje con el número que te dimos al confirmarlo. No hace
-              falta iniciar sesión.
-            </p>
+        {SHOP_ENABLED ? (
+          <div className={s.cta}>
+            <div>
+              <h2 className={s.ctaTitle}>¿Ya tienes un pedido en marcha?</h2>
+              <p className={s.ctaText}>
+                Consulta el avance de tu traje con el número que te dimos al confirmarlo. No hace
+                falta iniciar sesión.
+              </p>
+            </div>
+            <ButtonLink to={paths.tracking} variant="primary" size="lg">
+              Ver el seguimiento
+            </ButtonLink>
           </div>
-          <ButtonLink to={paths.tracking} variant="primary" size="lg">
-            Ver el seguimiento
-          </ButtonLink>
-        </div>
-
-        <p className={s.demoNote}>
-          <Icon name="info" size={15} />
-          Versión de diseño con datos de demostración.{' '}
-          <Link to={paths.login}>Entra con las cuentas de prueba</Link> para ver el área de cliente y
-          el back-office.
-        </p>
+        ) : (
+          <div className={s.cta}>
+            <div>
+              <h2 className={s.ctaTitle}>¿Listo para tu próximo traje?</h2>
+              <p className={s.ctaText}>
+                Escríbenos por WhatsApp y agenda tu cita en el taller — sin trámites, sin cuenta.
+              </p>
+            </div>
+            <ButtonLink
+              to={getWhatsAppUrl()}
+              external
+              variant="primary"
+              size="lg"
+              leftIcon={<Icon name="calendar" size={17} />}
+            >
+              Agendar por WhatsApp
+            </ButtonLink>
+          </div>
+        )}
       </section>
     </>
   );

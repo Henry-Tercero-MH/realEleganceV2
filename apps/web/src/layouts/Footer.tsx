@@ -2,36 +2,58 @@ import { Link } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import { Icon } from '@/components/ui';
 import { paths } from '@/routes/paths';
+import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
 import s from './Footer.module.css';
 
-const COLUMNS = [
-  {
-    title: 'Tienda',
-    links: [
-      { to: paths.catalog, label: 'Catálogo de trajes' },
-      { to: paths.fabrics, label: 'Muestrario de telas' },
-      { to: paths.accessories, label: 'Accesorios' },
-      { to: paths.bookAppointment, label: 'Agendar una cita' },
-    ],
-  },
-  {
-    title: 'Tu pedido',
-    links: [
-      { to: paths.tracking, label: 'Seguimiento en línea' },
-      { to: paths.orders, label: 'Mis pedidos' },
-      { to: paths.measurements, label: 'Mis medidas' },
-      { to: paths.cart, label: 'Carrito' },
-    ],
-  },
-  {
-    title: 'La casa',
-    links: [
-      { to: paths.about, label: 'El taller' },
-      { to: paths.login, label: 'Entrar' },
-      { to: paths.register, label: 'Crear cuenta' },
-    ],
-  },
-];
+/*
+ * Fase solo informativa: "Agendar una cita" pasa a ser un enlace externo de
+ * WhatsApp (el flujo interno vive detrás de una cuenta), y se quitan las
+ * columnas/enlaces que dependen del carrito, la cuenta o la sesión. Ver
+ * config/features.ts.
+ */
+const COLUMNS = SHOP_ENABLED
+  ? [
+      {
+        title: 'Tienda',
+        links: [
+          { to: paths.catalog, label: 'Catálogo de trajes' },
+          { to: paths.fabrics, label: 'Muestrario de telas' },
+          { to: paths.accessories, label: 'Accesorios' },
+          { to: paths.bookAppointment, label: 'Agendar una cita' },
+        ],
+      },
+      {
+        title: 'Tu pedido',
+        links: [
+          { to: paths.tracking, label: 'Seguimiento en línea' },
+          { to: paths.orders, label: 'Mis pedidos' },
+          { to: paths.measurements, label: 'Mis medidas' },
+          { to: paths.cart, label: 'Carrito' },
+        ],
+      },
+      {
+        title: 'La casa',
+        links: [
+          { to: paths.about, label: 'El taller' },
+          { to: paths.login, label: 'Entrar' },
+          { to: paths.register, label: 'Crear cuenta' },
+        ],
+      },
+    ]
+  : [
+      {
+        title: 'Tienda',
+        links: [
+          { to: paths.catalog, label: 'Catálogo de trajes' },
+          { to: paths.fabrics, label: 'Muestrario de telas' },
+          { to: paths.accessories, label: 'Accesorios' },
+        ],
+      },
+      {
+        title: 'La casa',
+        links: [{ to: paths.about, label: 'El taller' }],
+      },
+    ];
 
 export function Footer() {
   return (
@@ -52,6 +74,11 @@ export function Footer() {
             <a href="mailto:contacto@realelegance.com">
               <Icon name="info" size={15} /> contacto@realelegance.com
             </a>
+            {SHOP_ENABLED ? null : (
+              <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer noopener">
+                <Icon name="phone" size={15} /> Agendar una cita por WhatsApp
+              </a>
+            )}
           </address>
         </div>
 

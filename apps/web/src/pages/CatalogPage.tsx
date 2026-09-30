@@ -14,6 +14,7 @@ import { SuitCard } from '@/features/catalog/ProductCards';
 import { useSuitStyles, useSuits } from '@/features/catalog/hooks';
 import { useDebounce } from '@/hooks/useDebounce';
 import { paths } from '@/routes/paths';
+import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './CatalogPage.module.css';
@@ -143,7 +144,11 @@ export default function CatalogPage() {
           title="Ningún modelo coincide"
           description="Prueba con otro estilo o borra los filtros. Si buscas algo que no está en el catálogo, podemos cortarlo igualmente: escríbenos."
           action={
-            <ButtonLink to={paths.bookAppointment} variant="secondary">
+            <ButtonLink
+              to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
+              external={!SHOP_ENABLED}
+              variant="secondary"
+            >
               Agendar una consulta
             </ButtonLink>
           }

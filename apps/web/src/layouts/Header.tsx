@@ -8,18 +8,31 @@ import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/context/ThemeContext';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
+import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
 import { cx } from '@/lib/cx';
 import s from './Header.module.css';
 
 const MOBILE_NAV_ID = 'site-nav';
 
-const NAV_LINKS = [
-  { to: paths.catalog, label: 'Trajes' },
-  { to: paths.fabrics, label: 'Telas' },
-  { to: paths.accessories, label: 'Accesorios' },
-  { to: paths.tracking, label: 'Seguimiento' },
-  { to: paths.about, label: 'El taller' },
-];
+/*
+ * Fase solo informativa: sin "Seguimiento" (necesita un pedido real) y sin
+ * los enlaces de carrito/cuenta/sesión del bloque de abajo. Ver
+ * config/features.ts — SHOP_ENABLED trae todo esto de vuelta.
+ */
+const NAV_LINKS = SHOP_ENABLED
+  ? [
+      { to: paths.catalog, label: 'Trajes' },
+      { to: paths.fabrics, label: 'Telas' },
+      { to: paths.accessories, label: 'Accesorios' },
+      { to: paths.tracking, label: 'Seguimiento' },
+      { to: paths.about, label: 'El taller' },
+    ]
+  : [
+      { to: paths.catalog, label: 'Trajes' },
+      { to: paths.fabrics, label: 'Telas' },
+      { to: paths.accessories, label: 'Accesorios' },
+      { to: paths.about, label: 'El taller' },
+    ];
 
 export function Header() {
   const { isAuthenticated, user, hasRole, logout } = useAuth();
@@ -93,29 +106,41 @@ export function Header() {
 
           {/* En móvil el menú también contiene las acciones de cuenta. */}
           <div className={s.navFooter}>
-            {isAuthenticated ? (
-              <>
-                <NavLink to={paths.account} className={s.navLink}>
-                  Mi cuenta
-                </NavLink>
-                {hasRole('admin', 'staff', 'tailor') ? (
-                  <NavLink to={paths.admin} className={s.navLink}>
-                    Back-office
+            {SHOP_ENABLED ? (
+              isAuthenticated ? (
+                <>
+                  <NavLink to={paths.account} className={s.navLink}>
+                    Mi cuenta
                   </NavLink>
-                ) : null}
-                <Button variant="link" onClick={logout}>
-                  Cerrar sesión
-                </Button>
-              </>
+                  {hasRole('admin', 'staff', 'tailor') ? (
+                    <NavLink to={paths.admin} className={s.navLink}>
+                      Back-office
+                    </NavLink>
+                  ) : null}
+                  <Button variant="link" onClick={logout}>
+                    Cerrar sesión
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <NavLink to={paths.login} className={s.navLink}>
+                    Entrar
+                  </NavLink>
+                  <ButtonLink to={paths.register} variant="primary" size="md">
+                    Crear cuenta
+                  </ButtonLink>
+                </>
+              )
             ) : (
-              <>
-                <NavLink to={paths.login} className={s.navLink}>
-                  Entrar
-                </NavLink>
-                <ButtonLink to={paths.register} variant="primary" size="md">
-                  Crear cuenta
-                </ButtonLink>
-              </>
+              <ButtonLink
+                to={getWhatsAppUrl()}
+                external
+                variant="primary"
+                size="md"
+                leftIcon={<Icon name="phone" size={16} />}
+              >
+                Agendar por WhatsApp
+              </ButtonLink>
             )}
           </div>
         </nav>
@@ -127,24 +152,39 @@ export function Header() {
             onClick={toggleTheme}
           />
 
-          {/* Navega, luego es un enlace — no un botón con `onClick`. */}
-          {isAuthenticated ? (
-            <Link
-              to={paths.account}
-              className={cx(s.iconLink, s.desktopOnly)}
-              aria-label={`Mi cuenta — ${user?.firstName ?? ''}`}
-              title="Mi cuenta"
-            >
-              <Icon name="user" size={19} />
-            </Link>
-          ) : null}
+          {SHOP_ENABLED ? (
+            <>
+              {/* Navega, luego es un enlace — no un botón con `onClick`. */}
+              {isAuthenticated ? (
+                <Link
+                  to={paths.account}
+                  className={cx(s.iconLink, s.desktopOnly)}
+                  aria-label={`Mi cuenta — ${user?.firstName ?? ''}`}
+                  title="Mi cuenta"
+                >
+                  <Icon name="user" size={19} />
+                </Link>
+              ) : null}
 
-          <IconButton
-            label={`Carrito — ${totals.itemCount} ${totals.itemCount === 1 ? 'artículo' : 'artículos'}`}
-            icon={<Icon name="cart" size={19} />}
-            badge={totals.itemCount}
-            onClick={openDrawer}
-          />
+              <IconButton
+                label={`Carrito — ${totals.itemCount} ${totals.itemCount === 1 ? 'artículo' : 'artículos'}`}
+                icon={<Icon name="cart" size={19} />}
+                badge={totals.itemCount}
+                onClick={openDrawer}
+              />
+            </>
+          ) : (
+            <ButtonLink
+              to={getWhatsAppUrl()}
+              external
+              variant="primary"
+              size="md"
+              className={s.desktopOnly}
+              leftIcon={<Icon name="phone" size={16} />}
+            >
+              Agendar por WhatsApp
+            </ButtonLink>
+          )}
 
           <IconButton
             label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}

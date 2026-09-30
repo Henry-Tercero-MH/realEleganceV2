@@ -5,6 +5,13 @@
 
 **Fase actual:** 🎨 Diseño de frontend (con datos simulados, sin backend)
 
+**⚠️ Lanzamiento parcial en curso (2026-09-29):** el sitio se publica primero **solo informativo**.
+`apps/web/src/config/features.ts` tiene `SHOP_ENABLED = false`: carrito, checkout, `/mi-cuenta`,
+`/admin`, `/entrar`/`/crear-cuenta` y `/seguimiento` están **deliberadamente** ocultos de la
+navegación y bloqueados por ruta (redirigen a inicio). No es un bug ni algo a revertir — es la
+decisión vigente hasta que exista `apps/api`. Ver Sesión 6 para el detalle completo antes de tocar
+routing, `Header`/`Footer`, o cualquier CTA de "agendar cita"/"personalizar".
+
 ---
 
 ## Cómo usar este archivo
@@ -40,6 +47,7 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 
 | Módulo | Estado | Notas |
 |---|---|---|
+| `apps/web` — fase solo informativa | 🚧 En curso | `config/features.ts` (`SHOP_ENABLED = false`) oculta compra/cuenta/admin/seguimiento y cambia "agendar cita" por WhatsApp. Falta el número real (hay un placeholder, ver Sesión 6) |
 | Raíz del monorepo | ✅ Hecho | npm workspaces, tsconfig base, ESLint 9 flat, Prettier, `.env.example` |
 | `packages/shared` — constantes y tipos | ✅ Hecho | Catálogos cerrados del dominio + DTOs de toda la API |
 | `packages/shared` — `tokens.css` | ✅ Hecho | Paleta §3 + escala, motivo de sastre y tema claro «lino» |
@@ -127,6 +135,68 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 ---
 
 ## Bitácora
+
+### Sesión 6 — 2026-09-29
+
+**Objetivo:** el usuario pidió lanzar ya la parte informativa del sitio (catálogo, telas,
+accesorios, el taller) mientras `apps/api`/`db`/Docker se implementan después — "oculta todo lo
+referente a backend". El reemplazo de "agendar cita" (que hoy vive detrás de una cuenta) es un
+enlace directo de WhatsApp.
+
+**Decisión de diseño:** un solo interruptor, `apps/web/src/config/features.ts`
+(`SHOP_ENABLED = false`), en vez de borrar o comentar código. Reactivar la tienda completa cuando
+exista el backend real es volver ese valor a `true` — nada de lo que ya se construyó (carrito,
+checkout, cuenta, back-office, fidelización, CRM) se tocó ni se perdió.
+
+**Hecho:**
+
+- **`routes/index.tsx`**: un helper `gate(element)` envuelve el `element` de cada ruta de
+  compra/cuenta/back-office/sesión (`/carrito`, `/checkout`, `/checkout/confirmado/:orderNumber`,
+  `/seguimiento`, `/mi-cuenta/*`, `/admin/*`, `/entrar`, `/crear-cuenta`, y también
+  `/catalogo/:code/personalizar` porque termina en "añadir al carrito"). Con `SHOP_ENABLED=false`,
+  cualquiera de esas URLs escrita a mano redirige a inicio (`<Navigate to={paths.home} replace />`)
+  en vez de renderizar la página real — no solo se quitan los enlaces, la ruta misma no responde.
+- **`Header.tsx`**: `NAV_LINKS` sin "Seguimiento"; se quitan el ícono de carrito, el ícono de
+  cuenta y el bloque de sesión (Entrar/Crear cuenta/Cerrar sesión) tanto en escritorio como en el
+  menú móvil, reemplazados por un botón "Agendar por WhatsApp".
+- **`Footer.tsx`**: se quita la columna "Tu pedido" completa (seguimiento, mis pedidos, mis
+  medidas, carrito) y "Entrar"/"Crear cuenta" de "La casa"; "Agendar una cita" pasa a WhatsApp; se
+  agrega un enlace de WhatsApp junto al teléfono/correo de contacto.
+- **`HomePage.tsx`**: la CTA "Agendar una cita" del hero va a WhatsApp; el bloque final
+  "¿Ya tienes un pedido en marcha? → Ver el seguimiento" se reemplaza por una CTA de WhatsApp; se
+  **elimina** la nota "Entra con las cuentas de prueba" — invitar a un visitante real a loguearse
+  con credenciales de demo y ver el back-office no tenía sentido con el sitio ya en producción.
+- **`SuitDetailPage.tsx`**: "Personalizar este traje" + "Verlo en el taller" se colapsan en un único
+  "Cotizar este traje por WhatsApp", con el nombre y código del modelo ya escritos en el mensaje.
+- **`CatalogPage.tsx`/`FabricsPage.tsx`/`AboutPage.tsx`**: sus CTAs de "agendar cita/consulta/visita"
+  (antes → `bookAppointment`) pasan a WhatsApp.
+- **`AccessoriesPage.tsx`**: el botón "Añadir" de cada `ProductCard` se omite (`onAdd={undefined}`)
+  — sin carrito, la tarjeta es solo vitrina.
+- **`ProductCards.tsx`** (`SuitCard`): la propia tarjeta ya enlazaba a la ficha del traje, no
+  directo a personalizar, así que no había enlace roto — pero el texto "Personalizar" ya no era
+  honesto con lo que hay detrás; ahora dice "Ver detalle".
+- **Dominio confirmado por el usuario**: `realelegancegt.com`. Se agregó a `apps/web/index.html`
+  (`<link rel="canonical">`, Open Graph y Twitter Card con ese dominio; la descripción también se
+  actualizó para no prometer "seguimiento en línea", que ahora está oculto) y a los nuevos
+  `apps/web/public/robots.txt` (bloquea rastrear las rutas gateadas) y `public/sitemap.xml` (solo
+  las páginas estáticas reales: `/`, `/catalogo`, `/telas`, `/accesorios`, `/el-taller` — las fichas
+  de traje salen de `src/mocks`, no del catálogo real, así que no se listan todavía).
+- **Pendiente real, no resuelto todavía**: `WHATSAPP_PHONE` en `config/features.ts` es un
+  **placeholder** (`50222345678`, el mismo teléfono del footer) — el usuario dijo que pasaría el
+  número real y no llegó a hacerlo en esta sesión. Buscar `WHATSAPP_PHONE` y confirmar/reemplazar
+  antes de considerar esto listo para tráfico real. Tampoco se confirmó si el correo de contacto
+  público (`contacto@realelegance.com`, en `Footer.tsx` e `index.html`) debe pasar a usar el dominio
+  nuevo (`@realelegancegt.com`) — son dominios distintos hoy, puede ser intencional o un descuido.
+
+**Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit`, `npx eslint` y `npx vitest run`
+(54/54) limpios. En navegador real (Playwright): las 7 rutas gateadas redirigen a `/` al escribirlas
+a mano; el nav principal solo muestra Trajes/Telas/Accesorios/El taller; los 5 enlaces `wa.me` de la
+portada resuelven con el mensaje esperado; la ficha de un traje ya no ofrece "Personalizar", solo
+"Cotizar por WhatsApp" con el modelo correcto en el texto.
+**No verificado:** número de WhatsApp real (pendiente arriba), y el resto del catálogo/telas/
+accesorios en dispositivo real — solo se probó viewport de escritorio esta vez.
+
+---
 
 ### Sesión 5 — 2026-09-03
 

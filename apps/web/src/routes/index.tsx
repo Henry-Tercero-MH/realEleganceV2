@@ -1,11 +1,23 @@
 import { lazy } from 'react';
+import type { ReactElement } from 'react';
 import { createBrowserRouter, Navigate } from 'react-router-dom';
 import { AppLayout } from '@/layouts/AppLayout';
 import { AuthLayout } from '@/layouts/AuthLayout';
 import { AccountLayout } from '@/layouts/AccountLayout';
 import { AdminLayout } from '@/layouts/AdminLayout';
+import { SHOP_ENABLED } from '@/config/features';
 import { RequireRole } from './RequireRole';
 import { paths } from './paths';
+
+/**
+ * Fase solo informativa (`SHOP_ENABLED = false`, ver `config/features.ts`):
+ * cualquier ruta de compra/cuenta/back-office redirige a inicio en vez de
+ * renderizar la página real, aunque alguien escriba la URL a mano. El árbol
+ * de rutas no cambia de forma — mismos paths, mismos `lazy()` — así que
+ * reactivar la tienda es solo volver `SHOP_ENABLED` a `true`.
+ */
+const gate = (element: ReactElement) =>
+  SHOP_ENABLED ? element : <Navigate to={paths.home} replace />;
 
 /*
  * Cada página se carga por separado (`lazy`) para que la primera visita solo
@@ -68,27 +80,27 @@ export const router = createBrowserRouter([
       // ── Tienda ───────────────────────────────────────────────────────────
       { path: paths.catalog, element: <CatalogPage /> },
       { path: '/catalogo/:code', element: <SuitDetailPage /> },
-      { path: '/catalogo/:code/personalizar', element: <CustomizePage /> },
+      { path: '/catalogo/:code/personalizar', element: gate(<CustomizePage />) },
       { path: paths.fabrics, element: <FabricsPage /> },
       { path: paths.accessories, element: <AccessoriesPage /> },
       { path: paths.about, element: <AboutPage /> },
 
       // ── Compra ───────────────────────────────────────────────────────────
-      { path: paths.cart, element: <CartPage /> },
-      { path: paths.checkout, element: <CheckoutPage /> },
-      { path: '/checkout/confirmado/:orderNumber', element: <CheckoutSuccessPage /> },
+      { path: paths.cart, element: gate(<CartPage />) },
+      { path: paths.checkout, element: gate(<CheckoutPage />) },
+      { path: '/checkout/confirmado/:orderNumber', element: gate(<CheckoutSuccessPage />) },
 
       // ── Seguimiento ──────────────────────────────────────────────────────
-      { path: paths.tracking, element: <TrackingPage /> },
-      { path: '/seguimiento/:orderNumber', element: <TrackingPage /> },
+      { path: paths.tracking, element: gate(<TrackingPage />) },
+      { path: '/seguimiento/:orderNumber', element: gate(<TrackingPage />) },
 
       // ── Cuenta del cliente ───────────────────────────────────────────────
       {
         path: paths.account,
-        element: (
+        element: gate(
           <RequireRole>
             <AccountLayout />
-          </RequireRole>
+          </RequireRole>,
         ),
         children: [
           { index: true, element: <AccountOverviewPage /> },
@@ -104,10 +116,10 @@ export const router = createBrowserRouter([
       // ── Back-office ──────────────────────────────────────────────────────
       {
         path: paths.admin,
-        element: (
+        element: gate(
           <RequireRole roles={['admin', 'staff', 'tailor']}>
             <AdminLayout />
-          </RequireRole>
+          </RequireRole>,
         ),
         children: [
           { index: true, element: <AdminDashboardPage /> },
@@ -134,8 +146,8 @@ export const router = createBrowserRouter([
   {
     element: <AuthLayout />,
     children: [
-      { path: paths.login, element: <LoginPage /> },
-      { path: paths.register, element: <RegisterPage /> },
+      { path: paths.login, element: gate(<LoginPage />) },
+      { path: paths.register, element: gate(<RegisterPage />) },
       // Alias en inglés por si alguien llega con un enlace antiguo.
       { path: '/login', element: <Navigate to={paths.login} replace /> },
     ],

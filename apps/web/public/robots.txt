@@ -1,0 +1,13 @@
+User-agent: *
+Allow: /
+# Fase solo informativa (ver apps/web/src/config/features.ts): estas rutas
+# redirigen a inicio y no deben indexarse mientras SHOP_ENABLED sea false.
+Disallow: /carrito
+Disallow: /checkout
+Disallow: /mi-cuenta
+Disallow: /admin
+Disallow: /entrar
+Disallow: /crear-cuenta
+Disallow: /seguimiento
+
+Sitemap: https://realelegancegt.com/sitemap.xml

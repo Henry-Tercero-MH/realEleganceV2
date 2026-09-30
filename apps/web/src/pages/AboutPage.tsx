@@ -1,5 +1,6 @@
 import { ButtonLink, Card, Icon, SectionHeading } from '@/components/ui';
 import { paths } from '@/routes/paths';
+import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './AboutPage.module.css';
@@ -91,7 +92,12 @@ export default function AboutPage() {
             Puedes pasar sin cita para ver telas, pero para tomar medidas conviene reservar.
           </p>
         </div>
-        <ButtonLink to={paths.bookAppointment} variant="primary" size="lg">
+        <ButtonLink
+          to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
+          external={!SHOP_ENABLED}
+          variant="primary"
+          size="lg"
+        >
           Agendar una visita
         </ButtonLink>
       </section>

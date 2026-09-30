@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom';
 import type { Fabric, Product, SuitModel } from '@real-elegance/shared';
 import { Badge, Card, Icon, Price } from '@/components/ui';
 import { paths } from '@/routes/paths';
+import { SHOP_ENABLED } from '@/config/features';
 import { formatCurrency, truncate } from '@/lib/format';
 import s from './ProductCards.module.css';
 
@@ -56,7 +57,7 @@ export function SuitCard({ suit }: SuitCardProps) {
       <Card.Footer className={s.footer}>
         <Price amount={suit.basePrice} prefix="Desde" size="sm" />
         <span className={s.cta}>
-          Personalizar <Icon name="arrowRight" size={15} />
+          {SHOP_ENABLED ? 'Personalizar' : 'Ver detalle'} <Icon name="arrowRight" size={15} />
         </span>
       </Card.Footer>
     </Card>

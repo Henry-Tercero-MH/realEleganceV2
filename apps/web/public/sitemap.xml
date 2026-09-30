@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Fase solo informativa (ver apps/web/src/config/features.ts): solo las
+  páginas estáticas que existen de verdad hoy. Las fichas de /catalogo/:code
+  salen de datos de demostración (src/mocks), no del catálogo real, así que
+  no se listan aquí todavía — hacerlo cuando el catálogo venga de apps/api.
+-->
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url>
+    <loc>https://realelegancegt.com/</loc>
+    <changefreq>weekly</changefreq>
+    <priority>1.0</priority>
+  </url>
+  <url>
+    <loc>https://realelegancegt.com/catalogo</loc>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>
+  <url>
+    <loc>https://realelegancegt.com/telas</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://realelegancegt.com/accesorios</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.6</priority>
+  </url>
+  <url>
+    <loc>https://realelegancegt.com/el-taller</loc>
+    <changefreq>monthly</changefreq>
+    <priority>0.5</priority>
+  </url>
+</urlset>

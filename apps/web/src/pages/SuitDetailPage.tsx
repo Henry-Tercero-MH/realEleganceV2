@@ -13,6 +13,7 @@ import {
 } from '@/components/ui';
 import { useSuit } from '@/features/catalog/hooks';
 import { paths } from '@/routes/paths';
+import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './SuitDetailPage.module.css';
@@ -135,24 +136,41 @@ export default function SuitDetailPage() {
           </div>
 
           <div className={s.actions}>
-            <ButtonLink
-              to={paths.customize(suit.code)}
-              variant="primary"
-              size="lg"
-              fullWidth
-              rightIcon={<Icon name="arrowRight" size={17} />}
-            >
-              Personalizar este traje
-            </ButtonLink>
-            <ButtonLink
-              to={paths.bookAppointment}
-              variant="secondary"
-              size="lg"
-              fullWidth
-              leftIcon={<Icon name="calendar" size={17} />}
-            >
-              Verlo en el taller
-            </ButtonLink>
+            {SHOP_ENABLED ? (
+              <>
+                <ButtonLink
+                  to={paths.customize(suit.code)}
+                  variant="primary"
+                  size="lg"
+                  fullWidth
+                  rightIcon={<Icon name="arrowRight" size={17} />}
+                >
+                  Personalizar este traje
+                </ButtonLink>
+                <ButtonLink
+                  to={paths.bookAppointment}
+                  variant="secondary"
+                  size="lg"
+                  fullWidth
+                  leftIcon={<Icon name="calendar" size={17} />}
+                >
+                  Verlo en el taller
+                </ButtonLink>
+              </>
+            ) : (
+              <ButtonLink
+                to={getWhatsAppUrl(
+                  `Hola, me interesa el modelo "${suit.name}" (${suit.code}). ¿Me ayudan a cotizarlo?`,
+                )}
+                external
+                variant="primary"
+                size="lg"
+                fullWidth
+                leftIcon={<Icon name="calendar" size={17} />}
+              >
+                Cotizar este traje por WhatsApp
+              </ButtonLink>
+            )}
           </div>
 
           <Card variant="raised" className={s.included}>

@@ -5,6 +5,7 @@ import { ProductCard } from '@/features/catalog/ProductCards';
 import { useProductCategories, useProducts } from '@/features/catalog/hooks';
 import { useCart } from '@/context/CartContext';
 import { useToast } from '@/context/ToastContext';
+import { SHOP_ENABLED } from '@/config/features';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 
@@ -84,7 +85,12 @@ export default function AccessoriesPage() {
         {isLoading
           ? Array.from({ length: 8 }, (_, index) => <SkeletonCard key={index} />)
           : products?.map((product) => (
-              <ProductCard key={product.id} product={product} onAdd={handleAdd} />
+              <ProductCard
+                key={product.id}
+                product={product}
+                // Fase solo informativa: sin carrito, la tarjeta es solo vitrina.
+                onAdd={SHOP_ENABLED ? handleAdd : undefined}
+              />
             ))}
       </div>
 
