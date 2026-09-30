@@ -8,17 +8,15 @@ export interface LogoProps {
 }
 
 /**
- * Identidad de Real Elegance.
- *
- * El monograma «RE» va enmarcado por dos filetes con ticks de cinta métrica —
- * el mismo motivo que recorre toda la interfaz.
+ * Identidad de Real Elegance: el monograma «RE» dorado que dio el usuario
+ * (`public/images/logore.png`, PNG transparente). El texto de al lado lleva
+ * el nombre y la marca por si el lector de pantalla no lee imágenes; el
+ * `<img>` es puramente decorativo (`alt=""`).
  */
 export function Logo({ variant = 'full', className }: LogoProps) {
   return (
     <span className={cx(s.logo, className)}>
-      <span className={s.mark} aria-hidden="true">
-        RE
-      </span>
+      <img src="/images/logore.png" alt="" aria-hidden="true" className={s.mark} />
       {variant === 'full' ? (
         <span className={s.words}>
           <span className={s.name}>Real Elegance</span>

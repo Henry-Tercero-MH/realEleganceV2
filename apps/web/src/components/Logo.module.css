@@ -4,24 +4,13 @@
   gap: var(--space-3);
 }
 
-/* Monograma: serif clara sobre un cuadro de filete dorado. */
+/* Monograma en PNG: ya es una pieza dorada con volumen propio, así que va
+   sin el recuadro de filete que llevaba la versión en texto. */
 .mark {
-  display: grid;
-  place-items: center;
-  width: 38px;
-  height: 38px;
+  width: 50px;
+  height: 50px;
   flex-shrink: 0;
-
-  border: 1px solid var(--color-primary);
-  color: var(--color-primary);
-
-  font-family: var(--font-display);
-  font-size: var(--text-base);
-  font-weight: var(--weight-medium);
-  letter-spacing: 0.06em;
-  line-height: 1;
-  /* Compensa el interletraje para que las dos letras queden centradas. */
-  text-indent: 0.06em;
+  object-fit: contain;
 }
 
 .words {

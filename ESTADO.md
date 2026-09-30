@@ -288,6 +288,31 @@ como sea su flujo con Vercel). Después de ese despliegue, volver a probar
 Directory real en el dashboard de Vercel (Project Settings → General) para saber cuál de los dos
 `vercel.json` hay que editar o si hace falta otro ajuste.
 
+**Corrección: la pantalla de "sin conexión" daba falsos positivos.** Tras el fix anterior, el
+usuario reportó que aparecía **con internet de verdad**, cada vez que iba a inicio. Causa: la
+comprobación activa (`fetch('/')`) se declaraba offline con un solo intento fallido — y un intento
+suelto puede fallar por razones que no son "no hay internet" (compitiendo por ancho de banda con la
+carga inicial de la página, una respuesta que tarda más de los 4s de margen que tenía, etc.), sobre
+todo justo al navegar a inicio. `useOnlineStatus.ts` ahora exige **dos fallos seguidos**
+(`FAILURES_BEFORE_OFFLINE`) antes de dar por offline — el primer fallo dispara un reintento rápido
+(2.5s) en vez de mostrar la pantalla de inmediato; un solo éxito, en cambio, restaura "en línea" al
+instante. De paso: `HEAD` → `GET` (algunos hosts/CDN, Vercel con *rewrites* incluido, no tratan
+`HEAD` igual en todas las rutas) y el timeout subió de 4s a 6s. Verificado con Playwright en los dos
+sentidos: (1) un solo intento retrasado más allá del timeout **ya no** dispara la pantalla; (2) una
+caída real y sostenida (peticiones bloqueadas de verdad) sigue mostrándola, ahora a los ~10-13s en
+vez de ~8s — el precio de dejar de tener falsos positivos.
+
+**Logo real**: el usuario dio `apps/web/public/images/logore.png` (PNG transparente, 1254×1254, el
+monograma "RE" dorado con relieve 3D) para reemplazar el monograma en texto plano que tenía
+`Logo.tsx` (un cuadro con filete dorado y las letras "RE"). Se conectó directo (`<img>`, 42×42px —
+25% más grande que el primer tamaño, a pedido del usuario después de verlo en pantalla —,
+`alt=""` porque es decorativo — el nombre completo ya va en texto al lado para lectores de
+pantalla) y se quitó el recuadro con borde que llevaba la versión en texto, porque la imagen ya
+tiene peso visual propio. **Detalle que se le señaló al usuario y decidió dejar así**: el PNG trae
+un halo rojo/amarillo tenue alrededor de las letras (recorte de fondo imperfecto, visible sobre
+todo en la imagen a tamaño completo) — al tamaño real del header casi no se nota, confirmado
+visualmente con una captura ampliada (`deviceScaleFactor: 4`).
+
 ---
 
 ### Sesión 6 — 2026-09-29
