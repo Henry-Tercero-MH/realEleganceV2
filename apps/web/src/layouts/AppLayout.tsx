@@ -5,6 +5,7 @@ import { Footer } from './Footer';
 import { CartDrawer } from '@/features/cart/CartDrawer';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 import { PageLoader } from '@/components/PageLoader';
+import { FloatingSocial } from '@/components/FloatingSocial';
 import s from './AppLayout.module.css';
 
 /**
@@ -38,6 +39,7 @@ export function AppLayout() {
 
       <Footer />
       <CartDrawer />
+      <FloatingSocial />
 
       {/* Devuelve el scroll arriba al navegar, y lo restaura al volver atrás. */}
       <ScrollRestoration />

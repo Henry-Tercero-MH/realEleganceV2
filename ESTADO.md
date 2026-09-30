@@ -47,7 +47,7 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 
 | Módulo | Estado | Notas |
 |---|---|---|
-| `apps/web` — fase solo informativa | 🚧 En curso | `config/features.ts` (`SHOP_ENABLED = false`) oculta compra/cuenta/admin/seguimiento y cambia "agendar cita" por WhatsApp. Falta el número real (hay un placeholder, ver Sesión 6) |
+| `apps/web` — fase solo informativa | ✅ Hecho | `config/features.ts` (`SHOP_ENABLED = false`) oculta compra/cuenta/admin/seguimiento/catálogo de trajes; "agendar cita" va por WhatsApp real (`+502 3074-5202`); contacto y redes reales en `Footer` + widget flotante `FloatingSocial`. Falta solo volver `true` cuando exista `apps/api` |
 | Raíz del monorepo | ✅ Hecho | npm workspaces, tsconfig base, ESLint 9 flat, Prettier, `.env.example` |
 | `packages/shared` — constantes y tipos | ✅ Hecho | Catálogos cerrados del dominio + DTOs de toda la API |
 | `packages/shared` — `tokens.css` | ✅ Hecho | Paleta §3 + escala, motivo de sastre y tema claro «lino» |
@@ -178,23 +178,45 @@ checkout, cuenta, back-office, fidelización, CRM) se tocó ni se perdió.
 - **Dominio confirmado por el usuario**: `realelegancegt.com`. Se agregó a `apps/web/index.html`
   (`<link rel="canonical">`, Open Graph y Twitter Card con ese dominio; la descripción también se
   actualizó para no prometer "seguimiento en línea", que ahora está oculto) y a los nuevos
-  `apps/web/public/robots.txt` (bloquea rastrear las rutas gateadas) y `public/sitemap.xml` (solo
-  las páginas estáticas reales: `/`, `/catalogo`, `/telas`, `/accesorios`, `/el-taller` — las fichas
-  de traje salen de `src/mocks`, no del catálogo real, así que no se listan todavía).
-- **Pendiente real, no resuelto todavía**: `WHATSAPP_PHONE` en `config/features.ts` es un
-  **placeholder** (`50222345678`, el mismo teléfono del footer) — el usuario dijo que pasaría el
-  número real y no llegó a hacerlo en esta sesión. Buscar `WHATSAPP_PHONE` y confirmar/reemplazar
-  antes de considerar esto listo para tráfico real. Tampoco se confirmó si el correo de contacto
-  público (`contacto@realelegance.com`, en `Footer.tsx` e `index.html`) debe pasar a usar el dominio
-  nuevo (`@realelegancegt.com`) — son dominios distintos hoy, puede ser intencional o un descuido.
+  `apps/web/public/robots.txt`/`public/sitemap.xml`.
+- **"Diseñar mi traje" (todo el catálogo de modelos) también se oculta, no solo el botón**: se
+  gatearon `paths.catalog` y `/catalogo/:code` en `routes/index.tsx` (antes solo `/personalizar` lo
+  estaba); se quitó "Trajes" del `Header`, "Catálogo de trajes" del `Footer`, el botón "Diseñar mi
+  traje" del hero de `HomePage.tsx` (con el texto del hero reescrito para no describir un flujo que
+  ya no existe) y la sección "Destacados" completa (la grilla de `SuitCard` no tenía sentido sin
+  poder abrir la ficha de cada modelo). `NotFoundPage.tsx` apunta a inicio en vez de al catálogo.
+  Con esto, `robots.txt`/`sitemap.xml` (recién creados en esta misma sesión) tuvieron que corregirse
+  para no listar `/catalogo` como página real.
+- **Datos de contacto reales, confirmados por el usuario**: WhatsApp/teléfono `+502 3074-5202`
+  (`WHATSAPP_PHONE`/`CONTACT_PHONE_*` en `config/features.ts` — ya no es el placeholder), correo
+  `realelegancegt@gmail.com` (`CONTACT_EMAIL`, reemplaza `contacto@realelegance.com` en `Footer.tsx`
+  e `index.html`), Instagram `instagram.com/realelegancegt` y Facebook (enlace de `share/` que dio
+  el usuario, se dejó tal cual). Todo centralizado en `SOCIAL_LINKS`/`CONTACT_*` de
+  `config/features.ts` — un solo sitio para cambiarlo si alguno cambia.
+- **Widget flotante de redes sociales**: `components/FloatingSocial.tsx` (+ su `.module.css`),
+  montado en `AppLayout.tsx` junto al `Header`/`Footer`/`CartDrawer`, así que aparece en todas las
+  páginas públicas. Dos círculos (Instagram, Facebook) fijos en la esquina inferior derecha,
+  `position: fixed`, por encima del contenido pero debajo del header/drawer/modal
+  (`z-index: var(--z-sticky)`). Se agregó el ícono `facebook` nuevo a `Icon.tsx` (no existía; el set
+  ya traía `instagram`). No incluye WhatsApp — el usuario pidió específicamente "sus redes"
+  (Instagram/Facebook); WhatsApp ya tiene su propio CTA prominente en Header/Home/Footer/fichas.
 
 **Verificado:** `npx tsc -p apps/web/tsconfig.app.json --noEmit`, `npx eslint` y `npx vitest run`
 (54/54) limpios. En navegador real (Playwright): las 7 rutas gateadas redirigen a `/` al escribirlas
 a mano; el nav principal solo muestra Trajes/Telas/Accesorios/El taller; los 5 enlaces `wa.me` de la
 portada resuelven con el mensaje esperado; la ficha de un traje ya no ofrece "Personalizar", solo
 "Cotizar por WhatsApp" con el modelo correcto en el texto.
-**No verificado:** número de WhatsApp real (pendiente arriba), y el resto del catálogo/telas/
-accesorios en dispositivo real — solo se probó viewport de escritorio esta vez.
+**No verificado:** dispositivo real (solo viewport de escritorio en Playwright esta vez).
+
+**Verificado (tras ocultar "Diseñar mi traje" y confirmar contacto/redes):** de nuevo `tsc`,
+`eslint` y `vitest` (54/54) limpios. En navegador: `/catalogo`, `/catalogo/RE-CL-001` y
+`/catalogo/RE-CL-001/personalizar` redirigen a `/`; el nav quedó en Telas/Accesorios/El taller;
+`/ruta-que-no-existe` ofrece "Ir a inicio"; el footer muestra `3074-5202` y
+`realelegancegt@gmail.com`; los dos círculos flotantes apuntan a los Instagram/Facebook reales y
+siguen visibles al hacer scroll.
+**Sigue sin confirmar:** si el correo de contacto debía coincidir con el dominio
+(`@realelegancegt.com`) — el usuario dio `realelegancegt@gmail.com` explícitamente, así que se usó
+tal cual; no es un descuido, es lo que pidió.
 
 ---
 

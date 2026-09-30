@@ -85,23 +85,26 @@ export default function HomePage() {
             </h1>
 
             <p className={s.heroText}>
-              Elige el modelo, la tela y cada detalle. Nosotros lo cortamos a mano sobre tus medidas
-              y tú sigues en línea cómo avanza, puntada a puntada.
+              {SHOP_ENABLED
+                ? 'Elige el modelo, la tela y cada detalle. Nosotros lo cortamos a mano sobre tus medidas y tú sigues en línea cómo avanza, puntada a puntada.'
+                : 'Elegimos juntos el modelo, la tela y cada detalle, y lo cortamos a mano sobre tus medidas. Escríbenos por WhatsApp para empezar.'}
             </p>
 
             <div className={s.heroActions}>
-              <ButtonLink
-                to={paths.catalog}
-                variant="primary"
-                size="lg"
-                leftIcon={<Icon name="scissors" size={17} />}
-              >
-                Diseñar mi traje
-              </ButtonLink>
+              {SHOP_ENABLED ? (
+                <ButtonLink
+                  to={paths.catalog}
+                  variant="primary"
+                  size="lg"
+                  leftIcon={<Icon name="scissors" size={17} />}
+                >
+                  Diseñar mi traje
+                </ButtonLink>
+              ) : null}
               <ButtonLink
                 to={SHOP_ENABLED ? paths.bookAppointment : getWhatsAppUrl()}
                 external={!SHOP_ENABLED}
-                variant="secondary"
+                variant={SHOP_ENABLED ? 'secondary' : 'primary'}
                 size="lg"
                 leftIcon={<Icon name="calendar" size={17} />}
               >
@@ -156,33 +159,38 @@ export default function HomePage() {
       </section>
 
       {/* ── Destacados ───────────────────────────────────────────────────── */}
-      <section className={cx('re-container', l.section)}>
-        <SectionHeading
-          eyebrow="Del taller"
-          title="Modelos que definen la casa"
-          description="Cinco cortes, una misma manera de trabajar. Cualquiera de ellos se personaliza por completo."
-          action={
-            <ButtonLink to={paths.catalog} variant="ghost" rightIcon={<Icon name="arrowRight" size={16} />}>
-              Ver todo el catálogo
-            </ButtonLink>
-          }
-        />
-
-        <div className={cx(l.gridSuits, l.afterHeading)}>
-          {isLoading
-            ? Array.from({ length: 4 }, (_, index) => <SkeletonCard key={index} />)
-            : data?.items.map((suit) => <SuitCard key={suit.id} suit={suit} />)}
-        </div>
-
-        {isError ? (
-          <EmptyState
-            tone="error"
-            className={l.afterHeading}
-            title="No pudimos cargar el catálogo"
-            description="Vuelve a intentarlo en un momento o escríbenos si el problema sigue."
+      {/* La opción "Diseñar mi traje" se oculta completa en la fase
+          informativa: esta sección solo tiene sentido si se puede llegar a
+          la ficha/personalizar de cada modelo, así que se oculta con ella. */}
+      {SHOP_ENABLED ? (
+        <section className={cx('re-container', l.section)}>
+          <SectionHeading
+            eyebrow="Del taller"
+            title="Modelos que definen la casa"
+            description="Cinco cortes, una misma manera de trabajar. Cualquiera de ellos se personaliza por completo."
+            action={
+              <ButtonLink to={paths.catalog} variant="ghost" rightIcon={<Icon name="arrowRight" size={16} />}>
+                Ver todo el catálogo
+              </ButtonLink>
+            }
           />
-        ) : null}
-      </section>
+
+          <div className={cx(l.gridSuits, l.afterHeading)}>
+            {isLoading
+              ? Array.from({ length: 4 }, (_, index) => <SkeletonCard key={index} />)
+              : data?.items.map((suit) => <SuitCard key={suit.id} suit={suit} />)}
+          </div>
+
+          {isError ? (
+            <EmptyState
+              tone="error"
+              className={l.afterHeading}
+              title="No pudimos cargar el catálogo"
+              description="Vuelve a intentarlo en un momento o escríbenos si el problema sigue."
+            />
+          ) : null}
+        </section>
+      ) : null}
 
       {/* ── Cómo funciona ────────────────────────────────────────────────── */}
       <section className={s.journey}>

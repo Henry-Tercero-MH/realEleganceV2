@@ -2,7 +2,13 @@ import { Link } from 'react-router-dom';
 import { Logo } from '@/components/Logo';
 import { Icon } from '@/components/ui';
 import { paths } from '@/routes/paths';
-import { SHOP_ENABLED, getWhatsAppUrl } from '@/config/features';
+import {
+  SHOP_ENABLED,
+  getWhatsAppUrl,
+  CONTACT_EMAIL,
+  CONTACT_PHONE_DISPLAY,
+  CONTACT_PHONE_TEL,
+} from '@/config/features';
 import s from './Footer.module.css';
 
 /*
@@ -44,7 +50,6 @@ const COLUMNS = SHOP_ENABLED
       {
         title: 'Tienda',
         links: [
-          { to: paths.catalog, label: 'Catálogo de trajes' },
           { to: paths.fabrics, label: 'Muestrario de telas' },
           { to: paths.accessories, label: 'Accesorios' },
         ],
@@ -68,11 +73,11 @@ export function Footer() {
             <p className={s.hours}>
               <Icon name="clock" size={15} /> Lun a sáb · 9:00 – 18:00
             </p>
-            <a href="tel:+50222345678">
-              <Icon name="phone" size={15} /> 2234-5678
+            <a href={`tel:${CONTACT_PHONE_TEL}`}>
+              <Icon name="phone" size={15} /> {CONTACT_PHONE_DISPLAY}
             </a>
-            <a href="mailto:contacto@realelegance.com">
-              <Icon name="info" size={15} /> contacto@realelegance.com
+            <a href={`mailto:${CONTACT_EMAIL}`}>
+              <Icon name="info" size={15} /> {CONTACT_EMAIL}
             </a>
             {SHOP_ENABLED ? null : (
               <a href={getWhatsAppUrl()} target="_blank" rel="noreferrer noopener">

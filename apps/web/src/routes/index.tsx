@@ -78,8 +78,10 @@ export const router = createBrowserRouter([
       { path: paths.home, element: <HomePage /> },
 
       // ── Tienda ───────────────────────────────────────────────────────────
-      { path: paths.catalog, element: <CatalogPage /> },
-      { path: '/catalogo/:code', element: <SuitDetailPage /> },
+      // "Diseñar mi traje" (catálogo de modelos + ficha + personalizar) se
+      // oculta completo en la fase informativa, no solo el botón.
+      { path: paths.catalog, element: gate(<CatalogPage />) },
+      { path: '/catalogo/:code', element: gate(<SuitDetailPage />) },
       { path: '/catalogo/:code/personalizar', element: gate(<CustomizePage />) },
       { path: paths.fabrics, element: <FabricsPage /> },
       { path: paths.accessories, element: <AccessoriesPage /> },

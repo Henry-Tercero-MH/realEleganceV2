@@ -1,20 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  Fase solo informativa (ver apps/web/src/config/features.ts): solo las
-  páginas estáticas que existen de verdad hoy. Las fichas de /catalogo/:code
-  salen de datos de demostración (src/mocks), no del catálogo real, así que
-  no se listan aquí todavía — hacerlo cuando el catálogo venga de apps/api.
+  Fase solo informativa (ver apps/web/src/config/features.ts): "Diseñar mi
+  traje" (/catalogo y sus fichas) está oculto, así que no se lista — listar
+  una URL que redirige a inicio confundiría a los buscadores. Agregarlo de
+  vuelta cuando SHOP_ENABLED vuelva a true.
 -->
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
     <loc>https://realelegancegt.com/</loc>
     <changefreq>weekly</changefreq>
     <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>https://realelegancegt.com/catalogo</loc>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
   </url>
   <url>
     <loc>https://realelegancegt.com/telas</loc>

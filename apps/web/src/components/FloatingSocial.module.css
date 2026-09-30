@@ -1,0 +1,53 @@
+.stack {
+  position: fixed;
+  right: var(--space-4);
+  bottom: var(--space-6);
+  z-index: var(--z-sticky);
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-3);
+
+  /* Respeta el borde curvo de un iPhone en el lado derecho. */
+  padding-bottom: env(safe-area-inset-bottom, 0);
+}
+
+.bubble {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border-radius: var(--radius-pill);
+
+  background-color: var(--color-primary);
+  color: var(--color-on-primary);
+  box-shadow: var(--shadow-2);
+
+  transition:
+    background-color var(--duration-fast) var(--ease-out),
+    transform var(--duration-fast) var(--ease-out);
+}
+
+.bubble:hover {
+  background-color: var(--color-primary-hover);
+  transform: translateY(-2px);
+}
+
+.bubble:focus-visible {
+  outline: none;
+  box-shadow:
+    var(--shadow-2),
+    var(--focus-ring);
+}
+
+@media (max-width: 640px) {
+  .stack {
+    right: var(--space-3);
+    bottom: var(--space-5);
+  }
+
+  .bubble {
+    width: 40px;
+    height: 40px;
+  }
+}

@@ -204,6 +204,12 @@ const PATHS = {
       <circle cx="17.2" cy="6.8" r="0.6" fill="currentColor" stroke="none" />
     </>
   ),
+  facebook: (
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path d="M13.5 19v-6h1.8l.3-2.5h-2.1V8.9c0-.6.3-.9.9-.9H15V5.8c-.4-.1-1-.1-1.7-.1-1.7 0-2.8 1-2.8 2.9v1.9H8.7V13h1.8v6" />
+    </>
+  ),
 } as const;
 
 export type IconName = keyof typeof PATHS;

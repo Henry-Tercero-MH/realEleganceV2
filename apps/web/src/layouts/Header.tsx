@@ -15,8 +15,9 @@ import s from './Header.module.css';
 const MOBILE_NAV_ID = 'site-nav';
 
 /*
- * Fase solo informativa: sin "Seguimiento" (necesita un pedido real) y sin
- * los enlaces de carrito/cuenta/sesión del bloque de abajo. Ver
+ * Fase solo informativa: sin "Trajes" (catálogo/ficha/personalizar, la
+ * opción "Diseñar mi traje"), sin "Seguimiento" (necesita un pedido real) y
+ * sin los enlaces de carrito/cuenta/sesión del bloque de abajo. Ver
  * config/features.ts — SHOP_ENABLED trae todo esto de vuelta.
  */
 const NAV_LINKS = SHOP_ENABLED
@@ -28,7 +29,6 @@ const NAV_LINKS = SHOP_ENABLED
       { to: paths.about, label: 'El taller' },
     ]
   : [
-      { to: paths.catalog, label: 'Trajes' },
       { to: paths.fabrics, label: 'Telas' },
       { to: paths.accessories, label: 'Accesorios' },
       { to: paths.about, label: 'El taller' },
