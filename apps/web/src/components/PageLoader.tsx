@@ -1,5 +1,6 @@
 import { useEffect, useState } from 'react';
 import { usePrefersReducedMotion } from '@/hooks/useMediaQuery';
+import { useTranslation } from '@/context/LanguageContext';
 import s from './PageLoader.module.css';
 
 /** Cuánto se acerca al final en cada paso: nunca llega, solo se frena. */
@@ -17,8 +18,9 @@ const STEP_MS = 180;
  * Reserva la altura de una pantalla para que el pie de página no salte hacia
  * arriba mientras baja el chunk.
  */
-export function PageLoader({ label = 'Cargando la página' }: { label?: string }) {
+export function PageLoader({ label }: { label?: string }) {
   const reducedMotion = usePrefersReducedMotion();
+  const t = useTranslation();
   const [progress, setProgress] = useState(reducedMotion ? TARGET : 12);
 
   useEffect(() => {
@@ -41,9 +43,9 @@ export function PageLoader({ label = 'Cargando la página' }: { label?: string }
         <div className={s.fill} style={{ width: `${progress}%` }} />
       </div>
       <p className={s.text} aria-hidden="true">
-        Un momento…
+        {t.pageLoader.text}
       </p>
-      <span className="re-sr-only">{label}</span>
+      <span className="re-sr-only">{label ?? t.pageLoader.label}</span>
     </div>
   );
 }

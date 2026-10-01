@@ -202,6 +202,45 @@
   border-block: 1px solid var(--color-border);
 }
 
+/* Panel de estilos de traje que se despliega en "Explorar"/"Personalizar". */
+
+.styleGrid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: var(--space-3);
+}
+
+.styleCard {
+  margin: 0;
+}
+
+.styleCardImg {
+  display: block;
+  width: 100%;
+  aspect-ratio: 4 / 5;
+  border-radius: var(--radius-sm);
+  object-fit: cover;
+  background-color: var(--color-surface);
+}
+
+.styleCardCaption {
+  display: flex;
+  flex-direction: column;
+  margin-top: var(--space-2);
+}
+
+.styleCardName {
+  color: var(--color-text);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-snug);
+}
+
+.styleCardPrice {
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+}
+
 /* ═══ Oficio ═════════════════════════════════════════════════════════════ */
 
 .craftGrid {

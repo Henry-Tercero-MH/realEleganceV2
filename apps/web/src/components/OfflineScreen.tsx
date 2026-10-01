@@ -1,5 +1,6 @@
 import { Icon } from './ui';
 import { useOnlineStatus } from '@/hooks/useOnlineStatus';
+import { useTranslation } from '@/context/LanguageContext';
 import s from './OfflineScreen.module.css';
 
 /**
@@ -11,6 +12,7 @@ import s from './OfflineScreen.module.css';
  */
 export function OfflineScreen() {
   const isOnline = useOnlineStatus();
+  const t = useTranslation();
 
   if (isOnline) return null;
 
@@ -19,11 +21,9 @@ export function OfflineScreen() {
       <span className={s.iconWrap}>
         <Icon name="wifiOff" size={36} />
       </span>
-      <h1 className={s.title}>Sin conexión a internet</h1>
-      <p className={s.text}>
-        No se puede llegar a Real Elegance ahora mismo. Revisa tu wifi o tus datos móviles.
-      </p>
-      <p className={s.hint}>Esto se cierra solo en cuanto vuelva la señal.</p>
+      <h1 className={s.title}>{t.offline.title}</h1>
+      <p className={s.text}>{t.offline.text}</p>
+      <p className={s.hint}>{t.offline.hint}</p>
     </div>
   );
 }

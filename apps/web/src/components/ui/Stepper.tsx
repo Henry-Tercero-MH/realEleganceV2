@@ -9,6 +9,12 @@ export interface StepperStep {
   description?: ReactNode;
   /** Fecha o dato al pie del paso (útil en el seguimiento del pedido). */
   meta?: ReactNode;
+  /**
+   * Contenido ampliado que se despliega al lado del disco al pasar el cursor
+   * o el foco (empuja a los pasos siguientes, como un carrusel). Solo tiene
+   * efecto en orientación `horizontal`.
+   */
+  detail?: ReactNode;
 }
 
 export interface StepperProps {
@@ -44,6 +50,7 @@ export function Stepper({
         const isDone = index < current;
         const isCurrent = index === current;
         const canNavigate = Boolean(onStepClick) && isDone;
+        const detailId = step.detail ? `${step.id}-detail` : undefined;
 
         const content = (
           <>
@@ -61,17 +68,32 @@ export function Stepper({
         return (
           <li
             key={step.id}
-            className={cx(s.step, isDone && s.done, isCurrent && s.current)}
+            className={cx(s.step, isDone && s.done, isCurrent && s.current, detailId && s.hasPanel)}
             aria-current={isCurrent ? 'step' : undefined}
           >
             {canNavigate ? (
-              <button type="button" className={s.trigger} onClick={() => onStepClick?.(index, step)}>
+              <button
+                type="button"
+                className={s.trigger}
+                onClick={() => onStepClick?.(index, step)}
+                aria-describedby={detailId}
+              >
                 {content}
                 <span className="re-sr-only">— paso completado, volver</span>
               </button>
             ) : (
-              <span className={s.trigger}>{content}</span>
+              <span className={s.trigger} tabIndex={detailId ? 0 : undefined} aria-describedby={detailId}>
+                {content}
+              </span>
             )}
+            {step.detail ? (
+              <div className={s.panel} id={detailId}>
+                <div className={s.panelInner}>
+                  <p className={s.panelTitle}>{step.label}</p>
+                  {step.detail}
+                </div>
+              </div>
+            ) : null}
           </li>
         );
       })}

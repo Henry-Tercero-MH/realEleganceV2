@@ -116,6 +116,61 @@
   color: var(--color-primary);
 }
 
+/* ── Panel de detalle ────────────────────────────────────────────────────
+   Se superpone al resto del diseño (no empuja ni mueve nada alrededor): un
+   `position: absolute` que crece en ancho desde el disco hacia la derecha,
+   como un carrete de tela al desenvolverse, flotando por encima con sombra
+   para que se note que está "encima" y no integrado al layout. Vive siempre
+   en el DOM — se abre y cierra solo con :hover/:focus-within, sin JS — así
+   que `aria-describedby` sigue funcionando para lectores de pantalla. */
+
+.hasPanel .trigger {
+  cursor: help;
+}
+
+.panel {
+  position: absolute;
+  z-index: var(--z-sticky);
+  top: 0;
+  left: calc(100% + var(--space-3));
+  overflow: hidden;
+  width: 0;
+  pointer-events: none;
+  transition: width var(--duration-base) var(--ease-out);
+}
+
+.panelInner {
+  width: 320px;
+  padding: var(--space-3);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  background-color: var(--color-surface-raised);
+  box-shadow: var(--shadow-2);
+  color: var(--color-text);
+  text-align: left;
+  text-transform: none;
+}
+
+/* El título repite la etiqueta del paso dentro del panel — al estar
+   superpuesto, puede flotar lejos de su disco y confundirse con el del
+   paso vecino sin esta referencia. */
+.panelTitle {
+  margin: 0 0 var(--space-3);
+  color: var(--color-text-muted);
+  font-size: var(--text-2xs);
+  font-weight: var(--weight-medium);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+.step:hover .panel,
+.step:focus-within .panel,
+.panel:hover,
+.panel:focus-within {
+  width: 320px;
+  pointer-events: auto;
+}
+
 /* ═══ Orientación horizontal ═══════════════════════════════════════════════
    La cinta métrica une los discos: ticks finos de fondo, dorado sólido en el
    tramo ya recorrido. */
@@ -145,6 +200,13 @@
   height: 1px;
   background-image: var(--pattern-tape);
   background-repeat: repeat-x;
+}
+
+/* Los últimos pasos de la fila no tienen 320px libres a la derecha antes del
+   borde de la página — el panel se abre hacia la izquierda en su lugar. */
+.horizontal .step:nth-last-child(-n + 2) .panel {
+  left: auto;
+  right: calc(100% + var(--space-3));
 }
 
 .horizontal .step:first-child::before {
@@ -231,6 +293,35 @@
 
   .horizontal .step:first-child::before {
     display: block;
+  }
+
+  /* A un lado ya no cabe sin salirse de la pantalla: en móvil se despliega
+     debajo del paso, de alto en vez de ancho — mismo "desenvolver", otro eje.
+     También deja de ser absoluto: en la columna angosta no hay nada "detrás"
+     que tapar, así que puede empujar el resto de la lista hacia abajo. */
+  .horizontal .panel {
+    position: static;
+    display: block;
+    width: auto;
+    max-height: 0;
+    pointer-events: auto;
+    transition: max-height var(--duration-base) var(--ease-out);
+  }
+
+  .horizontal .step:hover .panel,
+  .horizontal .step:focus-within .panel,
+  .horizontal .panel:hover,
+  .horizontal .panel:focus-within {
+    width: auto;
+    max-height: 420px;
+  }
+
+  .horizontal .panelInner {
+    width: auto;
+    max-width: none;
+    min-width: 0;
+    margin-left: calc(var(--_marker) + var(--space-3));
+    margin-top: var(--space-2);
   }
 
   .horizontal .step:last-child::before {

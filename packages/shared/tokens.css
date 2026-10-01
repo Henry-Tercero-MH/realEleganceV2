@@ -18,6 +18,10 @@
   --re-gold: #c6a253; /* dorado principal (antiguo, sobrio)  */
   --re-gold-bright: #e6cc86; /* dorado de acento / hover            */
   --re-gold-deep: #8c6e2e; /* dorado apagado / bordes             */
+  /* Brillo casi blanco, solo para el punto más luminoso del degradado
+     metálico del botón primario (Button.module.css) — nunca como color de
+     texto ni de fondo por sí solo, cae fuera del par con --color-on-primary. */
+  --re-gold-glint: #fff3d6;
   --re-ivory: #f4efe4; /* texto y superficies claras          */
   --re-muted: #9b917e; /* texto secundario                    */
   --re-line: rgba(198, 162, 83, 0.22); /* líneas tipo patrón sastre */

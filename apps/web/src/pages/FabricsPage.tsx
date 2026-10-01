@@ -4,10 +4,12 @@ import { FabricCard } from '@/features/catalog/ProductCards';
 import { useFabricCategories, useFabrics } from '@/features/catalog/hooks';
 import { paths } from '@/routes/paths';
 import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL } from '@/config/features';
+import { useTranslation } from '@/context/LanguageContext';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 
 export default function FabricsPage() {
+  const t = useTranslation();
   // El filtro vive en la URL, no en `useState`: se puede compartir por enlace
   // y el botón «atrás» funciona (misma decisión que en CatalogPage).
   const [params, setParams] = useSearchParams();
@@ -26,7 +28,7 @@ export default function FabricsPage() {
   });
 
   const tabs = [
-    { id: 'todas', label: 'Todas' },
+    { id: 'todas', label: t.fabrics.tabAll },
     ...(categories ?? []).map((category) => ({ id: String(category.id), label: category.name })),
   ];
 
@@ -35,9 +37,9 @@ export default function FabricsPage() {
       <SectionHeading
         as="h1"
         size="lg"
-        eyebrow="Muestrario"
-        title="Telas de la casa"
-        description="Lanas frías para el trópico, linos irlandeses y tweeds tejidos en telar. Todas se pueden ver y tocar en el taller antes de decidir."
+        eyebrow={t.fabrics.eyebrow}
+        title={t.fabrics.title}
+        description={t.fabrics.description}
         action={
           <ButtonLink
             to={SHOP_ENABLED ? paths.bookAppointment : APPOINTMENT_IN_PERSON_URL}
@@ -45,7 +47,7 @@ export default function FabricsPage() {
             variant="secondary"
             leftIcon={<Icon name="calendar" size={16} />}
           >
-            Ver el muestrario en persona
+            {t.fabrics.viewInPerson}
           </ButtonLink>
         }
       />
@@ -56,7 +58,7 @@ export default function FabricsPage() {
           value={categoryId}
           onChange={setCategoryId}
           variant="pill"
-          aria-label="Categorías de tela"
+          aria-label={t.fabrics.categoriesAriaLabel}
         />
       </div>
 
@@ -64,8 +66,8 @@ export default function FabricsPage() {
         <EmptyState
           tone="error"
           className={l.afterHeading}
-          title="No pudimos cargar el muestrario"
-          description="Vuelve a intentarlo en un momento."
+          title={t.fabrics.errorTitle}
+          description={t.fabrics.errorDescription}
         />
       ) : null}
 
@@ -80,8 +82,8 @@ export default function FabricsPage() {
       {!isLoading && fabrics?.length === 0 ? (
         <EmptyState
           icon="spool"
-          title="No hay telas en esta categoría"
-          description="Prueba con otra o escríbenos: solemos conseguir piezas por encargo."
+          title={t.fabrics.emptyTitle}
+          description={t.fabrics.emptyDescription}
         />
       ) : null}
     </div>

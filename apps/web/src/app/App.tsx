@@ -6,6 +6,7 @@ import { AuthProvider } from '@/context/AuthContext';
 import { CartProvider } from '@/context/CartContext';
 import { ThemeProvider } from '@/context/ThemeContext';
 import { ToastProvider } from '@/context/ToastContext';
+import { LanguageProvider } from '@/context/LanguageContext';
 import { ErrorBoundary } from '@/components/ErrorBoundary';
 
 /**
@@ -20,13 +21,15 @@ export function App() {
     <ErrorBoundary>
       <QueryClientProvider client={queryClient}>
         <ThemeProvider>
-          <ToastProvider>
-            <AuthProvider>
-              <CartProvider>
-                <RouterProvider router={router} />
-              </CartProvider>
-            </AuthProvider>
-          </ToastProvider>
+          <LanguageProvider>
+            <ToastProvider>
+              <AuthProvider>
+                <CartProvider>
+                  <RouterProvider router={router} />
+                </CartProvider>
+              </AuthProvider>
+            </ToastProvider>
+          </LanguageProvider>
         </ThemeProvider>
       </QueryClientProvider>
     </ErrorBoundary>

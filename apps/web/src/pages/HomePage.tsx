@@ -1,3 +1,4 @@
+import { useMemo } from 'react';
 import {
   ButtonLink,
   Icon,
@@ -10,63 +11,96 @@ import { SuitCard } from '@/features/catalog/ProductCards';
 import { useSuits } from '@/features/catalog/hooks';
 import { paths } from '@/routes/paths';
 import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL, APPOINTMENT_VIRTUAL_URL } from '@/config/features';
+import { useTranslation } from '@/context/LanguageContext';
+import { formatCurrency } from '@/lib/format';
 import { cx } from '@/lib/cx';
 import l from '@/styles/layout.module.css';
 import s from './HomePage.module.css';
 
-/** Los ocho pasos del §1 del prompt maestro, tal cual los vive el cliente. */
-const JOURNEY = [
-  { id: '1', label: 'Explorar', description: 'Elige el modelo que te representa' },
-  { id: '2', label: 'Personalizar', description: 'Tela, solapa, forro y botones' },
-  { id: '3', label: 'Cotizar', description: 'Precio cerrado, sin sorpresas' },
-  { id: '4', label: 'Agendar', description: 'Reservas tu cita en el taller' },
-  { id: '5', label: 'Medidas', description: 'Te tomamos medidas y dejas el anticipo' },
-  { id: '6', label: 'Confirmado', description: 'Tu pedido entra al taller' },
-  { id: '7', label: 'Confección', description: 'Corte, costura y pruebas' },
-  { id: '8', label: 'Entrega', description: 'Pagas el saldo y te lo llevas' },
+/** Íconos de la franja de beneficios del hero; el texto sale del diccionario. */
+const FEATURE_ICONS = ['hanger', 'needle', 'star', 'checkCircle'] as const;
+
+/** Íconos de la sección de oficio; el texto sale del diccionario. */
+const CRAFT_ICONS = ['scissors', 'spool', 'ruler', 'eye'] as const;
+
+const INSTAGRAM_IMAGES = [
+  '/images/coloresdetraje.png',
+  '/images/entalledeunsaco.png',
+  '/images/telatijerasycinta.png',
+  '/images/tuprimertrajebienconfeccionado.png',
 ];
 
-const INSTAGRAM_POSTS = [
-  { image: '/images/coloresdetraje.png', alt: 'El color: por qué el azul marino es la elección más segura' },
-  { image: '/images/entalledeunsaco.png', alt: 'El entalle: los hombros limpios y la silueta que sigue el cuerpo' },
-  { image: '/images/telatijerasycinta.png', alt: 'La tela: lana al 100% o mezclas de alta calidad' },
-  { image: '/images/tuprimertrajebienconfeccionado.png', alt: 'Tu primer traje bien confeccionado' },
-];
+/** Pasos del "Cómo funciona" que, al pasar el cursor, despliegan estilos de traje. */
+const JOURNEY_STEPS_WITH_STYLES = new Set([0, 1]);
 
-/** La franja de beneficios del hero (§ misma referencia visual). */
-const FEATURES = [
-  { icon: 'hanger' as const, title: 'Hecho a medida', text: 'Ajuste perfecto para ti' },
-  { icon: 'needle' as const, title: '100% artesanal', text: 'Hecho a mano, puntada a puntada' },
-  { icon: 'star' as const, title: 'Telas premium', text: 'Selección de las mejores telas' },
-  { icon: 'checkCircle' as const, title: 'Garantía de calidad', text: 'Satisfacción garantizada' },
-];
+interface StyleGalleryItem {
+  id: number;
+  name: string;
+  image: string | null;
+  price: number;
+}
 
-const CRAFT = [
-  {
-    icon: 'scissors' as const,
-    title: 'Cortado a mano',
-    text: 'Cada patrón se traza sobre tus medidas. Nada de tallas estándar retocadas.',
-  },
-  {
-    icon: 'spool' as const,
-    title: 'Telas con nombre',
-    text: 'Lanas Súper 110 a 130, linos irlandeses y tweeds Donegal. Sabemos de dónde viene cada metro.',
-  },
-  {
-    icon: 'ruler' as const,
-    title: 'Pruebas incluidas',
-    text: 'Ajustamos hasta que la chaqueta caiga como debe. Sin coste adicional.',
-  },
-  {
-    icon: 'eye' as const,
-    title: 'Seguimiento en línea',
-    text: 'Mira en qué etapa está tu traje —corte, confección, prueba— desde tu cuenta.',
-  },
-];
+/** Grilla compacta de estilos de traje — el contenido del panel que se despliega al lado del disco.
+ *  El título del panel (la etiqueta del paso) ya lo agrega `Stepper`, así que esto es solo la grilla. */
+function StyleGallery({ items }: { items: StyleGalleryItem[] }) {
+  return (
+    <div className={s.styleGrid}>
+      {items.map((item) => (
+        <figure key={item.id} className={s.styleCard}>
+          {item.image ? (
+            <img src={item.image} alt="" className={s.styleCardImg} />
+          ) : (
+            <div className={s.styleCardImg} aria-hidden="true" />
+          )}
+          <figcaption className={s.styleCardCaption}>
+            <span className={s.styleCardName}>{item.name}</span>
+            <span className={s.styleCardPrice}>{formatCurrency(item.price)}</span>
+          </figcaption>
+        </figure>
+      ))}
+    </div>
+  );
+}
 
 export default function HomePage() {
+  const t = useTranslation();
   // Solo los cuatro primeros: la portada invita, no agota el catálogo.
   const { data, isLoading, isError } = useSuits({ pageSize: 4, sort: 'featured' });
+  // Para el panel de "Explorar"/"Personalizar": un representante por estilo.
+  const { data: styleSuits } = useSuits({ pageSize: 12, sort: 'featured' });
+
+  const styleGalleryItems = useMemo<StyleGalleryItem[]>(() => {
+    const seenStyles = new Set<number>();
+    const items: StyleGalleryItem[] = [];
+    for (const suitModel of styleSuits?.items ?? []) {
+      if (seenStyles.has(suitModel.styleId)) continue;
+      seenStyles.add(suitModel.styleId);
+      items.push({
+        id: suitModel.styleId,
+        name: suitModel.styleName,
+        image: suitModel.primaryImage?.url ?? null,
+        price: suitModel.basePrice,
+      });
+    }
+    return items;
+  }, [styleSuits]);
+
+  const journey = t.home.journeySteps.map((step, index) => {
+    const base = { id: String(index + 1), ...step };
+    if (JOURNEY_STEPS_WITH_STYLES.has(index) && styleGalleryItems.length > 0) {
+      return { ...base, detail: <StyleGallery items={styleGalleryItems} /> };
+    }
+    return base;
+  });
+  const features = t.home.features.map((feature, index) => ({
+    ...feature,
+    icon: FEATURE_ICONS[index]!,
+  }));
+  const craft = t.home.craftItems.map((item, index) => ({ ...item, icon: CRAFT_ICONS[index]! }));
+  const instagramPosts = INSTAGRAM_IMAGES.map((image, index) => ({
+    image,
+    alt: t.home.igAlts[index]!,
+  }));
 
   return (
     <>
@@ -76,19 +110,15 @@ export default function HomePage() {
           <div className={s.heroContent}>
             <p className={s.heroEyebrow}>
               <span className={s.heroTick} aria-hidden="true" />
-              Sastrería artesanal · Guatemala
+              {t.home.heroEyebrow}
             </p>
 
             <h1 className={s.heroTitle}>
-              Un traje que no se parece a ningún otro
-              <span className={s.heroTitleAccent}> porque no lo es.</span>
+              {t.home.heroTitle}
+              <span className={s.heroTitleAccent}> {t.home.heroTitleAccent}</span>
             </h1>
 
-            <p className={s.heroText}>
-              {SHOP_ENABLED
-                ? 'Elige el modelo, la tela y cada detalle. Nosotros lo cortamos a mano sobre tus medidas y tú sigues en línea cómo avanza, puntada a puntada.'
-                : 'Elegimos juntos el modelo, la tela y cada detalle, y lo cortamos a mano sobre tus medidas. Agenda tu cita, presencial o por videollamada.'}
-            </p>
+            <p className={s.heroText}>{t.home.heroText}</p>
 
             <div className={s.heroActions}>
               {SHOP_ENABLED ? (
@@ -108,7 +138,7 @@ export default function HomePage() {
                 size="lg"
                 leftIcon={<Icon name="mapPin" size={17} />}
               >
-                Cita presencial
+                {t.home.inPersonAppointment}
               </ButtonLink>
               {SHOP_ENABLED ? null : (
                 <ButtonLink
@@ -118,7 +148,7 @@ export default function HomePage() {
                   size="lg"
                   leftIcon={<Icon name="video" size={17} />}
                 >
-                  Cita virtual
+                  {t.home.virtualAppointment}
                 </ButtonLink>
               )}
             </div>
@@ -133,7 +163,7 @@ export default function HomePage() {
 
         <div className="re-container">
           <ul role="list" className={s.featureStrip}>
-            {FEATURES.map((feature) => (
+            {features.map((feature) => (
               <li key={feature.title} className={s.featureItem}>
                 <Icon name={feature.icon} size={26} className={s.featureIcon} />
                 <div>
@@ -148,19 +178,19 @@ export default function HomePage() {
         <div className="re-container">
           <dl className={s.heroStats}>
             <div>
-              <dt>Años cosiendo</dt>
+              <dt>{t.home.statsYearsLabel}</dt>
               <dd>
                 27<span className={s.statTick} aria-hidden="true" />
               </dd>
             </div>
             <div>
-              <dt>Trajes entregados</dt>
+              <dt>{t.home.statsSuitsLabel}</dt>
               <dd>
                 4,200+<span className={s.statTick} aria-hidden="true" />
               </dd>
             </div>
             <div>
-              <dt>Telas en muestrario</dt>
+              <dt>{t.home.statsFabricsLabel}</dt>
               <dd>
                 60<span className={s.statTick} aria-hidden="true" />
               </dd>
@@ -208,30 +238,23 @@ export default function HomePage() {
         <div className="re-container">
           <SectionHeading
             align="center"
-            eyebrow="Cómo funciona"
-            title="De la idea al armario, en ocho pasos"
-            description="Sabes en todo momento dónde está tu traje y qué falta para tenerlo."
+            eyebrow={t.home.journeyEyebrow}
+            title={t.home.journeyTitle}
+            description={t.home.journeyDescription}
           />
 
           <div className={l.afterHeading}>
-            <Stepper
-              steps={JOURNEY}
-              current={JOURNEY.length}
-              aria-label="Proceso de encargo de un traje"
-            />
+            <Stepper steps={journey} current={journey.length} aria-label={t.home.journeyAriaLabel} />
           </div>
         </div>
       </section>
 
       {/* ── Oficio ───────────────────────────────────────────────────────── */}
       <section className={cx('re-container', l.section)}>
-        <SectionHeading
-          eyebrow="Por qué a medida"
-          title="Lo que cambia cuando algo se hace despacio"
-        />
+        <SectionHeading eyebrow={t.home.craftEyebrow} title={t.home.craftTitle} />
 
         <div className={cx(s.craftGrid, l.afterHeading)}>
-          {CRAFT.map((item) => (
+          {craft.map((item) => (
             <article key={item.title} className={s.craftCard}>
               <span className={s.craftIcon}>
                 <Icon name={item.icon} size={22} />
@@ -247,13 +270,13 @@ export default function HomePage() {
       <section className={cx('re-container', l.section)}>
         <SectionHeading
           align="center"
-          eyebrow="@realelegance"
-          title="Síguenos en Instagram"
-          description="Consejos de sastrería y un vistazo al taller, publicados cada semana."
+          eyebrow={t.home.igEyebrow}
+          title={t.home.igTitle}
+          description={t.home.igDescription}
         />
 
         <div className={cx(s.igGrid, l.afterHeading)}>
-          {INSTAGRAM_POSTS.map((post) => (
+          {instagramPosts.map((post) => (
             <div key={post.image} className={s.igItem}>
               <img src={post.image} alt={post.alt} loading="lazy" />
             </div>
@@ -279,11 +302,8 @@ export default function HomePage() {
         ) : (
           <div className={s.cta}>
             <div>
-              <h2 className={s.ctaTitle}>¿Listo para tu próximo traje?</h2>
-              <p className={s.ctaText}>
-                Elige día y hora para tu cita en el taller — virtual o presencial, sin trámites, sin
-                cuenta.
-              </p>
+              <h2 className={s.ctaTitle}>{t.home.ctaTitle}</h2>
+              <p className={s.ctaText}>{t.home.ctaText}</p>
             </div>
             <ButtonLink
               to={APPOINTMENT_IN_PERSON_URL}
@@ -292,7 +312,7 @@ export default function HomePage() {
               size="lg"
               leftIcon={<Icon name="calendar" size={17} />}
             >
-              Agendar una cita
+              {t.home.ctaButton}
             </ButtonLink>
           </div>
         )}

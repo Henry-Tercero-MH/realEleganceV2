@@ -76,17 +76,37 @@
 
 /* ── Variantes ───────────────────────────────────────────────────────────── */
 
-/* Primaria: dorado sólido. Una sola por vista — es la acción de la página. */
+/* Primaria: dorado con barrido metálico (el mismo brillo del logo), no un
+   plano sólido. Los tonos salen de la paleta ya calibrada (--re-gold-*), no
+   de valores nuevos — así el contraste de --color-on-primary encima sigue
+   siendo el mismo que ya se validó. Una sola por vista — es la acción de la
+   página. */
 .primary {
   --_bg: var(--color-primary);
   --_fg: var(--color-on-primary);
   --_border: var(--color-primary);
+  background-image: linear-gradient(
+    135deg,
+    var(--re-gold-deep) 0%,
+    var(--re-gold) 30%,
+    var(--re-gold-bright) 50%,
+    var(--re-gold) 70%,
+    var(--re-gold-deep) 100%
+  );
   font-weight: var(--weight-semibold);
 }
 
 .primary:hover:not(:disabled) {
   --_bg: var(--color-primary-hover);
   --_border: var(--color-primary-hover);
+  /* Un tono entero más brillante que el reposo, para que el hover se note
+     como un realce, no como el mismo barrido apenas movido. */
+  background-image: linear-gradient(
+    135deg,
+    var(--re-gold) 0%,
+    var(--re-gold-bright) 50%,
+    var(--re-gold) 100%
+  );
   box-shadow: 0 6px 24px var(--color-primary-soft);
 }
 

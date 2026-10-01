@@ -90,6 +90,15 @@
   flex-shrink: 0;
 }
 
+/* Texto "EN"/"ES" dentro del IconButton de idioma — mismo peso visual que un
+   ícono de 19px, pero es texto real, no un glifo del set de Icon.tsx. */
+.langLabel {
+  font-family: var(--font-sans);
+  font-weight: var(--weight-semibold);
+  font-size: 12px;
+  letter-spacing: 0.02em;
+}
+
 .iconLink {
   display: grid;
   place-items: center;

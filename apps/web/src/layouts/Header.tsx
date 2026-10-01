@@ -6,6 +6,7 @@ import { paths } from '@/routes/paths';
 import { useAuth } from '@/context/AuthContext';
 import { useCart } from '@/context/CartContext';
 import { useTheme } from '@/context/ThemeContext';
+import { useLanguage } from '@/context/LanguageContext';
 import { useFocusTrap } from '@/hooks/useFocusTrap';
 import { useMediaQuery } from '@/hooks/useMediaQuery';
 import { SHOP_ENABLED, APPOINTMENT_IN_PERSON_URL } from '@/config/features';
@@ -14,31 +15,32 @@ import s from './Header.module.css';
 
 const MOBILE_NAV_ID = 'site-nav';
 
-/*
- * Fase solo informativa: sin "Trajes" (catálogo/ficha/personalizar, la
- * opción "Diseñar mi traje"), sin "Seguimiento" (necesita un pedido real) y
- * sin los enlaces de carrito/cuenta/sesión del bloque de abajo. Ver
- * config/features.ts — SHOP_ENABLED trae todo esto de vuelta.
- */
-const NAV_LINKS = SHOP_ENABLED
-  ? [
-      { to: paths.catalog, label: 'Trajes' },
-      { to: paths.fabrics, label: 'Telas' },
-      { to: paths.accessories, label: 'Accesorios' },
-      { to: paths.tracking, label: 'Seguimiento' },
-      { to: paths.about, label: 'El taller' },
-    ]
-  : [
-      { to: paths.fabrics, label: 'Telas' },
-      { to: paths.accessories, label: 'Accesorios' },
-      { to: paths.about, label: 'El taller' },
-    ];
-
 export function Header() {
   const { isAuthenticated, user, hasRole, logout } = useAuth();
   const { totals, openDrawer } = useCart();
   const { theme, toggleTheme } = useTheme();
+  const { language, toggleLanguage, t } = useLanguage();
   const location = useLocation();
+
+  /*
+   * Fase solo informativa: sin "Trajes" (catálogo/ficha/personalizar, la
+   * opción "Diseñar mi traje"), sin "Seguimiento" (necesita un pedido real) y
+   * sin los enlaces de carrito/cuenta/sesión del bloque de abajo. Ver
+   * config/features.ts — SHOP_ENABLED trae todo esto de vuelta.
+   */
+  const NAV_LINKS = SHOP_ENABLED
+    ? [
+        { to: paths.catalog, label: 'Trajes' },
+        { to: paths.fabrics, label: t.header.navFabrics },
+        { to: paths.accessories, label: t.header.navAccessories },
+        { to: paths.tracking, label: 'Seguimiento' },
+        { to: paths.about, label: t.header.navAbout },
+      ]
+    : [
+        { to: paths.fabrics, label: t.header.navFabrics },
+        { to: paths.accessories, label: t.header.navAccessories },
+        { to: paths.about, label: t.header.navAbout },
+      ];
 
   const [isMenuOpen, setMenuOpen] = useState(false);
   const [isScrolled, setScrolled] = useState(false);
@@ -139,7 +141,7 @@ export function Header() {
                 size="md"
                 leftIcon={<Icon name="calendar" size={16} />}
               >
-                Agendar una cita
+                {t.header.bookAppointment}
               </ButtonLink>
             )}
           </div>
@@ -147,7 +149,13 @@ export function Header() {
 
         <div className={s.actions}>
           <IconButton
-            label={theme === 'dark' ? 'Cambiar a tema claro' : 'Cambiar a tema oscuro'}
+            label={language === 'es' ? t.language.switchToEnglish : t.language.switchToSpanish}
+            icon={<span className={s.langLabel}>{language === 'es' ? 'EN' : 'ES'}</span>}
+            onClick={toggleLanguage}
+          />
+
+          <IconButton
+            label={theme === 'dark' ? t.header.themeToLight : t.header.themeToDark}
             icon={<Icon name={theme === 'dark' ? 'sun' : 'moon'} size={19} />}
             onClick={toggleTheme}
           />
@@ -182,12 +190,12 @@ export function Header() {
               className={s.desktopOnly}
               leftIcon={<Icon name="calendar" size={16} />}
             >
-              Agendar una cita
+              {t.header.bookAppointment}
             </ButtonLink>
           )}
 
           <IconButton
-            label={isMenuOpen ? 'Cerrar menú' : 'Abrir menú'}
+            label={isMenuOpen ? t.header.closeMenu : t.header.openMenu}
             icon={<Icon name={isMenuOpen ? 'close' : 'menu'} size={20} />}
             onClick={() => setMenuOpen((open) => !open)}
             aria-expanded={isMenuOpen}

@@ -47,6 +47,7 @@ export function removeStorage(key: string): void {
 /** Claves usadas por la app, en un solo sitio para evitar colisiones. */
 export const STORAGE_KEYS = {
   theme: 'theme',
+  language: 'language',
   cart: 'cart',
   cartSession: 'cart-session',
   auth: 'auth',

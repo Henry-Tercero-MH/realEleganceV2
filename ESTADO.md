@@ -51,6 +51,7 @@ Pedido de demostración para el seguimiento público: **`RE-2026-01024`**.
 | Módulo | Estado | Notas |
 |---|---|---|
 | `apps/web` — fase solo informativa | 🚧 En curso | `config/features.ts` (`SHOP_ENABLED = false`) oculta compra/cuenta/admin/seguimiento/catálogo de trajes; "agendar cita" va a Google Calendar, WhatsApp (`+502 3074-5202`) queda para preguntas; contacto y redes reales en `Footer` + widget flotante `FloatingSocial`. Sitio ya desplegado en `realelegancegt.com`. Falta: `APPOINTMENT_VIRTUAL_URL` sigue apuntando al horario presencial (placeholder) hasta que el usuario cree el horario virtual con Meet en Google Calendar |
+| `apps/web` — idioma ES/EN | 🚧 En curso | `LanguageContext.tsx` + `i18n/dictionary.ts` (interfaz tipada, ES por defecto). Traducido: Header, Footer, Home, Telas, Accesorios, El taller, 404, pantalla de sin conexión — el resto sigue oculto por `SHOP_ENABLED`. No traduce el contenido de `src/mocks/data.ts` (nombres/descripciones de telas, trajes, accesorios: es dato, no texto de interfaz) |
 | Raíz del monorepo | ✅ Hecho | npm workspaces, tsconfig base, ESLint 9 flat, Prettier, `.env.example` |
 | `packages/shared` — constantes y tipos | ✅ Hecho | Catálogos cerrados del dominio + DTOs de toda la API |
 | `packages/shared` — `tokens.css` | ✅ Hecho | Paleta §3 + escala, motivo de sastre y tema claro «lino» |
@@ -138,6 +139,151 @@ Leyenda: ✅ hecho · 🚧 en curso · ⬜ pendiente (en alcance) · ⛔ fuera d
 ---
 
 ## Bitácora
+
+### Sesión 8 — 2026-09-30
+
+**Objetivo:** el usuario vio el stepper de "Cómo funciona" (Home) en inglés y pidió que al pasar el
+cursor por cada paso se abriera "un modal al lado derecho" con más información de ese paso.
+
+**Hecho:**
+
+- Se le aclaró (implícitamente, aplicándolo así) que lo pedido es un **tooltip/popover** disparado
+  por hover/foco, no un modal bloqueante — un modal exige cerrarse a mano y este se cierra solo al
+  quitar el cursor.
+- `components/ui/Stepper.tsx`: nuevo campo opcional `detail?: ReactNode` en `StepperStep`. Cuando un
+  paso lo trae, se renderiza un `<span role="tooltip">` fijo en el DOM (no montado/desmontado por
+  JS) y se conecta al disparador con `aria-describedby`, para que un lector de pantalla lo anuncie
+  al enfocar el paso. Es **opt-in y retrocompatible**: `TrackingPage.tsx` y `CheckoutSuccessPage.tsx`
+  usan el mismo `<Stepper>` sin pasar `detail`, así que no cambian en nada (además siguen ocultos
+  detrás de `SHOP_ENABLED`).
+- Visibilidad resuelta en CSS puro (`:hover`/`:focus-within` sobre el `<li>`), sin estado de React:
+  más simple y sin parpadeos por retraso de render.
+- Accesible por teclado, no solo con mouse: al paso sin botón (los no completados, que hoy son
+  todos en esta vista) se le agregó `tabIndex={0}` para que Tab lo alcance y dispare el mismo
+  tooltip que el hover.
+- Posicionamiento distinto según el layout real del stepper:
+  - **Horizontal (escritorio, 8 pasos en fila)**: el tooltip aparece **arriba** del círculo,
+    centrado — "a la derecha" literal habría invadido el paso siguiente, con 8 pasos apretados en
+    fila no hay margen para eso.
+  - **Vertical / fila colapsada en móvil (`≤720px`, mismo `<Stepper orientation="horizontal">` que
+    se apila)**: ahí sí "a la derecha" tiene sentido, pero se descartó por riesgo de desbordar la
+    pantalla en un teléfono angosto; en su lugar se despliega **debajo** del texto del paso, con alto
+    animado (0 → contenido), sin superponerse a nada.
+- Contenido: se agregó `detail` (frase más larga que la `description` corta que ya existía) a los 8
+  `journeySteps` de `i18n/dictionary.ts`, en español e inglés — la interfaz `Dictionary` fuerza que
+  ambos tengan las mismas claves, así que no se puede dejar uno sin traducir.
+
+**Corregido durante la propia verificación** (dos bugs reales de overflow en móvil, ninguno visible
+en escritorio):
+
+1. La regla base `.tooltip { width: max-content }` seguía activa dentro del media query de móvil —
+   con el texto largo del `detail`, eso fuerza el ancho a la línea completa sin partir (~670px),
+   desbordando un viewport de 390px. Se corrigió fijando `width: 100%` en la variante de móvil.
+2. La transición de `:hover`/`:focus-within` de escritorio (`transform: translate(-50%, 0)`, para
+   centrar arriba del círculo) seguía aplicando en móvil por especificidad de selector, corriendo el
+   bloque 50% de su propio ancho hacia la izquierda y sacándolo de pantalla. Se corrigió con
+   `transform: none` explícito en la variante de móvil.
+
+**Verificado** con Playwright en navegador real (no solo `tsc`): a 1280px el tooltip aparece arriba
+del paso "Personalizar" sin salirse por ningún lado; a 390px aparece debajo, ocupando el ancho del
+`<li>` (342px, sin desbordar los 390px del viewport); enfocar por teclado (Tab) el paso "Cotizar"
+también revela el tooltip y `aria-describedby` apunta al `id` correcto del `role="tooltip"`. `tsc`
+limpio.
+
+**No verificado:** contraste de color del tooltip en tema oscuro con un lector de pantalla real (solo
+inspección visual); no se corrió `vitest` porque no hay test que cubra `Stepper.tsx` hoy.
+
+**Corrección sobre la marcha — de tooltip flotante a panel que empuja (carrusel)**: el usuario vio el
+resultado y aclaró su idea real: no quería un tooltip superpuesto, sino un panel al lado derecho del
+**disco** (no del paso completo) que se despliega "como desenvolver tela" y **empuja** a los pasos
+siguientes (se abre espacio real, no se monta encima) — y que ahí, específicamente en "Explorar" y
+"Personalizar", se muestren los estilos de traje del taller a modo de ejemplo.
+
+- `Stepper.module.css`: el panel dejó de ser `position: absolute` y pasó a ser un hijo flex más del
+  propio `<li>` (`flex: 0 0 auto; width: 0`, transición de `width`) — al abrirse con
+  `:hover`/`:focus-within` gana `320px` de ancho de verdad, lo que empuja a los `<li>` siguientes
+  dentro de la fila. Para que esto tuviera adónde crecer sin desbordar la página, `.horizontal` (el
+  `<ol>`) ganó `overflow-x: auto` — con un panel abierto la fila mide más que el contenedor y se
+  vuelve desplazable, el "carrusel" que pidió el usuario; en reposo (todos los paneles en `width: 0`)
+  se ve exactamente igual que antes, sin scroll.
+  También cambió `.horizontal .step` de columnas iguales (`flex: 1`, un octavo del ancho cada una) a
+  columnas por contenido (`flex: 0 0 auto`) — si no, el panel no tenía forma de empujar nada, porque
+  `flex: 1` reparte el ancho fijo del contenedor entre los 8 pasos sin importar cuánto contenido tenga
+  cada uno.
+  La cintra métrica que conecta los discos (`::before`) asume que el disco está centrado en el ancho
+  de su propio `<li>` — deja de ser cierto en el paso que tiene el panel abierto (su caja ahora incluye
+  el panel), así que esa única línea se oculta mientras el panel está abierto (`.step:hover::before`);
+  el panel mismo ocupa visualmente ese tramo, así que no se nota.
+- `Stepper.tsx`: el panel ahora es un `<div>` hermano del `trigger` dentro del `<li>` (antes vivía
+  anidado como un `<span>` suelto) — mismo mecanismo de visibilidad por CSS, sin JS.
+- **Contenido real para "Explorar"/"Personalizar"**: en vez de texto, un componente `StyleGallery`
+  nuevo en `HomePage.tsx` muestra los 5 estilos del taller (`suitStyles`: Clásico, Cruzado, Esmoquín,
+  Entallado, Tres piezas) con foto, nombre y precio — un representante por estilo, elegido por
+  `styleId` de los primeros 12 `suitModels` que trae `useSuits({ pageSize: 12 })` (mismo hook de
+  React Query que ya usaba la sección de destacados, no se inventó una fuente de datos nueva).
+  Los otros 6 pasos (Cotizar, Agendar, Medidas, Confirmado, Confección, Entrega) **conservan** el
+  panel de texto de la corrección anterior — solo "Explorar" y "Personalizar" muestran la galería,
+  a pedido explícito del usuario.
+  Nota de datos: dos de las cinco fotos (`entalledeunsaco.png`, `coloresdetraje.png`) son imágenes
+  promocionales con texto superpuesto, no fotos de producto limpias — vienen así de la Sesión 3/4 y
+  se reutilizan también en la sección de Instagram de esta misma página; no se generaron fotos nuevas,
+  queda igual de "mock" que el resto del catálogo simulado.
+
+**Verificado** con Playwright en navegador real: en reposo el stepper se ve igual que antes de este
+cambio (sin regresión); al pasar el cursor por "Explorar" el panel se abre con `width: 320px` real
+(confirmado con `getBoundingClientRect`) y empuja visualmente a "Personalizar", "Cotizar", etc. hacia
+la derecha; la fila del stepper pasa de `scrollWidth === clientWidth` (sin scroll) a
+`scrollWidth > clientWidth` (con scroll) exactamente cuando el panel se abre. En móvil (390px) el
+mismo panel se despliega hacia abajo (alto en vez de ancho) sin desbordar el viewport
+(`document.documentElement.scrollWidth` se mantiene en 390). El foco por teclado (Tab) también abre el
+panel. `tsc`, `eslint` y `vitest` (54/54) limpios.
+
+**Segunda corrección — de "empuja y hace scroll" a superpuesto**: viendo el carrusel en uso, el usuario
+pidió lo contrario a nivel visual: que no se vea ningún scroll y que el panel se muestre **encima**
+del diseño en vez de empujarlo, "para evitar que se dañe el diseño" (el screenshot que mandó mostraba
+la etiqueta "PERSONALIZAR" apretada contra el panel de "Explorar" al empujarse). Se revirtió el
+mecanismo de layout manteniendo todo lo demás (galería de estilos, texto de los otros 6 pasos, apertura
+por hover/foco):
+
+- `.panel` volvió a `position: absolute` (como el tooltip original de la primera versión), con
+  `z-index` y sombra para leerse claramente "por encima" de la página, no integrado en el flujo. Ya no
+  empuja nada — por eso se le quitó a `.horizontal` el `overflow-x: auto` y a `.horizontal .step` el
+  `flex: 0 0 auto` (vuelven a ser 8 columnas iguales, como antes de este trabajo). El "desenvolver"
+  sigue ahí: el ancho anima de `0` a `320px`, revelando el contenido de izquierda a derecha.
+- **Bug encontrado al verificar el propio cambio**: con el panel superpuesto, el último paso
+  ("Entrega") y el penúltimo ("Confección") no tienen 320px libres antes del borde de la página — abrir
+  hacia la derecha ahí desbordaba la página entera (`document.documentElement.scrollWidth` pasaba de
+  1280 a 1580px), el mismo problema de scroll que se quería evitar, ahora a nivel de página en vez del
+  stepper. Se corrigió con `.horizontal .step:nth-last-child(-n+2) .panel` — los últimos dos pasos
+  abren el panel hacia la **izquierda** (`right: calc(100% + space-3)` en vez de `left`) en lugar de
+  hacia la derecha.
+- Móvil no cambió de mecanismo (ya empujaba hacia abajo dentro de la columna, sin scroll horizontal,
+  que es justo lo que no se quería arriba) — solo se le agregó `position: static` explícito al panel
+  para anular el `position: absolute` del caso de escritorio.
+
+**Verificado** con Playwright: en reposo y con cualquier panel abierto, `stepper.scrollWidth ===
+stepper.clientWidth` (nunca aparece scrollbar en la fila) y `document.documentElement.scrollWidth ===
+window.innerWidth` (tampoco en la página), probado explícitamente en "Explorar" (primero) y "Entrega"
+(último, el caso que se rompía antes del fix de `nth-last-child`). En móvil (390px) sigue sin
+desbordar. Foco por teclado sigue abriendo el panel. `tsc`, `eslint` y `vitest` (54/54) limpios.
+
+**Ajuste final — título dentro del panel**: el usuario mandó una captura del panel de "Explorar" (que
+ya traía su propio título "EXPLORAR" porque `StyleGallery` lo agregaba a mano) pidiendo que fuera
+"como este, con su título, para no confundir" — es decir, que **todos** los paneles lo tuvieran, no
+solo los dos con galería de estilos. Como el título repite la etiqueta del paso (`step.label`), que
+ya es un dato que `Stepper` conoce, se movió ahí en vez de dejarlo como responsabilidad de cada
+contenido: `Stepper.tsx` ahora antepone un `<p class="panelTitle">{step.label}</p>` dentro de
+`.panelInner`, antes de `step.detail`, para los 8 pasos por igual. `StyleGallery` en `HomePage.tsx` se
+quedó solo con la grilla (se le quitó el `title` que traía duplicado). Tiene sentido estando el panel
+superpuesto: al no estar pegado al layout del paso, puede quedar flotando lejos de su disco (sobre todo
+los dos de la derecha, que abren hacia la izquierda) y sin título sería fácil confundirlo con el del
+paso vecino.
+
+Verificado visualmente en navegador real: los 8 pasos muestran su etiqueta en mayúsculas como
+encabezado del panel ("EXPLORAR", "COTIZAR", etc.), con el mismo estilo tipográfico que ya usaba
+`StyleGallery`. `tsc`, `eslint` y `vitest` (54/54) limpios.
+
+---
 
 ### Sesión 7 — 2026-09-30
 
@@ -304,14 +450,78 @@ vez de ~8s — el precio de dejar de tener falsos positivos.
 
 **Logo real**: el usuario dio `apps/web/public/images/logore.png` (PNG transparente, 1254×1254, el
 monograma "RE" dorado con relieve 3D) para reemplazar el monograma en texto plano que tenía
-`Logo.tsx` (un cuadro con filete dorado y las letras "RE"). Se conectó directo (`<img>`, 42×42px —
-25% más grande que el primer tamaño, a pedido del usuario después de verlo en pantalla —,
-`alt=""` porque es decorativo — el nombre completo ya va en texto al lado para lectores de
-pantalla) y se quitó el recuadro con borde que llevaba la versión en texto, porque la imagen ya
-tiene peso visual propio. **Detalle que se le señaló al usuario y decidió dejar así**: el PNG trae
-un halo rojo/amarillo tenue alrededor de las letras (recorte de fondo imperfecto, visible sobre
-todo en la imagen a tamaño completo) — al tamaño real del header casi no se nota, confirmado
-visualmente con una captura ampliada (`deviceScaleFactor: 4`).
+`Logo.tsx` (un cuadro con filete dorado y las letras "RE"). Se conectó directo (`<img>`, `alt=""`
+porque es decorativo — el nombre completo ya va en texto al lado para lectores de pantalla) y se
+quitó el recuadro con borde que llevaba la versión en texto, porque la imagen ya tiene peso visual
+propio. **Detalle que se le señaló al usuario y decidió dejar así**: el PNG trae un halo
+rojo/amarillo tenue alrededor de las letras (recorte de fondo imperfecto, visible sobre todo en la
+imagen a tamaño completo) — al tamaño real del header casi no se nota, confirmado visualmente con
+una captura ampliada (`deviceScaleFactor: 4`). Tamaño: 34px → 42px (+25%, a pedido) → **50px**
+(el usuario dijo que el primer aumento "aún no se notaba más grande" corriendo local con
+`npm run dev`; el código sí tenía 42px — probablemente caché del navegador/HMR, no se investigó más
+a fondo porque pidió directamente subirlo a 50 — si vuelve a pasar con futuros cambios de tamaño,
+sospechar primero de la caché antes que del código).
+
+**Efecto metálico en el botón primario**: el usuario pasó una paleta dorada y un degradado sugeridos
+(generados por otra IA, con hex nuevos sin relación con `tokens.css`) y pidió "agrega este efecto y
+color metálico a la paleta o solo botones, como consideres". Se decidió **no** tocar la paleta
+(`--color-primary` y el resto de semánticos ya pasaron por el trabajo de contraste de la Sesión 5,
+usado en decenas de componentes — cambiarlos sin volver a validar contraste es alto riesgo para un
+pedido que ni siquiera lo pedía con claridad) y aplicar el efecto **solo al botón `.primary`** de
+`Button.module.css`/`ButtonLink` (comparten las mismas clases): un `background-image` con
+`linear-gradient(135deg, …)` en vez de `background-color` plano, usando los tonos **ya existentes**
+de la paleta (`--re-gold-deep`, `--re-gold`, `--re-gold-bright`) para que el contraste con
+`--color-on-primary` siga siendo el mismo que ya se validó. Se agregó un único token nuevo,
+`--re-gold-glint` (`#fff3d6`, casi blanco) en `tokens.css`, para el punto más luminoso del degradado
+del estado `:hover` — es el único hex nuevo que entró al proyecto, y solo se usa ahí (documentado en
+el propio token para que no se reutilice como color de texto/fondo, donde el contraste no está
+pensado para eso). Verificado visualmente en navegador: se ve el barrido metálico diagonal en reposo,
+más brillante en `:hover`, y se sostiene bien en los dos temas. `vitest` (54/54) sigue en verde —
+el cambio es solo CSS, no toca el DOM que prueban los tests de `Button.test.tsx`.
+
+**Ajuste**: el usuario vio el botón ya desplegado y dijo que el reposo se sentía "un poco más
+oscuro" de lo esperado — las puntas del degradado usaban `--re-gold-deep` (el dorado apagado de la
+paleta, pensado para bordes, no para superficies grandes). Se subió el rango completo un escalón:
+reposo ahora va de `--re-gold` a `--re-gold-bright` con el glint (`--re-gold-glint`) en el centro
+(antes el glint solo aparecía en `:hover`); `:hover` subió otro escalón más, de `--re-gold-bright`
+al glint y de vuelta — así el hover se siente como un realce real, no el mismo barrido apenas
+movido. Verificado visualmente: reposo notablemente más claro, hover un paso más brillante todavía.
+
+**Corrección del ajuste anterior — era al revés**: el usuario aclaró que había pedido lo contrario
+("el color debería ser más oscuro el amarillo o dorado"), para los botones. Se bajó toda la escala
+un escalón: reposo vuelve a usar `--re-gold-deep` en las puntas (con `--re-gold` de paso y
+`--re-gold-bright` como pico central — ya no llega al glint casi blanco), y `:hover` sube un solo
+escalón (`--re-gold` → `--re-gold-bright` → `--re-gold`, tampoco toca el glint). `--re-gold-glint`
+queda declarado en `tokens.css` pero sin uso por ahora — se deja porque no estorba y puede servir si
+se quiere un brillo más fuerte en otro sitio más adelante. Verificado visualmente: reposo oscuro con
+buen carácter metálico, hover un paso más claro y perceptible.
+
+**Selector de idioma (ES/EN)**: el usuario pidió un botón para cambiar a inglés en el header, junto
+al de tema. Se armó un sistema de i18n propio (sin librería nueva — el proyecto ya usa Context para
+Theme/Auth/Cart/Toast, así que `LanguageContext.tsx` sigue exactamente ese mismo patrón, persistido
+en `localStorage` igual que el tema, y actualiza `<html lang>`).
+
+- `i18n/dictionary.ts`: diccionario ES/EN con una **interfaz `Dictionary` explícita** (no
+  `typeof es`) a propósito — así TypeScript exige que `en` tenga exactamente las mismas claves que
+  `es`; si algo queda sin traducir, no compila.
+- **Alcance deliberado, igual que con la ocultación de rutas de la Sesión 6**: solo se tradujo lo que
+  hoy es visible con `SHOP_ENABLED = false` — Header, Footer, Home, Telas, Accesorios, El taller,
+  404 y la pantalla de sin conexión. El resto (carrito, cuenta, back-office…) sigue oculto, así que
+  traducirlo ahora sería trabajo perdido. **Tampoco se traduce el CONTENIDO** (nombres/descripciones
+  de telas, trajes y accesorios de `src/mocks/data.ts`): es dato de catálogo, no texto de interfaz —
+  se confirmó visualmente que `/telas` en inglés traduce el título, la descripción y los botones,
+  pero los nombres de tela ("Súper 110 Negro", "100 % lana virgen") siguen en español, como se
+  esperaba.
+- Botón de idioma: mismo `IconButton` que ya existía para el tema, mostrando el idioma **al que se
+  cambiaría** ("EN" en español, "ES" en inglés) — mismo patrón que el ícono de sol/luna del tema.
+  Ícono nuevo no hizo falta, es texto (`.langLabel` en `Header.module.css`).
+
+Verificado: `tsc`, `eslint` (solo dos warnings preexistentes de `react-refresh/only-export-components`,
+mismo patrón que los otros contextos) y `vitest` (54/54) limpios. En navegador real: el botón
+traduce Home/Telas/Accesorios/El taller/404 correctamente, `<html lang>` cambia, el idioma persiste
+tras recargar la página (confirmado por error propio al verificar: al comprobar la persistencia
+busqué el texto en español del botón sin caer en que, ya en inglés, el botón mismo también se
+traduce — no fue un bug real, era el regex de mi propia verificación).
 
 ---
 
